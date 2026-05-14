@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mudança · Travessa do Galvão</title>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+<style>
+:root { color-scheme: light; --g: #2d6a4f; --gl: #f0f7f4; --gm: #d8eddf; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f4f4f4; color: #1a1a1a; }
+
+/* Loading overlay */
+#loading { position: fixed; inset: 0; background: white; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 999; gap: 14px; }
+#loading .spinner { width: 40px; height: 40px; border: 4px solid #e0e0e0; border-top-color: var(--g); border-radius: 50%; animation: spin 0.8s linear infinite; }
+#loading p { font-size: 0.9rem; color: #666; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Config warning */
+#cfg-warning { display: none; background: #fff3cd; border: 1.5px solid #ffc107; border-radius: 10px; margin: 12px; padding: 14px; font-size: 0.84rem; line-height: 1.6; color: #664d03; }
+#cfg-warning strong { display: block; margin-bottom: 4px; font-size: 0.9rem; }
+#cfg-warning code { background: #ffe69c; padding: 1px 5px; border-radius: 4px; font-family: monospace; font-size: 0.82rem; }
+
+/* Sync indicator */
+#sync-bar { height: 3px; background: var(--g); transition: opacity 0.5s; opacity: 0; position: fixed; top: 0; left: 0; right: 0; z-index: 100; }
+
+header { background: var(--g); color: white; padding: 16px 16px 12px; }
+header h1 { font-size: 1.05rem; font-weight: 700; }
+header p { font-size: 0.75rem; opacity: 0.8; margin-top: 2px; }
+.header-sync { font-size: 0.68rem; opacity: 0.7; margin-top: 4px; }
+
+.timeline { background: white; margin: 10px 10px 0; border-radius: 12px; padding: 12px 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.07); }
+.tl-row { display: flex; justify-content: space-between; font-size: 0.78rem; color: #555; margin-bottom: 7px; }
+.tl-label { font-weight: 600; color: #1a1a1a; }
+.bar-bg { background: #e0e0e0; border-radius: 6px; height: 9px; }
+.bar-fill { background: var(--g); height: 9px; border-radius: 6px; transition: width 0.5s ease; }
+
+.stats { display: flex; gap: 8px; margin: 8px 10px 0; }
+.stat { flex: 1; background: white; border-radius: 10px; padding: 10px 6px; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.07); }
+.stat-n { font-size: 1.5rem; font-weight: 800; color: var(--g); line-height: 1; }
+.stat-l { font-size: 0.65rem; color: #888; margin-top: 3px; line-height: 1.3; }
+
+.tabs { display: flex; margin: 10px 10px 0; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.07); }
+.tab { flex: 1; padding: 11px 6px; text-align: center; font-size: 0.78rem; font-weight: 600; color: #888; cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.2s; user-select: none; }
+.tab.active { color: var(--g); border-bottom-color: var(--g); background: var(--gl); }
+
+.content { padding: 10px 10px 80px; }
+.panel { display: none; }
+.panel.active { display: block; }
+
+.cat-block { background: white; border-radius: 12px; margin-bottom: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.07); overflow: hidden; }
+.cat-hdr { padding: 11px 14px; font-weight: 700; font-size: 0.85rem; background: #fafafa; border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center; }
+.cat-count { font-size: 0.72rem; background: var(--gm); color: var(--g); padding: 2px 8px; border-radius: 10px; font-weight: 600; }
+.cat-count.all-done { background: var(--g); color: white; }
+
+.task-row { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-bottom: 1px solid #f5f5f5; }
+.task-row:last-of-type { border-bottom: none; }
+.task-row input[type="checkbox"] { width: 19px; height: 19px; accent-color: var(--g); flex-shrink: 0; cursor: pointer; }
+.task-text { flex: 1; font-size: 0.86rem; line-height: 1.3; cursor: pointer; }
+.task-text.done { text-decoration: line-through; color: #bbb; }
+.task-del { color: #ddd; font-size: 1.2rem; cursor: pointer; padding: 2px 4px; flex-shrink: 0; line-height: 1; }
+.task-del:hover { color: #e74c3c; }
+
+.add-task-row { padding: 8px 12px 10px; }
+.add-inline { display: flex; gap: 6px; }
+.add-inline input { flex: 1; padding: 8px 10px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 0.83rem; outline: none; }
+.add-inline input:focus { border-color: var(--g); }
+.add-inline button { padding: 8px 14px; background: var(--g); color: white; border: none; border-radius: 8px; font-size: 0.9rem; cursor: pointer; font-weight: 700; }
+
+.item-card { background: white; border-radius: 12px; margin-bottom: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.07); overflow: hidden; }
+.item-hdr { padding: 11px 14px; background: #fafafa; border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center; }
+.item-hdr h3 { font-size: 0.9rem; font-weight: 700; }
+.item-hdr-right { display: flex; align-items: center; gap: 8px; }
+.badge { font-size: 0.7rem; padding: 3px 8px; border-radius: 10px; font-weight: 600; white-space: nowrap; }
+.badge.pending { background: #fff3cd; color: #856404; }
+.badge.chosen { background: var(--gm); color: var(--g); }
+.item-del-btn { color: #ccc; font-size: 1.2rem; cursor: pointer; line-height: 1; }
+.item-del-btn:hover { color: #e74c3c; }
+
+.no-options { padding: 12px 14px; font-size: 0.82rem; color: #aaa; font-style: italic; }
+
+.option-row { padding: 10px 14px; border-bottom: 1px solid #f5f5f5; }
+.option-row:last-of-type { border-bottom: none; }
+.option-row.is-selected { background: var(--gl); }
+.opt-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+.opt-name { font-size: 0.86rem; font-weight: 600; flex: 1; }
+.opt-price { font-size: 0.9rem; font-weight: 800; color: var(--g); flex-shrink: 0; }
+.opt-store { font-size: 0.75rem; color: #777; margin-top: 2px; }
+.opt-notes { font-size: 0.76rem; color: #666; margin-top: 3px; font-style: italic; }
+.opt-btns { display: flex; gap: 5px; margin-top: 7px; flex-wrap: wrap; }
+.bx { padding: 4px 10px; border-radius: 6px; font-size: 0.72rem; cursor: pointer; border: none; font-weight: 600; }
+.bx-pick { background: var(--g); color: white; }
+.bx-pick.off { background: #ccc; color: white; }
+.bx-edit { background: #e8f4fd; color: #1565c0; }
+.bx-del { background: #fde8e8; color: #c0392b; }
+.bx-link { background: #f3e8ff; color: #7b1fa2; }
+
+.add-opt-btn { display: block; margin: 8px 14px 12px; width: calc(100% - 28px); padding: 9px; background: var(--gl); border: 2px dashed var(--g); border-radius: 8px; color: var(--g); font-size: 0.81rem; cursor: pointer; font-weight: 600; text-align: center; }
+
+.add-item-area { text-align: center; padding: 4px 0 8px; }
+.add-item-btn { padding: 11px 24px; background: var(--g); color: white; border: none; border-radius: 10px; font-size: 0.87rem; cursor: pointer; font-weight: 600; box-shadow: 0 2px 8px rgba(45,106,79,0.3); }
+
+.overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 300; }
+.overlay.open { display: flex; align-items: flex-end; }
+.modal { background: white; border-radius: 18px 18px 0 0; padding: 20px 16px 24px; width: 100%; max-height: 88vh; overflow-y: auto; }
+.modal-drag { width: 40px; height: 4px; background: #ddd; border-radius: 2px; margin: 0 auto 16px; }
+.modal h2 { font-size: 1rem; font-weight: 700; margin-bottom: 14px; }
+.fg { margin-bottom: 11px; }
+.fg label { display: block; font-size: 0.77rem; color: #666; margin-bottom: 3px; font-weight: 500; }
+.fg input, .fg textarea, .fg select { width: 100%; padding: 9px 11px; border: 1.5px solid #e0e0e0; border-radius: 9px; font-size: 0.87rem; outline: none; font-family: inherit; }
+.fg input:focus, .fg textarea:focus { border-color: var(--g); }
+.fg textarea { height: 62px; resize: vertical; }
+.row2 { display: flex; gap: 8px; }
+.row2 .fg { flex: 1; }
+.mbtns { display: flex; gap: 8px; margin-top: 14px; }
+.btn-ok { flex: 1; padding: 13px; background: var(--g); color: white; border: none; border-radius: 10px; font-size: 0.9rem; cursor: pointer; font-weight: 700; }
+.btn-cancel { flex: 1; padding: 13px; background: #eee; color: #444; border: none; border-radius: 10px; font-size: 0.9rem; cursor: pointer; }
+</style>
+</head>
+<body>
+
+<div id="sync-bar"></div>
+
+<!-- Loading screen -->
+<div id="loading">
+  <div class="spinner"></div>
+  <p>A ligar à base de dados…</p>
+</div>
+
+<!-- Config warning (shown if Firebase keys not replaced) -->
+<div id="cfg-warning">
+  <strong>⚠️ Firebase não configurado</strong>
+  Substitui os valores <code>COLE-AQUI-*</code> no ficheiro HTML pelas tuas chaves Firebase.<br>
+  Segue o guia <strong>GUIA_SETUP.pdf</strong> incluído na pasta.
+</div>
+
+<header>
+  <h1>🏠 Mudança · Travessa do Galvão 133</h1>
+  <p>Ajuda, Lisboa &nbsp;·&nbsp; Meta: Setembro 2026</p>
+  <div class="header-sync" id="syncStatus">🔴 A ligar…</div>
+</header>
+
+<div class="timeline">
+  <div class="tl-row">
+    <span class="tl-label">⏳ Contagem decrescente</span>
+    <span id="daysLeft">—</span>
+  </div>
+  <div class="bar-bg"><div class="bar-fill" id="timeFill" style="width:0%"></div></div>
+</div>
+
+<div class="stats">
+  <div class="stat"><div class="stat-n" id="sTotal">0</div><div class="stat-l">Tarefas<br>totais</div></div>
+  <div class="stat"><div class="stat-n" id="sDone">0</div><div class="stat-l">Tarefas<br>concluídas</div></div>
+  <div class="stat"><div class="stat-n" id="sChosen">0</div><div class="stat-l">Artigos<br>escolhidos</div></div>
+  <div class="stat"><div class="stat-n" id="sItems">0</div><div class="stat-l">Artigos<br>a comprar</div></div>
+</div>
+
+<div class="tabs">
+  <div class="tab active" data-tab="tarefas" onclick="switchTab(this,'tarefas')">✅ Tarefas</div>
+  <div class="tab" data-tab="compras" onclick="switchTab(this,'compras')">🛒 Compras</div>
+</div>
+
+<div class="content">
+  <div class="panel active" id="panel-tarefas">
+    <div id="tasks-container"></div>
+  </div>
+  <div class="panel" id="panel-compras">
+    <div id="items-container"></div>
+    <div class="add-item-area">
+      <button class="add-item-btn" onclick="openAddItem()">+ Adicionar artigo</button>
+    </div>
+  </div>
+</div>
+
+<!-- Option Modal -->
+<div class="overlay" id="optOverlay">
+  <div class="modal">
+    <div class="modal-drag"></div>
+    <h2 id="optTitle">Adicionar opção</h2>
+    <div class="fg"><label>Nome / Modelo *</label><input id="oName" placeholder="ex: IKEA MALM 160×200"></div>
+    <div class="row2">
+      <div class="fg"><label>Loja</label><input id="oStore" placeholder="ex: IKEA, OLX…"></div>
+      <div class="fg"><label>Preço (€)</label><input id="oPrice" type="number" step="0.01" placeholder="0"></div>
+    </div>
+    <div class="fg"><label>Link</label><input id="oUrl" type="url" placeholder="https://…"></div>
+    <div class="fg"><label>Notas</label><textarea id="oNotes" placeholder="Dimensões, cor, prazo de entrega…"></textarea></div>
+    <div class="mbtns">
+      <button class="btn-cancel" onclick="closeOverlay('optOverlay')">Cancelar</button>
+      <button class="btn-ok" onclick="saveOption()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Item Modal -->
+<div class="overlay" id="itemOverlay">
+  <div class="modal">
+    <div class="modal-drag"></div>
+    <h2>Novo artigo</h2>
+    <div class="fg"><label>Nome do artigo *</label><input id="iName" placeholder="ex: Roupeiro, Frigorífico…"></div>
+    <div class="fg">
+      <label>Categoria</label>
+      <select id="iCat">
+        <option value="Móveis">🛋️ Móveis</option>
+        <option value="Decoração">🎨 Decoração / Acessórios</option>
+        <option value="Eletrodomésticos">🔌 Eletrodomésticos</option>
+        <option value="Outro">📦 Outro</option>
+      </select>
+    </div>
+    <div class="mbtns">
+      <button class="btn-cancel" onclick="closeOverlay('itemOverlay')">Cancelar</button>
+      <button class="btn-ok" onclick="saveItem()">Adicionar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const firebaseConfig = {
+  apiKey: "AIzaSyA2p57gYo7pVL2IbC9RpfU9DNT6zfmGNgw",
+  authDomain: "newhomeajuda.firebaseapp.com",
+  projectId: "newhomeajuda",
+  storageBucket: "newhomeajuda.firebasestorage.app",
+  messagingSenderId: "1000301475536",
+  appId: "1:1000301475536:web:f3b7c2ee37e0f91139d0d5",
+  measurementId: "G-9MNK2Q5E27"
+}
+
+const IS_CONFIGURED = !firebaseConfig.apiKey.startsWith('COLE-AQUI');
+
+let db, docRef, S = null;
+let _optItemId = null, _optEditId = null;
+
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
+
+// ── Default data ──────────────────────────────────
+function defaultData() {
+  return {
+    tasks: [
+      { id: uid(), cat: 'Administrativo', text: 'Assinar contrato de arrendamento', done: false },
+      { id: uid(), cat: 'Administrativo', text: 'Tratar de electricidade e água', done: false },
+      { id: uid(), cat: 'Administrativo', text: 'Contratar internet (MEO / NOS / Vodafone)', done: false },
+      { id: uid(), cat: 'Administrativo', text: 'Seguro de habitação / multirriscos', done: false },
+      { id: uid(), cat: 'Administrativo', text: 'Mudar morada nas Finanças', done: false },
+      { id: uid(), cat: 'Administrativo', text: 'Mudar morada no banco', done: false },
+      { id: uid(), cat: 'Administrativo', text: 'Mudar morada no Cartão de Cidadão', done: false },
+      { id: uid(), cat: 'Administrativo', text: 'Contratar empresa de mudanças', done: false },
+      { id: uid(), cat: 'Móveis', text: 'Comprar cama de casal', done: false },
+      { id: uid(), cat: 'Móveis', text: 'Comprar colchão', done: false },
+      { id: uid(), cat: 'Móveis', text: 'Comprar sofá', done: false },
+      { id: uid(), cat: 'Móveis', text: 'Comprar mesa de jantar + cadeiras', done: false },
+      { id: uid(), cat: 'Móveis', text: 'Comprar roupeiro', done: false },
+      { id: uid(), cat: 'Móveis', text: 'Comprar mesa(s) de cabeceira', done: false },
+      { id: uid(), cat: 'Móveis', text: 'Comprar cómoda / arrumação', done: false },
+      { id: uid(), cat: 'Decoração', text: 'Cortinas ou estores', done: false },
+      { id: uid(), cat: 'Decoração', text: 'Tapetes', done: false },
+      { id: uid(), cat: 'Decoração', text: 'Iluminação (candeeiros / apliques)', done: false },
+      { id: uid(), cat: 'Decoração', text: 'Prateleiras e arrumação extra', done: false },
+      { id: uid(), cat: 'Decoração', text: 'Espelhos', done: false },
+    ],
+    items: [
+      {
+        id: uid(), name: 'Cama de casal', cat: 'Móveis',
+        options: [{ id: uid(), name: 'MALM 160×200 (branco)', store: 'IKEA', price: '299', url: 'https://www.ikea.com/pt/pt/cat/estruturas-de-cama-bm003/', notes: 'Gavetas incluídas na versão alta', selected: false }]
+      },
+      {
+        id: uid(), name: 'Colchão', cat: 'Móveis',
+        options: [{ id: uid(), name: 'ÅKREHAMN 160×200 (médio-firme)', store: 'IKEA', price: '249', url: 'https://www.ikea.com/pt/pt/cat/colchoes-bm005/', notes: '10 anos de garantia', selected: false }]
+      },
+      {
+        id: uid(), name: 'Sofá', cat: 'Móveis',
+        options: [{ id: uid(), name: 'KIVIK 3 lugares (bege)', store: 'IKEA', price: '549', url: 'https://www.ikea.com/pt/pt/cat/sofas-fu003/', notes: 'Verificar medidas da sala', selected: false }]
+      },
+    ]
+  };
+}
+
+// ── Firebase init ─────────────────────────────────
+function initFirebase() {
+  if (!IS_CONFIGURED) {
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('cfg-warning').style.display = 'block';
+    return;
+  }
+
+  try {
+    firebase.initializeApp(firebaseConfig);
+    db = firebase.firestore();
+    docRef = db.collection('mudanca').doc('estado');
+
+    // Real-time listener
+    docRef.onSnapshot((doc) => {
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('syncStatus').textContent = '🟢 Sincronizado';
+
+      if (doc.exists) {
+        S = doc.data();
+      } else {
+        // First run — seed with default data
+        S = defaultData();
+        docRef.set(S);
+      }
+      render();
+    }, (err) => {
+      document.getElementById('syncStatus').textContent = '🔴 Erro de ligação';
+      console.error('Firestore error:', err);
+    });
+
+  } catch(e) {
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('syncStatus').textContent = '🔴 Erro de configuração';
+    console.error(e);
+  }
+}
+
+// ── Save to Firestore ─────────────────────────────
+function save() {
+  if (!docRef || !S) return;
+  const bar = document.getElementById('sync-bar');
+  bar.style.opacity = '1';
+  docRef.set(S).then(() => {
+    setTimeout(() => { bar.style.opacity = '0'; }, 600);
+  });
+  render(); // optimistic local render
+}
+
+// ── Timeline ──────────────────────────────────────
+function renderTimeline() {
+  const start = new Date('2026-05-15');
+  const end   = new Date('2026-09-01');
+  const now   = new Date();
+  const pct   = Math.min(100, Math.max(0, ((now - start) / (end - start)) * 100));
+  const days  = Math.max(0, Math.round((end - now) / 86400000));
+  document.getElementById('timeFill').style.width = pct.toFixed(1) + '%';
+  document.getElementById('daysLeft').textContent = days === 0 ? 'Chegou o dia! 🎉' : days + ' dias para setembro';
+}
+
+// ── Stats ─────────────────────────────────────────
+function renderStats() {
+  if (!S) return;
+  document.getElementById('sTotal').textContent  = S.tasks.length;
+  document.getElementById('sDone').textContent   = S.tasks.filter(t => t.done).length;
+  document.getElementById('sItems').textContent  = S.items.length;
+  document.getElementById('sChosen').textContent = S.items.filter(i => i.options.some(o => o.selected)).length;
+}
+
+// ── Tabs ──────────────────────────────────────────
+function switchTab(el, name) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('panel-' + name).classList.add('active');
+}
+
+const ICONS = { Administrativo:'🏛️', Móveis:'🛋️', Decoração:'🎨', Eletrodomésticos:'🔌', Outro:'📦' };
+
+// ── Tasks ─────────────────────────────────────────
+function renderTasks() {
+  if (!S) return;
+  const cats = [...new Set(S.tasks.map(t => t.cat))];
+  document.getElementById('tasks-container').innerHTML = cats.map(cat => {
+    const list = S.tasks.filter(t => t.cat === cat);
+    const done = list.filter(t => t.done).length;
+    const allDone = done === list.length && list.length > 0;
+    return `
+      <div class="cat-block">
+        <div class="cat-hdr">
+          <span>${ICONS[cat]||'📦'} ${cat}</span>
+          <span class="cat-count ${allDone?'all-done':''}">${done}/${list.length}</span>
+        </div>
+        ${list.map(t => `
+          <div class="task-row">
+            <input type="checkbox" ${t.done?'checked':''} onchange="toggleTask('${t.id}')">
+            <span class="task-text ${t.done?'done':''}" onclick="toggleTask('${t.id}')">${t.text}</span>
+            <span class="task-del" onclick="delTask('${t.id}')">×</span>
+          </div>
+        `).join('')}
+        <div class="add-task-row">
+          <div class="add-inline">
+            <input id="ni-${cat.replace(/[\s/]/g,'_')}" placeholder="Nova tarefa…" onkeydown="if(event.key==='Enter') addTask('${cat}')">
+            <button onclick="addTask('${cat}')">+</button>
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function toggleTask(id) {
+  const t = S.tasks.find(x => x.id === id);
+  if (t) { t.done = !t.done; save(); }
+}
+function delTask(id) { S.tasks = S.tasks.filter(t => t.id !== id); save(); }
+function addTask(cat) {
+  const key = 'ni-' + cat.replace(/[\s/]/g,'_');
+  const el = document.getElementById(key);
+  const text = el.value.trim();
+  if (!text) return;
+  S.tasks.push({ id: uid(), cat, text, done: false });
+  el.value = '';
+  save();
+}
+
+// ── Items ─────────────────────────────────────────
+function renderItems() {
+  if (!S) return;
+  if (!S.items.length) {
+    document.getElementById('items-container').innerHTML = '<p style="text-align:center;color:#aaa;padding:24px 16px;font-size:0.83rem;">Nenhum artigo ainda.</p>';
+    return;
+  }
+  document.getElementById('items-container').innerHTML = S.items.map(item => {
+    const chosen = item.options.some(o => o.selected);
+    return `
+      <div class="item-card">
+        <div class="item-hdr">
+          <h3>${ICONS[item.cat]||'📦'} ${item.name}</h3>
+          <div class="item-hdr-right">
+            <span class="badge ${chosen?'chosen':'pending'}">${chosen?'✓ Escolhido':'A decidir'}</span>
+            <span class="item-del-btn" onclick="delItem('${item.id}')">×</span>
+          </div>
+        </div>
+        ${item.options.length===0 ? '<div class="no-options">Sem opções ainda — adiciona a primeira!</div>' : ''}
+        ${item.options.map(o => `
+          <div class="option-row ${o.selected?'is-selected':''}">
+            <div class="opt-top">
+              <div class="opt-name">${o.selected?'✅ ':''}${o.name||'—'}</div>
+              <div class="opt-price">${o.price ? o.price+'€' : '—'}</div>
+            </div>
+            ${o.store ? `<div class="opt-store">🏪 ${o.store}</div>` : ''}
+            ${o.notes ? `<div class="opt-notes">${o.notes}</div>` : ''}
+            <div class="opt-btns">
+              <button class="bx bx-pick ${o.selected?'off':''}" onclick="pickOption('${item.id}','${o.id}')">${o.selected?'Desmarcar':'✓ Escolher'}</button>
+              ${o.url ? `<button class="bx bx-link" onclick="window.open('${o.url}','_blank')">🔗 Link</button>` : ''}
+              <button class="bx bx-edit" onclick="openEditOpt('${item.id}','${o.id}')">✏️ Editar</button>
+              <button class="bx bx-del" onclick="delOption('${item.id}','${o.id}')">Remover</button>
+            </div>
+          </div>`).join('')}
+        <button class="add-opt-btn" onclick="openAddOpt('${item.id}')">+ Adicionar opção</button>
+      </div>`;
+  }).join('');
+}
+
+function pickOption(itemId, optId) {
+  const item = S.items.find(i => i.id === itemId);
+  if (!item) return;
+  item.options.forEach(o => { o.selected = (o.id === optId) ? !o.selected : false; });
+  save();
+}
+function delOption(itemId, optId) {
+  const item = S.items.find(i => i.id === itemId);
+  if (item) { item.options = item.options.filter(o => o.id !== optId); save(); }
+}
+function delItem(id) {
+  if (!confirm('Remover este artigo e todas as suas opções?')) return;
+  S.items = S.items.filter(i => i.id !== id); save();
+}
+
+// ── Modals ────────────────────────────────────────
+function openAddOpt(itemId) {
+  _optItemId = itemId; _optEditId = null;
+  document.getElementById('optTitle').textContent = 'Adicionar opção';
+  ['oName','oStore','oPrice','oUrl','oNotes'].forEach(id => document.getElementById(id).value = '');
+  openOverlay('optOverlay');
+}
+function openEditOpt(itemId, optId) {
+  const item = S.items.find(i => i.id === itemId);
+  const opt  = item?.options.find(o => o.id === optId);
+  if (!opt) return;
+  _optItemId = itemId; _optEditId = optId;
+  document.getElementById('optTitle').textContent = 'Editar opção';
+  document.getElementById('oName').value  = opt.name  || '';
+  document.getElementById('oStore').value = opt.store || '';
+  document.getElementById('oPrice').value = opt.price || '';
+  document.getElementById('oUrl').value   = opt.url   || '';
+  document.getElementById('oNotes').value = opt.notes || '';
+  openOverlay('optOverlay');
+}
+function saveOption() {
+  const name = document.getElementById('oName').value.trim();
+  if (!name) { alert('Por favor indica o nome da opção.'); return; }
+  const item = S.items.find(i => i.id === _optItemId);
+  if (!item) return;
+  const data = { name, store: document.getElementById('oStore').value.trim(), price: document.getElementById('oPrice').value.trim(), url: document.getElementById('oUrl').value.trim(), notes: document.getElementById('oNotes').value.trim() };
+  if (_optEditId) {
+    const opt = item.options.find(o => o.id === _optEditId);
+    if (opt) Object.assign(opt, data);
+  } else {
+    item.options.push({ id: uid(), ...data, selected: false });
+  }
+  closeOverlay('optOverlay'); save();
+}
+function openAddItem() {
+  document.getElementById('iName').value = '';
+  document.getElementById('iCat').value = 'Móveis';
+  openOverlay('itemOverlay');
+}
+function saveItem() {
+  const name = document.getElementById('iName').value.trim();
+  if (!name) { alert('Por favor indica o nome do artigo.'); return; }
+  S.items.push({ id: uid(), name, cat: document.getElementById('iCat').value, options: [] });
+  closeOverlay('itemOverlay');
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelector('[data-tab="compras"]').classList.add('active');
+  document.getElementById('panel-compras').classList.add('active');
+  save();
+}
+function openOverlay(id) { document.getElementById(id).classList.add('open'); }
+function closeOverlay(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.overlay').forEach(el => {
+  el.addEventListener('click', e => { if (e.target === el) el.classList.remove('open'); });
+});
+
+// ── Render ────────────────────────────────────────
+function render() {
+  renderTimeline();
+  renderStats();
+  renderTasks();
+  renderItems();
+}
+
+// ── Start ─────────────────────────────────────────
+initFirebase();
+</script>
+</body>
+</html>
