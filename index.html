@@ -279,18 +279,15 @@ body{font-family:var(--font);background:var(--cream);color:var(--text);}
 </div>
 
 <script>
-// ══════════════════════════════════════════
-//  🔥 FIREBASE CONFIG
-// ══════════════════════════════════════════
-const firebaseConfig = {
-  apiKey:            "COLE-AQUI-A-TUA-API-KEY",
-  authDomain:        "COLE-AQUI-O-SEU-PROJETO.firebaseapp.com",
-  projectId:         "COLE-AQUI-O-SEU-PROJETO-ID",
-  storageBucket:     "COLE-AQUI-O-SEU-PROJETO.appspot.com",
-  messagingSenderId: "COLE-AQUI-O-SENDER-ID",
-  appId:             "COLE-AQUI-O-APP-ID"
+  const firebaseConfig = {
+  apiKey: "AIzaSyA2p57gYo7pVL2IbC9RpfU9DNT6zfmGNgw",
+  authDomain: "newhomeajuda.firebaseapp.com",
+  projectId: "newhomeajuda",
+  storageBucket: "newhomeajuda.firebasestorage.app",
+  messagingSenderId: "1000301475536",
+  appId: "1:1000301475536:web:f3b7c2ee37e0f91139d0d5",
+  measurementId: "G-9MNK2Q5E27"
 };
-// ══════════════════════════════════════════
 
 const IS_CFG = !firebaseConfig.apiKey.startsWith('COLE-AQUI');
 
@@ -577,6 +574,25 @@ function parseNextData(doc){
   }catch(e){return null;}
 }
 
+// ── Detecta páginas de anti-bot (Cloudflare, IKEA blocked, etc.) ──
+const ANTIBOT_PHRASES=[
+  'sorry, you have been blocked',
+  'you have been blocked',
+  'attention required',
+  'just a moment',
+  'checking your browser',
+  'access denied',
+  'cf-error',
+  'please enable cookies',
+  'verify you are human',
+  'forbidden'
+];
+function isAntiBot(text){
+  if(!text)return false;
+  const t=text.toLowerCase().slice(0,3000);
+  return ANTIBOT_PHRASES.some(p=>t.includes(p));
+}
+
 // ── Try fetching HTML via a proxy and extract meta tags ──
 async function tryProxy(proxyUrl){
   let html='';
@@ -586,6 +602,8 @@ async function tryProxy(proxyUrl){
   if(ct.includes('json')){const d=await res.json();html=d.contents||d.body||'';}
   else{html=await res.text();}
   if(!html||html.length<200)return null;
+  // Página de bloqueio (Cloudflare, IKEA, etc.) — força próximo proxy
+  if(isAntiBot(html))return null;
 
   const doc=new DOMParser().parseFromString(html,'text/html');
 
@@ -775,7 +793,9 @@ async function fetchInfo(){
   // Merge: usa o que vem do slug quando o proxy devolveu lixo (e.g. captcha
   // do Leroy Merlin que devolve `<title>leroymerlin.pt</title>`).
   if(result&&fromUrl){
-    const looksLikeJunk=n=>!n||n.length<8||/^[a-z0-9.\-]+\.(pt|com|net|org|es|fr|eu)$/i.test(n);
+    const looksLikeJunk=n=>!n||n.length<8||
+      /^[a-z0-9.\-]+\.(pt|com|net|org|es|fr|eu)$/i.test(n)||
+      isAntiBot(n);
     if(looksLikeJunk(result.name)) result.name=fromUrl.name;
     if(!result.store) result.store=fromUrl.store;
   }
