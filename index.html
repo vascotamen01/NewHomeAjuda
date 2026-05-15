@@ -279,7 +279,10 @@ body{font-family:var(--font);background:var(--cream);color:var(--text);}
 </div>
 
 <script>
-  const firebaseConfig = {
+// ══════════════════════════════════════════
+//  🔥 FIREBASE CONFIG
+// ══════════════════════════════════════════
+const firebaseConfig = {
   apiKey: "AIzaSyA2p57gYo7pVL2IbC9RpfU9DNT6zfmGNgw",
   authDomain: "newhomeajuda.firebaseapp.com",
   projectId: "newhomeajuda",
@@ -288,8 +291,18 @@ body{font-family:var(--font);background:var(--cream);color:var(--text);}
   appId: "1:1000301475536:web:f3b7c2ee37e0f91139d0d5",
   measurementId: "G-9MNK2Q5E27"
 };
+// ══════════════════════════════════════════
+//  🌍 CLOUDFLARE WORKER (super-proxy)
+//     Opcional. Quando preenchido, é usado como 1º proxy para
+//     ultrapassar anti-bot (Leroy Merlin, IKEA, moveis.pt, etc.).
+//     Setup: ver GUIA_WORKER.docx
+//     Exemplo: https://mudanca-scraper.joao.workers.dev
+// ══════════════════════════════════════════
+const WORKER_URL = "https://newhomescrapper.vascotamen01.workers.dev";
+// ══════════════════════════════════════════
 
 const IS_CFG = !firebaseConfig.apiKey.startsWith('COLE-AQUI');
+const HAS_WORKER = !WORKER_URL.startsWith('COLE-AQUI');
 
 const ROOMS = [
   {id:'sala',    n:'Sala',          e:'🛋️', c:'#7A9B78'},
@@ -761,6 +774,8 @@ async function fetchInfo(){
 
   let result=null;
   const proxies=[
+    // 🌍 Cloudflare Worker próprio (se configurado) — passa por anti-bot
+    ...(HAS_WORKER?[WORKER_URL.replace(/\/+$/,'')+'/?url='+encodeURIComponent(url)]:[]),
     // Proxies CORS clássicos
     'https://api.allorigins.win/raw?url='+encodeURIComponent(url),
     'https://api.allorigins.win/get?url='+encodeURIComponent(url),
