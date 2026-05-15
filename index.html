@@ -235,29 +235,27 @@ body.scrolled .cd{max-height:0;padding-top:0;padding-bottom:0;opacity:0;}
 .store-search-clear{padding:9px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--surface);font-size:.8rem;cursor:pointer;font-family:var(--font);color:var(--text2);white-space:nowrap;transition:all .15s;}
 .store-search-clear.on{background:var(--sage);color:#fff;border-color:var(--sage);}
 
-/* ── TASKS JIRA-STYLE ── */
-.task-toolbar{display:flex;gap:6px;align-items:center;margin-bottom:10px;flex-wrap:wrap;}
-.task-sort-btn{padding:5px 10px;border-radius:8px;border:1.5px solid var(--border);background:var(--surface);font-size:.72rem;font-weight:600;cursor:pointer;font-family:var(--font);color:var(--text2);transition:all .15s;}
-.task-sort-btn.on{background:var(--sage);color:#fff;border-color:var(--sage);}
-.task-card{background:var(--surface);border-radius:14px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.07),0 0 0 1px rgba(0,0,0,.04);}
-.task-row{display:flex;align-items:center;gap:8px;padding:10px 12px;border-bottom:1px solid var(--border);transition:background .1s;}
+/* ── TASKS TABLE ── */
+.task-table{background:var(--surface);border-radius:14px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.07),0 0 0 1px rgba(0,0,0,.04);margin-bottom:10px;}
+.task-thead{display:grid;grid-template-columns:28px 36px 1fr 90px 28px;gap:0;background:var(--border);padding:0;}
+.task-th{padding:7px 6px;font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);cursor:pointer;user-select:none;display:flex;align-items:center;gap:3px;transition:color .15s;}
+.task-th:hover{color:var(--text);}
+.task-th.sorted{color:var(--sage);}
+.task-th .sort-arrow{font-size:.55rem;}
+.task-row{display:grid;grid-template-columns:28px 36px 1fr 90px 28px;gap:0;border-bottom:1px solid var(--border);align-items:center;transition:background .1s;min-height:44px;}
 .task-row:last-child{border-bottom:none;}
-.task-row:hover{background:rgba(0,0,0,.02);}
-.prio-select{appearance:none;-webkit-appearance:none;border:none;background:transparent;font-size:.85rem;cursor:pointer;padding:2px;border-radius:4px;width:26px;text-align:center;}
-.prio-select:focus{outline:2px solid var(--sage);border-radius:4px;}
-.task-txt-input{flex:1;border:none;background:transparent;font-family:var(--font);font-size:.84rem;color:var(--text);padding:2px 4px;border-radius:4px;min-width:0;}
-.task-txt-input:focus{outline:2px solid var(--sage);background:var(--cream);}
+.task-row:active{background:rgba(0,0,0,.03);}
+.task-cell{padding:8px 6px;display:flex;align-items:center;}
+.task-cell.grow{flex:1;min-width:0;}
+.prio-select{appearance:none;-webkit-appearance:none;border:none;background:transparent;font-size:.9rem;cursor:pointer;padding:0;width:28px;text-align:center;touch-action:manipulation;}
+.task-txt-input{width:100%;border:none;background:transparent;font-family:var(--font);font-size:.84rem;color:var(--text);padding:3px 4px;border-radius:4px;min-width:0;touch-action:manipulation;}
+.task-txt-input:focus{outline:2px solid var(--sage);background:rgba(107,143,105,.08);}
 .task-txt-input.done-txt{text-decoration:line-through;color:var(--text3);}
-.task-date-input{border:none;background:transparent;font-family:var(--font);font-size:.7rem;color:var(--text3);cursor:pointer;padding:2px 4px;border-radius:4px;width:100px;flex-shrink:0;}
-.task-date-input:focus{outline:2px solid var(--sage);background:var(--cream);}
-.task-date-input.overdue{color:#ef4444;}
-.task-date-input.soon{color:#f97316;}
-.prio-badge{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:5px;font-size:.68rem;font-weight:700;flex-shrink:0;cursor:pointer;border:none;}
-.prio-c{background:#fee2e2;color:#dc2626;}
-.prio-h{background:#ffedd5;color:#ea580c;}
-.prio-m{background:#fef9c3;color:#ca8a04;}
-.prio-l{background:#dbeafe;color:#2563eb;}
-.prio-n{background:var(--border);color:var(--text3);}
+.task-date-input{border:none;background:transparent;font-family:var(--font);font-size:.68rem;color:var(--text3);cursor:pointer;padding:2px 2px;border-radius:4px;width:88px;touch-action:manipulation;}
+.task-date-input:focus{outline:2px solid var(--sage);}
+.task-date-input.overdue{color:#ef4444;font-weight:700;}
+.task-date-input.soon{color:#f97316;font-weight:600;}
+.prio-c{color:#dc2626;} .prio-h{color:#ea580c;} .prio-m{color:#ca8a04;} .prio-l{color:#2563eb;} .prio-n{color:var(--text3);}
 /* ── BUDGET CHART ── */
 .chart-wrap{background:var(--surface);border-radius:14px;padding:16px;margin-bottom:16px;box-shadow:0 1px 4px rgba(0,0,0,.07),0 0 0 1px rgba(0,0,0,.04);}
 .chart-title{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:12px;}
@@ -275,6 +273,21 @@ body.scrolled .cd{max-height:0;padding-top:0;padding-bottom:0;opacity:0;}
 .top-item-room{font-size:.7rem;color:var(--text2);}
 .top-item-price{font-weight:800;font-size:.9rem;}
 
+
+/* ── Item collapse ── */
+.item-body{overflow:hidden;transition:max-height .28s cubic-bezier(.4,0,.2,1);}
+.item-body.open{max-height:2000px;}
+.item-body.closed{max-height:0;}
+.item-chevron{font-size:.7rem;color:var(--text3);transition:transform .25s ease;flex-shrink:0;padding:2px 4px;}
+.item-hdr.collapsed .item-chevron{transform:rotate(-90deg);}
+.item-hdr{cursor:pointer;}
+/* ── Opt link ── */
+.opt-link{display:contents;text-decoration:none;color:inherit;}
+.opt-img-link{display:block;flex-shrink:0;}
+.opt-img-link img,.opt-img-link .opt-img-ph{transition:opacity .15s;}
+.opt-img-link:hover img,.opt-img-link:hover .opt-img-ph{opacity:.75;}
+.opt-name-link{color:inherit;text-decoration:none;font-weight:700;}
+.opt-name-link:hover{text-decoration:underline;color:var(--sage);}
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 </head>
@@ -330,11 +343,7 @@ body.scrolled .cd{max-height:0;padding-top:0;padding-bottom:0;opacity:0;}
   <!-- ADMIN -->
   <div class="panel active" id="panel-admin">
     <div id="task-wrap"></div>
-    <div class="task-toolbar" id="task-toolbar">
-      <button class="task-sort-btn on" id="sort-prio" onclick="setTaskSort('prio')">⬆ Prioridade</button>
-      <button class="task-sort-btn" id="sort-date" onclick="setTaskSort('date')">📅 Data</button>
-      <button class="task-sort-btn" id="sort-status" onclick="setTaskSort('status')">✓ Estado</button>
-    </div>
+    
     <div class="add-row" style="margin-top:8px">
       <input id="newTask" placeholder="Nova tarefa…" onkeydown="if(event.key==='Enter')addTask()">
       <select id="newTaskPrio" style="padding:10px 6px;border-radius:10px;border:1.5px solid var(--border);background:var(--surface);font-family:var(--font);font-size:.8rem;color:var(--text);cursor:pointer;">
@@ -541,16 +550,24 @@ function renderTimeline(){
 }
 
 // ── Header colapsível ao scroll (throttled com rAF) ──────────────
-let _scrollTicking=false,_lastScrollY=0;
+let _scrollTicking=false,_lastScrollY=0,_scrollCooldown=false;
 function onScroll(){
-  if(_scrollTicking)return;
+  if(_scrollTicking||_scrollCooldown)return;
   _scrollTicking=true;
   requestAnimationFrame(()=>{
     const y=window.scrollY;
-    const scrollingDown=y>_lastScrollY;
+    const goingDown=y>_lastScrollY;
     _lastScrollY=y;
-    if(scrollingDown&&y>10) document.body.classList.add('scrolled');
-    else if(y<5) document.body.classList.remove('scrolled');
+    const isScrolled=document.body.classList.contains('scrolled');
+    if(!isScrolled&&goingDown&&y>30){
+      document.body.classList.add('scrolled');
+      _scrollCooldown=true;
+      setTimeout(()=>_scrollCooldown=false,600);
+    }else if(isScrolled&&y===0){
+      document.body.classList.remove('scrolled');
+      _scrollCooldown=true;
+      setTimeout(()=>_scrollCooldown=false,600);
+    }
     _scrollTicking=false;
   });
 }
@@ -572,9 +589,6 @@ let _taskSort='prio';
 
 function setTaskSort(s){
   _taskSort=s;
-  document.querySelectorAll('.task-sort-btn').forEach(b=>b.classList.remove('on'));
-  const btn=document.getElementById('sort-'+s);
-  if(btn)btn.classList.add('on');
   renderAdmin();
 }
 
@@ -596,6 +610,8 @@ function sortedTasks(){
   });
 }
 
+function thArrow(col){return _taskSort===col?'<span class="sort-arrow">▲</span>':'';}
+
 function renderAdmin(){
   if(!S)return;
   const done=S.tasks.filter(t=>t.done).length,total=S.tasks.length;
@@ -604,25 +620,38 @@ function renderAdmin(){
 
   document.getElementById('task-wrap').innerHTML=
     !total?'<div style="padding:18px;text-align:center;color:var(--text3);font-size:.84rem;">Sem tarefas 🎉</div>'
-    :`<div class="task-card">${
-      sortedTasks().map(t=>{
-        const p=PRIO[t.prio||'n'];
+    :`<div class="task-table">
+      <div class="task-thead">
+        <div class="task-th"></div>
+        <div class="task-th ${_taskSort==='prio'?'sorted':''}" onclick="setTaskSort('prio')" title="Ordenar por prioridade">P ${thArrow('prio')}</div>
+        <div class="task-th ${_taskSort==='text'?'sorted':''}" onclick="setTaskSort('text')" title="Ordenar por nome">Tarefa ${thArrow('text')}</div>
+        <div class="task-th ${_taskSort==='date'?'sorted':''}" onclick="setTaskSort('date')" title="Ordenar por data">📅 ${thArrow('date')}</div>
+        <div class="task-th"></div>
+      </div>
+      ${sortedTasks().map(t=>{
         const dateClass=t.due?(t.due<today?'overdue':t.due<=soon?'soon':''):'';
+        const prioEmoji={c:'🔴',h:'🟠',m:'🟡',l:'🔵',n:'·'}[t.prio||'n'];
         return `<div class="task-row">
-          <div class="cb ${t.done?'on':''}" onclick="togT('${t.id}')"></div>
-          <select class="prio-select" title="Prioridade" onchange="setPrio('${t.id}',this.value)">
-            ${Object.entries(PRIO).map(([k,v])=>`<option value="${k}" ${(t.prio||'n')===k?'selected':''}>${v.l}</option>`).join('')}
-          </select>
-          <input class="task-txt-input ${t.done?'done-txt':''}" value="${t.text.replace(/"/g,'&quot;')}"
-            onchange="editTask('${t.id}',this.value)"
-            onkeydown="if(event.key==='Enter')this.blur()">
-          <input type="date" class="task-date-input ${dateClass}" value="${t.due||''}"
-            onchange="setDue('${t.id}',this.value)" title="Data limite">
-          <span class="btn-del" onclick="delT('${t.id}')">×</span>
+          <div class="task-cell"><div class="cb ${t.done?'on':''}" onclick="togT('${t.id}')"></div></div>
+          <div class="task-cell">
+            <select class="prio-select prio-${t.prio||'n'}" title="Prioridade" onchange="setPrio('${t.id}',this.value)">
+              ${Object.entries(PRIO).map(([k,v])=>`<option value="${k}" ${(t.prio||'n')===k?'selected':''}>${v.l}</option>`).join('')}
+            </select>
+          </div>
+          <div class="task-cell grow">
+            <input class="task-txt-input ${t.done?'done-txt':''}" value="${t.text.replace(/"/g,'&quot;')}"
+              onchange="editTask('${t.id}',this.value)"
+              onkeydown="if(event.key==='Enter')this.blur()">
+          </div>
+          <div class="task-cell">
+            <input type="date" class="task-date-input ${dateClass}" value="${t.due||''}"
+              onchange="setDue('${t.id}',this.value)">
+          </div>
+          <div class="task-cell"><span class="btn-del" onclick="delT('${t.id}')">×</span></div>
         </div>`;
-      }).join('')
-    }</div>
-    <div style="display:flex;justify-content:flex-end;padding:4px 2px;font-size:.7rem;color:var(--text3)">${done}/${total} concluídas</div>`;
+      }).join('')}
+    </div>
+    <div style="text-align:right;padding:4px 2px;font-size:.7rem;color:var(--text3)">${done}/${total} concluídas</div>`;
 }
 
 function togT(id){const t=S.tasks.find(x=>x.id===id);if(t){t.done=!t.done;save();}}
@@ -678,6 +707,19 @@ function renderFilterBar(){
   // keep focus after re-render (only runs once on init)
 }
 
+
+// ── Item collapse ─────────────────────────────────────────────────────────────
+function isItemOpen(id){
+  try{const s=JSON.parse(localStorage.getItem('itemOpen')||'{}');return s[id]!==false;}catch(e){return true;}
+}
+function toggleItem(id){
+  try{
+    const s=JSON.parse(localStorage.getItem('itemOpen')||'{}');
+    s[id]=!isItemOpen(id);
+    localStorage.setItem('itemOpen',JSON.stringify(s));
+  }catch(e){}
+  renderRoomsList();
+}
 function renderRoomsList(){
   if(!S)return;
   const used=ROOMS.filter(r=>S.items.some(i=>i.room===r.id));
@@ -714,22 +756,24 @@ function renderRoomsList(){
       ${items.map(item=>{
         const chosen=item.options.some(o=>o.selected);
         return `<div class="item-card">
-          <div class="item-hdr">
+          <div class="item-hdr ${isItemOpen(item.id)?'':'collapsed'}" onclick="toggleItem('${item.id}')">
             <div class="item-color-bar" style="background:${room.c}"></div>
             <span class="item-name">${item.name}</span>
             <span class="item-tag ${chosen?'c':'p'}">${chosen?'✓ Escolhido':'A decidir'}</span>
             <button class="move-room-btn" onclick="event.stopPropagation();openMoveRoom('${item.id}')">⇄</button>
-            <span class="item-x" onclick="delItem('${item.id}')">×</span>
+            <span class="item-x" onclick="event.stopPropagation();delItem('${item.id}')">×</span>
+            <span class="item-chevron">▾</span>
           </div>
+          <div class="item-body ${isItemOpen(item.id)?'open':'closed'}">
           ${!item.options.length?'<div class="no-opts">Adiciona a primeira opção abaixo.</div>':''}
           ${(sf?item.options.filter(o=>!o.store||o.store.toLowerCase().includes(sf)):item.options).map(o=>`
             <div class="opt-row ${o.selected?'sel':''}">
               <div class="opt-top">
-                ${o.image?`<img class="opt-img" src="https://wsrv.nl/?url=${encodeURIComponent(o.image)}" alt="" loading="lazy" onerror="this.outerHTML='<div class=\\'opt-img-ph\\'>📦</div>'">`:'<div class="opt-img-ph">📦</div>'}
+                ${o.url?`<a class="opt-img-link" href="${o.url}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${o.image?`<img class="opt-img" src="https://wsrv.nl/?url=${encodeURIComponent(o.image)}" alt="" loading="lazy" onerror="this.outerHTML='<div class=\\'opt-img-ph\\'>📦</div>'">`:'<div class="opt-img-ph">📦</div>'}</a>`:o.image?`<img class="opt-img" src="https://wsrv.nl/?url=${encodeURIComponent(o.image)}" alt="" loading="lazy" onerror="this.outerHTML='<div class=\\'opt-img-ph\\'>📦</div>'">`:'<div class="opt-img-ph">📦</div>'}
                 <div style="flex:1;min-width:0">
                   <div class="opt-name">
                     ${o.selected?'<span class="opt-sel-dot"></span>':''}
-                    <span>${o.name||'—'}</span>
+                    ${o.url?`<a class="opt-name-link" href="${o.url}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${o.name||'—'}</a>`:`<span>${o.name||'—'}</span>`}
                   </div>
                   ${o.store?`<div class="opt-store">🏪 ${o.store}</div>`:''}
                   ${o.notes?`<div class="opt-note">${o.notes}</div>`:''}
@@ -738,11 +782,11 @@ function renderRoomsList(){
               </div>
               <div class="opt-chips">
                 <button class="chip ${o.selected?'ch-u':'ch-p'}" onclick="pickOpt('${item.id}','${o.id}')">${o.selected?'Desmarcar':'✓ Escolher'}</button>
-                ${o.url?`<button class="chip ch-l" onclick="window.open('${o.url}','_blank')">🔗 Ver</button>`:''}
                 <button class="chip ch-e" onclick="openEditOpt('${item.id}','${o.id}')">✏️</button>
                 <button class="chip ch-d" onclick="delOpt('${item.id}','${o.id}')">Remover</button>
               </div>
             </div>`).join('')}
+          </div>
           <div class="add-opt-wrap">
             <button class="add-opt-btn" onclick="openAddOpt('${item.id}')">＋ Adicionar opção</button>
           </div>
