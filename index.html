@@ -729,7 +729,7 @@ function isAntiBot(text){
 // ── Try fetching HTML via a proxy and extract meta tags ──
 async function tryProxy(proxyUrl){
   let html='';
-  const res=await fetch(proxyUrl,{signal:AbortSignal.timeout(12000)});
+  const res=await fetch(proxyUrl,{signal:AbortSignal.timeout(5000)});
   if(!res.ok)return null;
   const ct=res.headers.get('content-type')||'';
   if(ct.includes('json')){const d=await res.json();html=d.contents||d.body||'';}
@@ -912,25 +912,23 @@ async function fetchInfo(){
     }catch(e){}
   }
 
-  // Cascata de fallback (apenas se o Worker falhou ou não está configurado)
+  // Cascata de fallback em paralelo (muito mais rápido que sequencial)
   if(!enough(result)){
     const proxies=[
-      // Proxies CORS clássicos
       'https://api.allorigins.win/raw?url='+encodeURIComponent(url),
       'https://api.allorigins.win/get?url='+encodeURIComponent(url),
       'https://api.codetabs.com/v1/proxy?quest='+encodeURIComponent(url),
       'https://corsproxy.io/?'+encodeURIComponent(url),
-      // Proxies adicionais — ajudam quando o site tem anti-bot básico
       'https://api.cors.lol/?url='+encodeURIComponent(url),
       'https://corsproxy.org/?url='+encodeURIComponent(url),
       'https://thingproxy.freeboard.io/fetch/'+url,
     ];
-    for(const p of proxies){
-      try{
-        const r=await tryProxy(p);
-        result=merge(result,r);
+    const settled=await Promise.allSettled(proxies.map(p=>tryProxy(p)));
+    for(const s of settled){
+      if(s.status==='fulfilled'&&s.value){
+        result=merge(result,s.value);
         if(enough(result))break;
-      }catch(e){}
+      }
     }
   }
   // 🆘 Último recurso: r.jina.ai — usa browser headless para renderizar.
