@@ -29,7 +29,7 @@ body{font-family:var(--font);background:var(--cream);color:var(--text);}
 .app-top{position:sticky;top:0;z-index:50;transition:box-shadow .3s ease;}
 body.scrolled .app-top{box-shadow:0 4px 18px rgba(0,0,0,.18);}
 
-.hero{position:relative;height:52vw;min-height:190px;max-height:300px;overflow:hidden;transition:height .35s cubic-bezier(.4,0,.2,1),min-height .35s cubic-bezier(.4,0,.2,1),max-height .35s cubic-bezier(.4,0,.2,1);}
+.hero{position:relative;height:52vw;min-height:190px;max-height:300px;overflow:hidden;will-change:height,max-height;transition:height .35s cubic-bezier(.4,0,.2,1),max-height .35s cubic-bezier(.4,0,.2,1);}
 .hero img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 35%;transition:transform .35s ease, filter .35s ease;}
 .hero-overlay{position:absolute;inset:0;background:linear-gradient(to bottom, rgba(20,14,8,.2) 0%, rgba(20,14,8,.72) 85%);transition:background .35s ease;}
 .hero-content{position:absolute;bottom:0;left:0;right:0;padding:18px 20px 14px;transition:padding .35s ease;}
@@ -38,7 +38,7 @@ body.scrolled .app-top{box-shadow:0 4px 18px rgba(0,0,0,.18);}
 .hero-addr{font-size:.75rem;color:rgba(255,255,255,.5);margin-top:4px;letter-spacing:.01em;transition:opacity .25s ease, max-height .35s ease;max-height:20px;overflow:hidden;}
 
 /* Estado compacto (scrolled): hero encolhe a 56px, mostra só "Casa Nova · 109 d" */
-body.scrolled .hero{height:56px;min-height:56px;max-height:56px;}
+body.scrolled .hero{height:56px;min-height:0;max-height:56px;}
 body.scrolled .hero img{transform:scale(1.05);filter:brightness(.55);}
 body.scrolled .hero-overlay{background:linear-gradient(to bottom, rgba(20,14,8,.55) 0%, rgba(20,14,8,.85) 100%);}
 body.scrolled .hero-content{padding:8px 70px 6px 20px;display:flex;align-items:center;gap:10px;}
@@ -198,6 +198,33 @@ body.scrolled .cd{max-height:0;padding-top:0;padding-bottom:0;opacity:0;}
 .r-btn .rn{font-size:.65rem;font-weight:600;color:var(--text2);margin-top:3px;}
 .r-btn.sel{border-color:var(--sage);background:var(--sage-lt);}
 .r-btn.sel .rn{color:var(--sage-dk);}
+
+/* ── BUDGET TAB ── */
+.budget-summary{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:20px;}
+.bcard{background:var(--surface);border-radius:14px;padding:14px 12px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,.07),0 0 0 1px rgba(0,0,0,.04);}
+.bcard-lbl{font-size:.65rem;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);font-weight:600;margin-bottom:6px;}
+.bcard-val{font-size:1.4rem;font-weight:800;color:var(--text);}
+.bcard-val.positive{color:#22c55e;}
+.bcard-val.negative{color:#ef4444;}
+.budget-set-row{display:flex;gap:8px;align-items:center;margin-bottom:20px;}
+.budget-set-row input{flex:1;padding:10px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--surface);font-size:.9rem;font-family:var(--font);color:var(--text);}
+.budget-set-row button{padding:10px 16px;border-radius:10px;background:var(--sage);color:#fff;border:none;font-weight:700;cursor:pointer;font-family:var(--font);}
+.budget-list{display:flex;flex-direction:column;gap:8px;}
+.budget-item{background:var(--surface);border-radius:12px;padding:12px 14px;box-shadow:0 1px 4px rgba(0,0,0,.06),0 0 0 1px rgba(0,0,0,.04);display:flex;justify-content:space-between;align-items:center;gap:10px;}
+.budget-item-info{flex:1;min-width:0;}
+.budget-item-name{font-size:.85rem;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.budget-item-opt{font-size:.73rem;color:var(--text2);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.budget-item-price{font-size:.95rem;font-weight:800;color:var(--text);flex-shrink:0;}
+.budget-empty{text-align:center;color:var(--text3);padding:32px 0;font-size:.86rem;}
+/* ── MOVE ROOM ── */
+.move-room-btn{font-size:.65rem;padding:2px 7px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text2);cursor:pointer;font-family:var(--font);margin-left:4px;}
+.move-room-picker{position:fixed;inset:0;z-index:500;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.45);backdrop-filter:blur(4px);}
+.move-room-box{background:var(--cream);border-radius:20px;padding:20px;width:min(320px,90vw);}
+.move-room-box h3{font-size:1rem;font-weight:800;margin:0 0 14px;}
+.move-room-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.move-room-opt{padding:10px;border-radius:10px;border:1.5px solid var(--border);background:var(--surface);cursor:pointer;font-family:var(--font);font-size:.82rem;font-weight:600;text-align:left;}
+.move-room-opt:hover{border-color:var(--sage);background:var(--sage-lt);}
+.move-room-cancel{width:100%;margin-top:10px;padding:10px;border-radius:10px;border:none;background:transparent;color:var(--text2);font-family:var(--font);font-weight:600;cursor:pointer;font-size:.85rem;}
 </style>
 </head>
 <body>
@@ -220,7 +247,7 @@ body.scrolled .cd{max-height:0;padding-top:0;padding-bottom:0;opacity:0;}
   <div class="hero-overlay"></div>
   <div class="sync-pill"><span class="sdot" id="sdot"></span><span id="slbl">A ligar…</span></div>
   <div class="hero-content">
-    <div class="hero-tag">Mudança · Setembro 2026</div>
+    <div class="hero-tag">Mudança · Agosto 2026</div>
     <div class="hero-title">Casa Nova</div>
     <div class="hero-addr">Travessa do Galvão 133 · Ajuda, Lisboa</div>
   </div>
@@ -234,7 +261,7 @@ body.scrolled .cd{max-height:0;padding-top:0;padding-bottom:0;opacity:0;}
     <span class="cdn" id="cdW">—</span><span class="cdu">sem.</span>
   </div>
   <div class="cd-prog">
-    <div class="cd-plbl">Maio → Setembro 2026</div>
+    <div class="cd-plbl">Maio → Agosto 2026</div>
     <div class="cd-track"><div class="cd-fill" id="pf" style="width:0%"></div></div>
   </div>
 </div>
@@ -242,8 +269,9 @@ body.scrolled .cd{max-height:0;padding-top:0;padding-bottom:0;opacity:0;}
 
 <!-- TABS -->
 <div class="tabs">
-  <button class="tab-btn active" data-tab="admin" onclick="switchTab(this,'admin')">🏛️ Administrativo</button>
+  <button class="tab-btn active" data-tab="admin" onclick="switchTab(this,'admin')">🏛️ Admin</button>
   <button class="tab-btn" data-tab="compras" onclick="switchTab(this,'compras')">🛒 Compras</button>
+  <button class="tab-btn" data-tab="orcamento" onclick="switchTab(this,'orcamento')">💰 Orçamento</button>
 </div>
 
 <div class="content">
@@ -262,6 +290,27 @@ body.scrolled .cd{max-height:0;padding-top:0;padding-bottom:0;opacity:0;}
     <div id="rooms-wrap"></div>
   </div>
 
+  <div class="panel" id="panel-orcamento">
+    <div class="budget-set-row">
+      <input type="number" id="budgetInput" placeholder="Orçamento total (€)" min="0" step="100" oninput="saveBudget()">
+    </div>
+    <div class="budget-summary">
+      <div class="bcard"><div class="bcard-lbl">Orçamento</div><div class="bcard-val" id="b-total">—</div></div>
+      <div class="bcard"><div class="bcard-lbl">Gasto</div><div class="bcard-val" id="b-spent">0€</div></div>
+      <div class="bcard"><div class="bcard-lbl">Restante</div><div class="bcard-val" id="b-left">—</div></div>
+    </div>
+    <div class="budget-list" id="budget-list"></div>
+  </div>
+
+</div>
+
+<!-- Move Room Picker -->
+<div class="move-room-picker" id="moveRoomPicker" style="display:none">
+  <div class="move-room-box">
+    <h3>Mover para divisão</h3>
+    <div class="move-room-grid" id="moveRoomGrid"></div>
+    <button class="move-room-cancel" onclick="closeMoveRoom()">Cancelar</button>
+  </div>
 </div>
 
 <button class="fab h" id="fab" onclick="openAddItem()">＋</button>
@@ -407,7 +456,7 @@ function save(){
 
 // ── Timeline ──────────────────────────────
 function renderTimeline(){
-  const s=new Date('2026-05-15'),e=new Date('2026-09-01'),n=new Date();
+  const s=new Date('2026-05-15'),e=new Date('2026-08-01'),n=new Date();
   const pct=Math.min(100,Math.max(0,(n-s)/(e-s)*100));
   const days=Math.max(0,Math.round((e-n)/86400000));
   document.getElementById('pf').style.width=pct.toFixed(1)+'%';
@@ -424,7 +473,10 @@ function onScroll(){
   if(_scrollTicking)return;
   _scrollTicking=true;
   requestAnimationFrame(()=>{
-    document.body.classList.toggle('scrolled', window.scrollY>60);
+    const y=window.scrollY;
+    const isScrolled=document.body.classList.contains('scrolled');
+    if(!isScrolled&&y>80) document.body.classList.add('scrolled');
+    else if(isScrolled&&y<40) document.body.classList.remove('scrolled');
     _scrollTicking=false;
   });
 }
@@ -508,7 +560,7 @@ function renderRooms(){
         <div class="room-hdr-left">
           <div class="room-dot" style="background:${room.c}"></div>
           <span class="room-name">${room.e} ${room.n}</span>
-          <span class="room-cnt">· ${items.length} artigo${items.length!==1?'s':''}</span>
+          <span class="room-cnt">· ${allItems.length} artigo${allItems.length!==1?'s':''}</span>
         </div>
         <div class="room-hdr-right">
           <button class="room-add-btn" onclick="event.stopPropagation();openAddItemRoom('${room.id}')">+</button>
@@ -524,10 +576,11 @@ function renderRooms(){
             <div class="item-color-bar" style="background:${room.c}"></div>
             <span class="item-name">${item.name}</span>
             <span class="item-tag ${chosen?'c':'p'}">${chosen?'✓ Escolhido':'A decidir'}</span>
+            <button class="move-room-btn" onclick="event.stopPropagation();openMoveRoom('${item.id}')">⇄</button>
             <span class="item-x" onclick="delItem('${item.id}')">×</span>
           </div>
           ${!item.options.length?'<div class="no-opts">Adiciona a primeira opção abaixo.</div>':''}
-          ${item.options.map(o=>`
+          ${(storeFilter?item.options.filter(o=>!o.store||o.store===storeFilter):item.options).map(o=>`
             <div class="opt-row ${o.selected?'sel':''}">
               <div class="opt-top">
                 ${o.image?`<img class="opt-img" src="https://wsrv.nl/?url=${encodeURIComponent(o.image)}" alt="" loading="lazy" onerror="this.outerHTML='<div class=\\'opt-img-ph\\'>📦</div>'">`:'<div class="opt-img-ph">📦</div>'}
@@ -1077,8 +1130,104 @@ document.querySelectorAll('.overlay').forEach(el=>{
   el.addEventListener('click',e=>{if(e.target===el){el.classList.remove('open');document.body.style.overflow='';}});
 });
 
-function render(){renderTimeline();renderAdmin();renderRooms();}
+function render(){renderTimeline();renderAdmin();renderRooms();renderBudget();}
 initFire();
+
+// ── Price parser (handles "1.299,99€", "299€", "1299") ───────────────────────
+function parsePrice(str){
+  if(!str)return 0;
+  let s=str.replace(/[€$£\s]/g,'').trim();
+  if(s.includes(',')&&s.includes('.')) s=s.replace(/\./g,'').replace(',','.');
+  else if(s.includes(',')) s=s.replace(',','.');
+  return parseFloat(s)||0;
+}
+
+// ── Budget ────────────────────────────────────────────────────────────────────
+function saveBudget(){
+  const v=parseFloat(document.getElementById('budgetInput').value)||0;
+  try{localStorage.setItem('budget',v);}catch(e){}
+  renderBudget();
+}
+function getBudget(){
+  try{return parseFloat(localStorage.getItem('budget'))||0;}catch(e){return 0;}
+}
+function renderBudget(){
+  if(!S)return;
+  const budget=getBudget();
+  // Restore input value
+  const inp=document.getElementById('budgetInput');
+  if(inp&&!inp.value&&budget) inp.value=budget;
+
+  // Collect all selected options with prices
+  const selected=[];
+  S.items.forEach(item=>{
+    item.options.forEach(o=>{
+      if(o.selected){
+        const price=parsePrice(o.price);
+        selected.push({itemName:item.name,optName:o.name,store:o.store,price,priceStr:o.price});
+      }
+    });
+  });
+
+  const spent=selected.reduce((a,s)=>a+s.price,0);
+  const left=budget-spent;
+  const fmt=v=>v===0?'0€':v.toLocaleString('pt-PT',{minimumFractionDigits:0,maximumFractionDigits:0})+'€';
+
+  const bTotal=document.getElementById('b-total');
+  const bSpent=document.getElementById('b-spent');
+  const bLeft=document.getElementById('b-left');
+  if(bTotal) bTotal.textContent=budget?fmt(budget):'—';
+  if(bSpent) bSpent.textContent=fmt(spent);
+  if(bLeft){
+    bLeft.textContent=budget?fmt(left):'—';
+    bLeft.className='bcard-val'+(budget?(left>=0?' positive':' negative'):'');
+  }
+
+  const list=document.getElementById('budget-list');
+  if(!list)return;
+  if(!selected.length){
+    list.innerHTML='<div class="budget-empty">Nenhuma opção escolhida ainda.<br>Vai a Compras e escolhe as tuas opções ✓</div>';
+    return;
+  }
+  list.innerHTML=selected.map(s=>`
+    <div class="budget-item">
+      <div class="budget-item-info">
+        <div class="budget-item-name">${s.itemName}</div>
+        <div class="budget-item-opt">${s.optName}${s.store?' · '+s.store:''}</div>
+      </div>
+      <div class="budget-item-price">${s.priceStr?s.priceStr+'€':'—'}</div>
+    </div>
+  `).join('');
+}
+
+// ── Move item to room ─────────────────────────────────────────────────────────
+let _moveItemId=null;
+function openMoveRoom(itemId){
+  _moveItemId=itemId;
+  const item=S.items.find(i=>i.id===itemId);
+  const grid=document.getElementById('moveRoomGrid');
+  grid.innerHTML=ROOMS.filter(r=>r.id!==item?.room).map(r=>`
+    <button class="move-room-opt" onclick="moveItem('${r.id}')">
+      ${r.e} ${r.n}
+    </button>
+  `).join('');
+  document.getElementById('moveRoomPicker').style.display='flex';
+  document.body.style.overflow='hidden';
+}
+function closeMoveRoom(){
+  document.getElementById('moveRoomPicker').style.display='none';
+  document.body.style.overflow='';
+  _moveItemId=null;
+}
+function moveItem(newRoomId){
+  const item=S.items.find(i=>i.id===_moveItemId);
+  if(item){item.room=newRoomId;save();}
+  closeMoveRoom();
+}
+document.getElementById('moveRoomPicker').addEventListener('click',function(e){
+  if(e.target===this)closeMoveRoom();
+});
+
 </script>
 </body>
 </html>
