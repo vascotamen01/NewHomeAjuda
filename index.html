@@ -235,14 +235,29 @@ body.scrolled .cd{max-height:0;padding-top:0;padding-bottom:0;opacity:0;}
 .store-search-clear{padding:9px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--surface);font-size:.8rem;cursor:pointer;font-family:var(--font);color:var(--text2);white-space:nowrap;transition:all .15s;}
 .store-search-clear.on{background:var(--sage);color:#fff;border-color:var(--sage);}
 
-/* ── TASK PRIORITY ── */
-.task-row{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--border);}
+/* ── TASKS JIRA-STYLE ── */
+.task-toolbar{display:flex;gap:6px;align-items:center;margin-bottom:10px;flex-wrap:wrap;}
+.task-sort-btn{padding:5px 10px;border-radius:8px;border:1.5px solid var(--border);background:var(--surface);font-size:.72rem;font-weight:600;cursor:pointer;font-family:var(--font);color:var(--text2);transition:all .15s;}
+.task-sort-btn.on{background:var(--sage);color:#fff;border-color:var(--sage);}
+.task-card{background:var(--surface);border-radius:14px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.07),0 0 0 1px rgba(0,0,0,.04);}
+.task-row{display:flex;align-items:center;gap:8px;padding:10px 12px;border-bottom:1px solid var(--border);transition:background .1s;}
 .task-row:last-child{border-bottom:none;}
-.prio-btn{width:22px;height:22px;border-radius:6px;border:none;cursor:pointer;font-size:.7rem;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
-.prio-1{background:#fee2e2;color:#dc2626;}
-.prio-2{background:#fef3c7;color:#d97706;}
-.prio-3{background:#dbeafe;color:#2563eb;}
-.prio-0{background:var(--border);color:var(--text3);}
+.task-row:hover{background:rgba(0,0,0,.02);}
+.prio-select{appearance:none;-webkit-appearance:none;border:none;background:transparent;font-size:.85rem;cursor:pointer;padding:2px;border-radius:4px;width:26px;text-align:center;}
+.prio-select:focus{outline:2px solid var(--sage);border-radius:4px;}
+.task-txt-input{flex:1;border:none;background:transparent;font-family:var(--font);font-size:.84rem;color:var(--text);padding:2px 4px;border-radius:4px;min-width:0;}
+.task-txt-input:focus{outline:2px solid var(--sage);background:var(--cream);}
+.task-txt-input.done-txt{text-decoration:line-through;color:var(--text3);}
+.task-date-input{border:none;background:transparent;font-family:var(--font);font-size:.7rem;color:var(--text3);cursor:pointer;padding:2px 4px;border-radius:4px;width:100px;flex-shrink:0;}
+.task-date-input:focus{outline:2px solid var(--sage);background:var(--cream);}
+.task-date-input.overdue{color:#ef4444;}
+.task-date-input.soon{color:#f97316;}
+.prio-badge{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:5px;font-size:.68rem;font-weight:700;flex-shrink:0;cursor:pointer;border:none;}
+.prio-c{background:#fee2e2;color:#dc2626;}
+.prio-h{background:#ffedd5;color:#ea580c;}
+.prio-m{background:#fef9c3;color:#ca8a04;}
+.prio-l{background:#dbeafe;color:#2563eb;}
+.prio-n{background:var(--border);color:var(--text3);}
 /* ── BUDGET CHART ── */
 .chart-wrap{background:var(--surface);border-radius:14px;padding:16px;margin-bottom:16px;box-shadow:0 1px 4px rgba(0,0,0,.07),0 0 0 1px rgba(0,0,0,.04);}
 .chart-title{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:12px;}
@@ -297,7 +312,7 @@ body.scrolled .cd{max-height:0;padding-top:0;padding-bottom:0;opacity:0;}
     <span class="cdn" id="cdW">—</span><span class="cdu">sem.</span>
   </div>
   <div class="cd-prog">
-    <div class="cd-plbl">Maio → Agosto 2026</div>
+    <div class="cd-plbl">Jan → Ago 2026</div>
     <div class="cd-track"><div class="cd-fill" id="pf" style="width:0%"></div></div>
   </div>
 </div>
@@ -315,21 +330,28 @@ body.scrolled .cd{max-height:0;padding-top:0;padding-bottom:0;opacity:0;}
   <!-- ADMIN -->
   <div class="panel active" id="panel-admin">
     <div id="task-wrap"></div>
+    <div class="task-toolbar" id="task-toolbar">
+      <button class="task-sort-btn on" id="sort-prio" onclick="setTaskSort('prio')">⬆ Prioridade</button>
+      <button class="task-sort-btn" id="sort-date" onclick="setTaskSort('date')">📅 Data</button>
+      <button class="task-sort-btn" id="sort-status" onclick="setTaskSort('status')">✓ Estado</button>
+    </div>
     <div class="add-row" style="margin-top:8px">
-      <input id="newTask" placeholder="Nova tarefa administrativa…" onkeydown="if(event.key==='Enter')addTask()">
+      <input id="newTask" placeholder="Nova tarefa…" onkeydown="if(event.key==='Enter')addTask()">
       <select id="newTaskPrio" style="padding:10px 6px;border-radius:10px;border:1.5px solid var(--border);background:var(--surface);font-family:var(--font);font-size:.8rem;color:var(--text);cursor:pointer;">
-        <option value="0">— Prioridade</option>
-        <option value="1">🔴 Alta</option>
-        <option value="2">🟡 Média</option>
-        <option value="3">🔵 Baixa</option>
+        <option value="n">— Prioridade</option>
+        <option value="c">🔴 Crítica</option>
+        <option value="h">🟠 Alta</option>
+        <option value="m">🟡 Média</option>
+        <option value="l">🔵 Baixa</option>
       </select>
+      <input type="date" id="newTaskDate" style="padding:10px 6px;border-radius:10px;border:1.5px solid var(--border);background:var(--surface);font-family:var(--font);font-size:.78rem;color:var(--text);">
       <button onclick="addTask()">＋</button>
     </div>
   </div>
 
   <!-- COMPRAS -->
   <div class="panel" id="panel-compras">
-    <div id="rooms-wrap"></div>
+    <div id="rooms-wrap"><div id="store-filter-bar"></div><div id="rooms-list"></div></div>
   </div>
 
   <div class="panel" id="panel-orcamento">
@@ -507,7 +529,7 @@ function save(){
 
 // ── Timeline ──────────────────────────────
 function renderTimeline(){
-  const s=new Date('2026-05-15'),e=new Date('2026-08-01'),n=new Date();
+  const s=new Date('2026-01-01'),e=new Date('2026-08-01'),n=new Date();
   const pct=Math.min(100,Math.max(0,(n-s)/(e-s)*100));
   const days=Math.max(0,Math.round((e-n)/86400000));
   document.getElementById('pf').style.width=pct.toFixed(1)+'%';
@@ -544,44 +566,81 @@ function switchTab(el,name){
 }
 
 // ── Admin ─────────────────────────────────
+// ── Tasks ─────────────────────────────────────────────────────────────────────
+const PRIO={c:{l:'🔴 Crítica',cls:'prio-c'},h:{l:'🟠 Alta',cls:'prio-h'},m:{l:'🟡 Média',cls:'prio-m'},l:{l:'🔵 Baixa',cls:'prio-l'},n:{l:'—',cls:'prio-n'}};
+let _taskSort='prio';
+
+function setTaskSort(s){
+  _taskSort=s;
+  document.querySelectorAll('.task-sort-btn').forEach(b=>b.classList.remove('on'));
+  const btn=document.getElementById('sort-'+s);
+  if(btn)btn.classList.add('on');
+  renderAdmin();
+}
+
+function sortedTasks(){
+  const prioOrder={c:0,h:1,m:2,l:3,n:4,undefined:4};
+  return [...S.tasks].sort((a,b)=>{
+    if(_taskSort==='status'){
+      if(a.done!==b.done)return a.done?1:-1;
+    }
+    if(_taskSort==='date'){
+      const da=a.due||'9999',db=b.due||'9999';
+      if(da!==db)return da<db?-1:1;
+    }
+    // always secondary sort by priority
+    const pa=prioOrder[a.prio??'n'],pb=prioOrder[b.prio??'n'];
+    if(pa!==pb)return pa-pb;
+    if(a.done!==b.done)return a.done?1:-1;
+    return 0;
+  });
+}
+
 function renderAdmin(){
   if(!S)return;
   const done=S.tasks.filter(t=>t.done).length,total=S.tasks.length;
-  const prioLabel={1:'🔴',2:'🟡',3:'🔵',0:''};
-  const sorted=[...S.tasks].sort((a,b)=>{
-    if(a.done!==b.done)return a.done?1:-1;
-    const pa=a.prio||0,pb=b.prio||0;
-    if(pa&&pb)return pa-pb;
-    if(pa)return -1;if(pb)return 1;return 0;
-  });
+  const today=new Date().toISOString().slice(0,10);
+  const soon=new Date(Date.now()+3*86400000).toISOString().slice(0,10);
+
   document.getElementById('task-wrap').innerHTML=
     !total?'<div style="padding:18px;text-align:center;color:var(--text3);font-size:.84rem;">Sem tarefas 🎉</div>'
     :`<div class="task-card">${
-      sorted.map(t=>`
-        <div class="task-row">
+      sortedTasks().map(t=>{
+        const p=PRIO[t.prio||'n'];
+        const dateClass=t.due?(t.due<today?'overdue':t.due<=soon?'soon':''):'';
+        return `<div class="task-row">
           <div class="cb ${t.done?'on':''}" onclick="togT('${t.id}')"></div>
-          ${t.prio?`<button class="prio-btn prio-${t.prio}" onclick="cyclePrio('${t.id}')" title="Mudar prioridade">${prioLabel[t.prio]}</button>`:`<button class="prio-btn prio-0" onclick="cyclePrio('${t.id}')" title="Definir prioridade">·</button>`}
-          <span class="task-txt ${t.done?'done':''}" onclick="togT('${t.id}')">${t.text}</span>
+          <select class="prio-select" title="Prioridade" onchange="setPrio('${t.id}',this.value)">
+            ${Object.entries(PRIO).map(([k,v])=>`<option value="${k}" ${(t.prio||'n')===k?'selected':''}>${v.l}</option>`).join('')}
+          </select>
+          <input class="task-txt-input ${t.done?'done-txt':''}" value="${t.text.replace(/"/g,'&quot;')}"
+            onchange="editTask('${t.id}',this.value)"
+            onkeydown="if(event.key==='Enter')this.blur()">
+          <input type="date" class="task-date-input ${dateClass}" value="${t.due||''}"
+            onchange="setDue('${t.id}',this.value)" title="Data limite">
           <span class="btn-del" onclick="delT('${t.id}')">×</span>
-        </div>`).join('')
+        </div>`;
+      }).join('')
     }</div>
-    <div style="display:flex;justify-content:flex-end;padding:4px 2px;font-size:.7rem;color:var(--text3)">
-      ${done}/${total} concluídas
-    </div>`;
+    <div style="display:flex;justify-content:flex-end;padding:4px 2px;font-size:.7rem;color:var(--text3)">${done}/${total} concluídas</div>`;
 }
+
 function togT(id){const t=S.tasks.find(x=>x.id===id);if(t){t.done=!t.done;save();}}
 function delT(id){S.tasks=S.tasks.filter(t=>t.id!==id);save();}
+function editTask(id,val){const t=S.tasks.find(t=>t.id===id);if(t&&val.trim()){t.text=val.trim();save();}}
+function setPrio(id,prio){const t=S.tasks.find(t=>t.id===id);if(t){t.prio=prio;save();}}
+function setDue(id,val){const t=S.tasks.find(t=>t.id===id);if(t){t.due=val;save();}}
 
-// ── Task priority cycle ───────────────────────────────────────────────────────
-function cyclePrio(id){
-  const t=S.tasks.find(t=>t.id===id);
-  if(!t)return;
-  t.prio=((t.prio||0)+1)%4;
-  save();
-}
 function addTask(){
   const el=document.getElementById('newTask'),text=el.value.trim();
-  if(!text)return;const prio=parseInt(document.getElementById('newTaskPrio').value)||0;S.tasks.push({id:uid(),text,done:false,prio});el.value='';save();
+  if(!text)return;
+  const prio=document.getElementById('newTaskPrio').value||'n';
+  const due=document.getElementById('newTaskDate').value||'';
+  S.tasks.push({id:uid(),text,done:false,prio,due});
+  el.value='';
+  document.getElementById('newTaskDate').value='';
+  document.getElementById('newTaskPrio').value='n';
+  save();
 }
 
 // ── Rooms ─────────────────────────────────
@@ -599,22 +658,40 @@ function toggleRoom(rid){
 
 // ── Filtro por marca/loja (persistido) ──
 function getStoreFilter(){try{return localStorage.getItem('storeFilter')||'';}catch(e){return '';}}
-function setStoreFilter(v){try{localStorage.setItem('storeFilter',v);}catch(e){}renderRooms();}
+function setStoreFilter(v){try{localStorage.setItem('storeFilter',v);}catch(e){}renderRoomsList();}
 
-function renderRooms(){
+function renderRooms(){renderFilterBar();renderRoomsList();}
+
+function renderFilterBar(){
+  const bar=document.getElementById('store-filter-bar');
+  if(!bar)return;
+  const sf=getStoreFilter();
+  bar.innerHTML=`<div class="store-search-row">
+    <div class="store-search-wrap">
+      <input class="store-search-input" id="storeSearchInput" type="search"
+        placeholder="Filtrar por loja…" value="${sf||''}"
+        oninput="setStoreFilter(this.value.trim())"
+        onsearch="setStoreFilter(this.value.trim())">
+    </div>
+    ${sf?`<button class="store-clear-btn" onclick="setStoreFilter('');const i=document.getElementById('storeSearchInput');if(i){i.value='';i.focus();}">✕</button>`:''}
+  </div>`;
+  // keep focus after re-render (only runs once on init)
+}
+
+function renderRoomsList(){
   if(!S)return;
   const used=ROOMS.filter(r=>S.items.some(i=>i.room===r.id));
-  const el=document.getElementById('rooms-wrap');
+  const el=document.getElementById('rooms-list');
+  if(!el)return;
   if(!used.length){
     el.innerHTML='<p style="text-align:center;color:var(--text3);padding:32px 0;font-size:.86rem;">Carrega em ＋ para o primeiro artigo.</p>';
     return;
   }
-  // Coleccionar lojas únicas para os chips de filtro
   const storeFilter=getStoreFilter();
   const allStores=[...new Set(S.items.flatMap(i=>i.options.map(o=>o.store).filter(Boolean)))].sort();
   const chipsHtml=`<div class="store-search-row"><div class="store-search-wrap"><input class="store-search-input" id="storeSearchInput" type="search" placeholder="Filtrar por loja…" value="${storeFilter||''}" oninput="setStoreFilter(this.value.trim())" onsearch="setStoreFilter(this.value.trim())"></div>${storeFilter?`<button class="store-clear-btn" onclick="setStoreFilter(\'\');setTimeout(()=>{const i=document.getElementById(\'storeSearchInput\');if(i)i.value=\'\';},0)">✕</button>`:''}</div>`;
 
-  el.innerHTML=chipsHtml+used.map(room=>{
+  el.innerHTML=used.map(room=>{
     const allItems=S.items.filter(i=>i.room===room.id);
     // Aplicar filtro de loja: item visível se tem pelo menos uma opção dessa loja (ou não há filtro)
     const sf=storeFilter?storeFilter.toLowerCase():'';const items=sf?allItems.filter(i=>i.options.some(o=>o.store&&o.store.toLowerCase().includes(sf))):allItems;
