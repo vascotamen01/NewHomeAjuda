@@ -1071,10 +1071,10 @@ function saveItem(){
   save();
 }
 
-function openO(id){document.getElementById(id).classList.add('open');}
-function closeO(id){document.getElementById(id).classList.remove('open');}
+function openO(id){document.getElementById(id).classList.add('open');document.body.style.overflow='hidden';}
+function closeO(id){document.getElementById(id).classList.remove('open');document.body.style.overflow='';}
 document.querySelectorAll('.overlay').forEach(el=>{
-  el.addEventListener('click',e=>{if(e.target===el)el.classList.remove('open');});
+  el.addEventListener('click',e=>{if(e.target===el){el.classList.remove('open');document.body.style.overflow='';}});
 });
 
 function render(){renderTimeline();renderAdmin();renderRooms();}
