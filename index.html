@@ -41,7 +41,7 @@ body.scrolled .app-top{box-shadow:0 4px 18px rgba(0,0,0,.18);}
 body.scrolled .hero{height:56px;min-height:0;max-height:56px;}
 body.scrolled .hero img{transform:scale(1.05);filter:brightness(.55);}
 body.scrolled .hero-overlay{background:linear-gradient(to bottom, rgba(20,14,8,.55) 0%, rgba(20,14,8,.85) 100%);}
-body.scrolled .hero-content{padding:8px 70px 6px 20px;display:flex;align-items:center;gap:10px;}
+body.scrolled .hero-content{padding:6px 70px 4px 20px;display:flex;flex-direction:column;justify-content:center;gap:2px;}
 body.scrolled .hero-tag{opacity:0;max-height:0;margin:0;}
 body.scrolled .hero-addr{opacity:0;max-height:0;margin:0;}
 body.scrolled .hero-title{font-size:1rem;}
@@ -237,25 +237,37 @@ body.scrolled .cd{max-height:0;padding-top:0;padding-bottom:0;opacity:0;}
 
 /* ── TASKS TABLE ── */
 .task-table{background:var(--surface);border-radius:14px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.07),0 0 0 1px rgba(0,0,0,.04);margin-bottom:10px;}
-.task-thead{display:grid;grid-template-columns:28px 36px 1fr 90px 28px;gap:0;background:var(--border);padding:0;}
-.task-th{padding:7px 6px;font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);cursor:pointer;user-select:none;display:flex;align-items:center;gap:3px;transition:color .15s;}
+.task-thead{display:grid;grid-template-columns:28px 1fr 72px 32px 24px;gap:0;background:rgba(0,0,0,.04);padding:0;}
+.task-th{padding:7px 6px;font-size:.63rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);cursor:pointer;user-select:none;display:flex;align-items:center;gap:2px;transition:color .15s;}
 .task-th:hover{color:var(--text);}
 .task-th.sorted{color:var(--sage);}
 .task-th .sort-arrow{font-size:.55rem;}
-.task-row{display:grid;grid-template-columns:28px 36px 1fr 90px 28px;gap:0;border-bottom:1px solid var(--border);align-items:center;transition:background .1s;min-height:44px;}
+.task-row{display:grid;grid-template-columns:28px 1fr 72px 32px 24px;gap:0;border-bottom:1px solid var(--border);align-items:center;min-height:44px;cursor:pointer;}
 .task-row:last-child{border-bottom:none;}
 .task-row:active{background:rgba(0,0,0,.03);}
-.task-cell{padding:8px 6px;display:flex;align-items:center;}
+.task-cell{padding:6px 4px;display:flex;align-items:center;}
 .task-cell.grow{flex:1;min-width:0;}
-.prio-select{appearance:none;-webkit-appearance:none;border:none;background:transparent;font-size:.9rem;cursor:pointer;padding:0;width:28px;text-align:center;touch-action:manipulation;}
-.task-txt-input{width:100%;border:none;background:transparent;font-family:var(--font);font-size:.84rem;color:var(--text);padding:3px 4px;border-radius:4px;min-width:0;touch-action:manipulation;}
-.task-txt-input:focus{outline:2px solid var(--sage);background:rgba(107,143,105,.08);}
-.task-txt-input.done-txt{text-decoration:line-through;color:var(--text3);}
-.task-date-input{border:none;background:transparent;font-family:var(--font);font-size:.68rem;color:var(--text3);cursor:pointer;padding:2px 2px;border-radius:4px;width:88px;touch-action:manipulation;}
-.task-date-input:focus{outline:2px solid var(--sage);}
-.task-date-input.overdue{color:#ef4444;font-weight:700;}
-.task-date-input.soon{color:#f97316;font-weight:600;}
-.prio-c{color:#dc2626;} .prio-h{color:#ea580c;} .prio-m{color:#ca8a04;} .prio-l{color:#2563eb;} .prio-n{color:var(--text3);}
+.task-name-cell{font-size:.84rem;color:var(--text);padding:6px 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.task-name-cell.done-txt{text-decoration:line-through;color:var(--text3);}
+.task-date-small{font-size:.65rem;color:var(--text3);white-space:nowrap;padding:0 4px;}
+.task-date-small.overdue{color:#ef4444;font-weight:700;}
+.task-date-small.soon{color:#f97316;font-weight:600;}
+.prio-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.prio-c .prio-dot,.prio-dot.c{background:#dc2626;}
+.prio-h .prio-dot,.prio-dot.h{background:#ea580c;}
+.prio-m .prio-dot,.prio-dot.m{background:#ca8a04;}
+.prio-l .prio-dot,.prio-dot.l{background:#2563eb;}
+.prio-n .prio-dot,.prio-dot.n{background:var(--border);}
+/* Task edit modal */
+.task-modal-field{margin-bottom:14px;}
+.task-modal-field label{display:block;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:5px;}
+.task-modal-input{width:100%;padding:10px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--surface);font-family:var(--font);font-size:.9rem;color:var(--text);box-sizing:border-box;}
+.task-modal-input:focus{outline:none;border-color:var(--sage);}
+.task-modal-select{width:100%;padding:10px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--surface);font-family:var(--font);font-size:.9rem;color:var(--text);cursor:pointer;}
+.task-modal-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.task-label-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px;}
+.label-chip{padding:4px 10px;border-radius:20px;font-size:.72rem;font-weight:600;cursor:pointer;border:1.5px solid transparent;transition:all .15s;}
+.label-chip.on{border-color:currentColor;}
 /* ── BUDGET CHART ── */
 .chart-wrap{background:var(--surface);border-radius:14px;padding:16px;margin-bottom:16px;box-shadow:0 1px 4px rgba(0,0,0,.07),0 0 0 1px rgba(0,0,0,.04);}
 .chart-title{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:12px;}
@@ -288,6 +300,12 @@ body.scrolled .cd{max-height:0;padding-top:0;padding-bottom:0;opacity:0;}
 .opt-img-link:hover img,.opt-img-link:hover .opt-img-ph{opacity:.75;}
 .opt-name-link{color:inherit;text-decoration:none;font-weight:700;}
 .opt-name-link:hover{text-decoration:underline;color:var(--sage);}
+
+/* ── Mini track in collapsed hero ── */
+.hero-mini-track{display:none;height:2px;background:rgba(255,255,255,.15);border-radius:2px;width:100%;margin-top:3px;}
+.hero-mini-fill{height:2px;background:linear-gradient(90deg,var(--wood),var(--sage));border-radius:2px;transition:width .5s ease;}
+body.scrolled .hero-mini-track{display:block;}
+body.scrolled .hero-title{font-size:.88rem;}
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 </head>
@@ -311,6 +329,7 @@ body.scrolled .cd{max-height:0;padding-top:0;padding-bottom:0;opacity:0;}
   <div class="hero-overlay"></div>
   <div class="sync-pill"><span class="sdot" id="sdot"></span><span id="slbl">A ligar…</span></div>
   <div class="hero-content">
+    <div class="hero-mini-track"><div class="hero-mini-fill" id="heroFill"></div></div>
     <div class="hero-tag">Mudança · Agosto 2026</div>
     <div class="hero-title">Casa Nova</div>
     <div class="hero-addr">Travessa do Galvão 133 · Ajuda, Lisboa</div>
@@ -364,11 +383,17 @@ body.scrolled .cd{max-height:0;padding-top:0;padding-bottom:0;opacity:0;}
   </div>
 
   <div class="panel" id="panel-orcamento">
-    <div class="budget-set-row">
-      <input type="number" id="budgetInput" placeholder="Orçamento total (€)" min="0" step="100" oninput="saveBudget()">
-    </div>
     <div class="budget-summary">
-      <div class="bcard"><div class="bcard-lbl">Orçamento</div><div class="bcard-val" id="b-total">—</div></div>
+      <div class="bcard" onclick="const i=document.getElementById('budgetInput');const t=document.getElementById('b-total-txt');if(i&&t){t.style.display='none';i.style.display='';i.focus();}" style="cursor:pointer;">
+        <div class="bcard-lbl">Orçamento</div>
+        <div class="bcard-val" id="b-total" style="display:flex;align-items:center;gap:4px;">
+          <span id="b-total-txt">—</span>
+          <input type="number" id="budgetInput" placeholder="0"
+            style="width:80px;border:none;border-bottom:1.5px solid var(--sage);background:transparent;font-family:var(--font);font-size:1rem;font-weight:800;color:var(--text);text-align:center;display:none;"
+            min="0" step="100" oninput="saveBudget()" onblur="hideBudgetInput()">
+          <span style="font-size:.75rem;color:var(--text3);">✏️</span>
+        </div>
+      </div>
       <div class="bcard"><div class="bcard-lbl">Gasto</div><div class="bcard-val" id="b-spent">0€</div></div>
       <div class="bcard"><div class="bcard-lbl">Restante</div><div class="bcard-val" id="b-left">—</div></div>
     </div>
@@ -384,6 +409,42 @@ body.scrolled .cd{max-height:0;padding-top:0;padding-bottom:0;opacity:0;}
   <div class="budget-list" id="budget-list"></div>
   </div>
 
+</div>
+
+<!-- Task Edit Modal -->
+<div class="overlay" id="taskEditOv">
+  <div class="modal" style="padding:20px 20px 40px;">
+    <div class="m-handle"></div>
+    <div class="m-title" id="taskEditTitle">Editar tarefa</div>
+    <div class="task-modal-field">
+      <label>Tarefa</label>
+      <input class="task-modal-input" id="teText" placeholder="Descrição da tarefa…">
+    </div>
+    <div class="task-modal-row">
+      <div class="task-modal-field">
+        <label>Prioridade</label>
+        <select class="task-modal-select" id="tePrio">
+          <option value="n">— Nenhuma</option>
+          <option value="c">🔴 Crítica</option>
+          <option value="h">🟠 Alta</option>
+          <option value="m">🟡 Média</option>
+          <option value="l">🔵 Baixa</option>
+        </select>
+      </div>
+      <div class="task-modal-field">
+        <label>Data limite</label>
+        <input type="date" class="task-modal-input" id="teDue">
+      </div>
+    </div>
+    <div class="task-modal-field">
+      <label>Etiqueta</label>
+      <div class="task-label-chips" id="teLabelChips"></div>
+    </div>
+    <div class="m-btns">
+      <button class="btn-no" onclick="closeO('taskEditOv')">Cancelar</button>
+      <button class="btn-ok" onclick="saveEditTask()">Guardar</button>
+    </div>
+  </div>
 </div>
 
 <!-- Move Room Picker -->
@@ -547,6 +608,7 @@ function renderTimeline(){
   // Atributo usado no estado colapsado do header (CSS: .hero-title::after)
   const title=document.querySelector('.hero-title');
   if(title)title.setAttribute('data-days','· '+days+' dias');
+  const hf=document.getElementById('heroFill');if(hf)hf.style.width=pct.toFixed(1)+'%';
 }
 
 // ── Header colapsível ao scroll (throttled com rAF) ──────────────
@@ -593,67 +655,116 @@ function setTaskSort(s){
 }
 
 function sortedTasks(){
-  const prioOrder={c:0,h:1,m:2,l:3,n:4,undefined:4};
+  const prioOrder={c:0,h:1,m:2,l:3,n:4};
   return [...S.tasks].sort((a,b)=>{
-    if(_taskSort==='status'){
-      if(a.done!==b.done)return a.done?1:-1;
+    // done tasks always at bottom
+    if(a.done!==b.done) return a.done?1:-1;
+    // primary sort
+    if(_taskSort==='prio'){
+      const pa=prioOrder[a.prio||'n']??4, pb=prioOrder[b.prio||'n']??4;
+      if(pa!==pb) return pa-pb;
     }
     if(_taskSort==='date'){
-      const da=a.due||'9999',db=b.due||'9999';
-      if(da!==db)return da<db?-1:1;
+      const da=a.due||'9999', db=b.due||'9999';
+      if(da!==db) return da<db?-1:1;
     }
-    // always secondary sort by priority
-    const pa=prioOrder[a.prio??'n'],pb=prioOrder[b.prio??'n'];
-    if(pa!==pb)return pa-pb;
-    if(a.done!==b.done)return a.done?1:-1;
-    return 0;
+    if(_taskSort==='text'){
+      return (a.text||'').localeCompare(b.text||'','pt');
+    }
+    // secondary: always priority
+    const pa=prioOrder[a.prio||'n']??4, pb=prioOrder[b.prio||'n']??4;
+    return pa-pb;
   });
 }
 
 function thArrow(col){return _taskSort===col?'<span class="sort-arrow">▲</span>':'';}
+const LABELS=[
+  {k:'casa',l:'🏠 Casa',c:'#6b8f69'},
+  {k:'doc',l:'📄 Docs',c:'#2563eb'},
+  {k:'compra',l:'🛒 Compra',c:'#ca8a04'},
+  {k:'urgente',l:'⚡ Urgente',c:'#dc2626'},
+  {k:'outro',l:'💬 Outro',c:'#7c3aed'},
+];
 
 function renderAdmin(){
   if(!S)return;
   const done=S.tasks.filter(t=>t.done).length,total=S.tasks.length;
   const today=new Date().toISOString().slice(0,10);
   const soon=new Date(Date.now()+3*86400000).toISOString().slice(0,10);
+  const prioDot=p=>`<div class="prio-dot ${p||'n'}"></div>`;
 
   document.getElementById('task-wrap').innerHTML=
     !total?'<div style="padding:18px;text-align:center;color:var(--text3);font-size:.84rem;">Sem tarefas 🎉</div>'
     :`<div class="task-table">
       <div class="task-thead">
         <div class="task-th"></div>
-        <div class="task-th ${_taskSort==='prio'?'sorted':''}" onclick="setTaskSort('prio')" title="Ordenar por prioridade">P ${thArrow('prio')}</div>
-        <div class="task-th ${_taskSort==='text'?'sorted':''}" onclick="setTaskSort('text')" title="Ordenar por nome">Tarefa ${thArrow('text')}</div>
-        <div class="task-th ${_taskSort==='date'?'sorted':''}" onclick="setTaskSort('date')" title="Ordenar por data">📅 ${thArrow('date')}</div>
+        <div class="task-th ${_taskSort==='text'?'sorted':''}" onclick="setTaskSort('text')">Tarefa ${thArrow('text')}</div>
+        <div class="task-th ${_taskSort==='date'?'sorted':''}" onclick="setTaskSort('date')">📅 ${thArrow('date')}</div>
+        <div class="task-th ${_taskSort==='prio'?'sorted':''}" onclick="setTaskSort('prio')">P ${thArrow('prio')}</div>
         <div class="task-th"></div>
       </div>
       ${sortedTasks().map(t=>{
-        const dateClass=t.due?(t.due<today?'overdue':t.due<=soon?'soon':''):'';
-        const prioEmoji={c:'🔴',h:'🟠',m:'🟡',l:'🔵',n:'·'}[t.prio||'n'];
-        return `<div class="task-row">
-          <div class="task-cell"><div class="cb ${t.done?'on':''}" onclick="togT('${t.id}')"></div></div>
-          <div class="task-cell">
-            <select class="prio-select prio-${t.prio||'n'}" title="Prioridade" onchange="setPrio('${t.id}',this.value)">
-              ${Object.entries(PRIO).map(([k,v])=>`<option value="${k}" ${(t.prio||'n')===k?'selected':''}>${v.l}</option>`).join('')}
-            </select>
+        const dc=t.due?(t.due<today?'overdue':t.due<=soon?'soon':''):'';
+        const label=LABELS.find(l=>l.k===t.label);
+        return `<div class="task-row" onclick="openEditTask('${t.id}')">
+          <div class="task-cell" onclick="event.stopPropagation();togT('${t.id}')">
+            <div class="cb ${t.done?'on':''}"></div>
           </div>
-          <div class="task-cell grow">
-            <input class="task-txt-input ${t.done?'done-txt':''}" value="${t.text.replace(/"/g,'&quot;')}"
-              onchange="editTask('${t.id}',this.value)"
-              onkeydown="if(event.key==='Enter')this.blur()">
+          <div class="task-name-cell ${t.done?'done-txt':''}">
+            ${t.text}
+            ${label?`<span style="margin-left:5px;font-size:.65rem;padding:1px 6px;border-radius:10px;background:${label.c}22;color:${label.c};font-weight:700;">${label.l}</span>`:''}
           </div>
-          <div class="task-cell">
-            <input type="date" class="task-date-input ${dateClass}" value="${t.due||''}"
-              onchange="setDue('${t.id}',this.value)">
-          </div>
-          <div class="task-cell"><span class="btn-del" onclick="delT('${t.id}')">×</span></div>
+          <div class="task-cell"><span class="task-date-small ${dc}">${t.due?t.due.slice(5):'—'}</span></div>
+          <div class="task-cell">${prioDot(t.prio)}</div>
+          <div class="task-cell" onclick="event.stopPropagation();delT('${t.id}')"><span class="btn-del">×</span></div>
         </div>`;
       }).join('')}
     </div>
     <div style="text-align:right;padding:4px 2px;font-size:.7rem;color:var(--text3)">${done}/${total} concluídas</div>`;
 }
 
+
+// ── Task edit modal ───────────────────────────────────────────────────────────
+let _editTaskId=null;
+function openEditTask(id){
+  const t=S.tasks.find(t=>t.id===id);if(!t)return;
+  _editTaskId=id;
+  document.getElementById('teText').value=t.text||'';
+  document.getElementById('tePrio').value=t.prio||'n';
+  document.getElementById('teDue').value=t.due||'';
+  // label chips
+  document.getElementById('teLabelChips').innerHTML=LABELS.map(l=>`
+    <button class="label-chip ${t.label===l.k?'on':''}"
+      style="background:${t.label===l.k?l.c+'22':'transparent'};color:${l.c};border-color:${t.label===l.k?l.c:'var(--border)'}"
+      onclick="toggleLabel('${l.k}')">${l.l}</button>`).join('');
+  openO('taskEditOv');
+}
+function toggleLabel(k){
+  const chips=document.getElementById('teLabelChips');
+  const t=S.tasks.find(t=>t.id===_editTaskId);
+  const cur=t?.label;
+  const newLabel=cur===k?null:k;
+  // update UI only (save on Guardar)
+  chips.querySelectorAll('.label-chip').forEach(btn=>{
+    const lk=btn.getAttribute('onclick').match(/'(\w+)'/)[1];
+    const l=LABELS.find(l=>l.k===lk);
+    const on=lk===newLabel;
+    btn.className='label-chip'+(on?' on':'');
+    btn.style.background=on?l.c+'22':'transparent';
+    btn.style.color=l.c;
+    btn.style.borderColor=on?l.c:'var(--border)';
+  });
+  chips.dataset.label=newLabel||'';
+}
+function saveEditTask(){
+  const t=S.tasks.find(t=>t.id===_editTaskId);if(!t)return;
+  t.text=document.getElementById('teText').value.trim()||t.text;
+  t.prio=document.getElementById('tePrio').value;
+  t.due=document.getElementById('teDue').value;
+  const labelVal=document.getElementById('teLabelChips').dataset.label;
+  t.label=labelVal||null;
+  closeO('taskEditOv');save();
+}
 function togT(id){const t=S.tasks.find(x=>x.id===id);if(t){t.done=!t.done;save();}}
 function delT(id){S.tasks=S.tasks.filter(t=>t.id!==id);save();}
 function editTask(id,val){const t=S.tasks.find(t=>t.id===id);if(t&&val.trim()){t.text=val.trim();save();}}
@@ -1335,6 +1446,12 @@ function saveBudget(){
   try{localStorage.setItem('budget',v);}catch(e){}
   renderBudget();
 }
+function hideBudgetInput(){
+  const inp=document.getElementById('budgetInput');
+  const txt=document.getElementById('b-total-txt');
+  if(inp)inp.style.display='none';
+  if(txt)txt.style.display='';
+}
 function getBudget(){
   try{return parseFloat(localStorage.getItem('budget'))||0;}catch(e){return 0;}
 }
@@ -1363,7 +1480,12 @@ function renderBudget(){
   const bTotal=document.getElementById('b-total');
   const bSpent=document.getElementById('b-spent');
   const bLeft=document.getElementById('b-left');
-  if(bTotal) bTotal.textContent=budget?fmt(budget):'—';
+  if(bTotal){
+    const txt=document.getElementById('b-total-txt');
+    if(txt) txt.textContent=budget?fmt(budget):'Def. orçamento';
+    const inp=document.getElementById('budgetInput');
+    if(inp&&!inp.value&&budget) inp.value=budget;
+  }
   if(bSpent) bSpent.textContent=fmt(spent);
   if(bLeft){
     bLeft.textContent=budget?fmt(left):'—';
