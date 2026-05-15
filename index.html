@@ -111,10 +111,12 @@ body.scrolled .cd{max-height:0;padding-top:0;padding-bottom:0;opacity:0;}
 .room-sect.collapsed .room-body{max-height:0;padding-top:0;padding-bottom:0;opacity:0;}
 
 /* ── Chips de filtro por marca/loja ── */
-.store-chips{display:flex;gap:6px;overflow-x:auto;padding:8px 2px 12px;scrollbar-width:none;-webkit-overflow-scrolling:touch;}
-.store-chips::-webkit-scrollbar{display:none;}
-.schip{flex-shrink:0;padding:6px 12px;border-radius:16px;border:1px solid var(--border);background:var(--surface);color:var(--text2);font-size:.72rem;font-weight:600;cursor:pointer;font-family:var(--font);white-space:nowrap;transition:all .15s;}
-.schip.on{background:var(--sage);color:#fff;border-color:var(--sage);}
+.store-search-row{display:flex;gap:8px;align-items:center;margin-bottom:14px;}
+.store-search-wrap{position:relative;flex:1;}
+.store-search-wrap::before{content:"🔍";position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:.8rem;pointer-events:none;}
+.store-search-input{width:100%;padding:9px 12px 9px 34px;border-radius:10px;border:1.5px solid var(--border);background:var(--surface);font-size:.84rem;font-family:var(--font);color:var(--text);outline:none;box-sizing:border-box;transition:border-color .15s;}
+.store-search-input:focus{border-color:var(--sage);}
+.store-clear-btn{padding:9px 12px;border-radius:10px;border:1.5px solid var(--sage);background:var(--sage);font-size:.8rem;cursor:pointer;font-family:var(--font);color:#fff;}
 
 /* ── Preview imagem do produto ── */
 .opt-img{width:48px;height:48px;border-radius:8px;object-fit:cover;flex-shrink:0;background:var(--sage-lt);box-shadow:0 0 0 1px rgba(0,0,0,.04);}
@@ -225,7 +227,41 @@ body.scrolled .cd{max-height:0;padding-top:0;padding-bottom:0;opacity:0;}
 .move-room-opt{padding:10px;border-radius:10px;border:1.5px solid var(--border);background:var(--surface);cursor:pointer;font-family:var(--font);font-size:.82rem;font-weight:600;text-align:left;}
 .move-room-opt:hover{border-color:var(--sage);background:var(--sage-lt);}
 .move-room-cancel{width:100%;margin-top:10px;padding:10px;border-radius:10px;border:none;background:transparent;color:var(--text2);font-family:var(--font);font-weight:600;cursor:pointer;font-size:.85rem;}
+.store-search-row{display:flex;gap:8px;align-items:center;margin-bottom:14px;}
+.store-search-input{flex:1;padding:9px 12px 9px 34px;border-radius:10px;border:1.5px solid var(--border);background:var(--surface);font-size:.84rem;font-family:var(--font);color:var(--text);outline:none;transition:border-color .15s;}
+.store-search-input:focus{border-color:var(--sage);}
+.store-search-wrap{position:relative;flex:1;}
+.store-search-wrap::before{content:'🔍';position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:.8rem;pointer-events:none;}
+.store-search-clear{padding:9px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--surface);font-size:.8rem;cursor:pointer;font-family:var(--font);color:var(--text2);white-space:nowrap;transition:all .15s;}
+.store-search-clear.on{background:var(--sage);color:#fff;border-color:var(--sage);}
+
+/* ── TASK PRIORITY ── */
+.task-row{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--border);}
+.task-row:last-child{border-bottom:none;}
+.prio-btn{width:22px;height:22px;border-radius:6px;border:none;cursor:pointer;font-size:.7rem;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+.prio-1{background:#fee2e2;color:#dc2626;}
+.prio-2{background:#fef3c7;color:#d97706;}
+.prio-3{background:#dbeafe;color:#2563eb;}
+.prio-0{background:var(--border);color:var(--text3);}
+/* ── BUDGET CHART ── */
+.chart-wrap{background:var(--surface);border-radius:14px;padding:16px;margin-bottom:16px;box-shadow:0 1px 4px rgba(0,0,0,.07),0 0 0 1px rgba(0,0,0,.04);}
+.chart-title{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:12px;}
+.chart-canvas-wrap{max-width:260px;margin:0 auto;}
+.chart-legend{display:flex;flex-direction:column;gap:6px;margin-top:14px;}
+.chart-legend-item{display:flex;align-items:center;gap:8px;font-size:.78rem;}
+.chart-legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.chart-legend-label{flex:1;color:var(--text2);}
+.chart-legend-val{font-weight:700;color:var(--text);}
+.top-items-list{display:flex;flex-direction:column;gap:6px;margin-top:8px;}
+.top-item-row{display:flex;align-items:center;gap:10px;padding:8px 10px;background:var(--surface);border-radius:10px;box-shadow:0 1px 3px rgba(0,0,0,.05);}
+.top-item-rank{font-size:.7rem;font-weight:800;color:var(--text3);width:16px;text-align:center;}
+.top-item-info{flex:1;min-width:0;}
+.top-item-name{font-size:.82rem;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.top-item-room{font-size:.7rem;color:var(--text2);}
+.top-item-price{font-weight:800;font-size:.9rem;}
+
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 </head>
 <body>
 <div id="sync-bar"></div>
@@ -281,6 +317,12 @@ body.scrolled .cd{max-height:0;padding-top:0;padding-bottom:0;opacity:0;}
     <div id="task-wrap"></div>
     <div class="add-row" style="margin-top:8px">
       <input id="newTask" placeholder="Nova tarefa administrativa…" onkeydown="if(event.key==='Enter')addTask()">
+      <select id="newTaskPrio" style="padding:10px 6px;border-radius:10px;border:1.5px solid var(--border);background:var(--surface);font-family:var(--font);font-size:.8rem;color:var(--text);cursor:pointer;">
+        <option value="0">— Prioridade</option>
+        <option value="1">🔴 Alta</option>
+        <option value="2">🟡 Média</option>
+        <option value="3">🔵 Baixa</option>
+      </select>
       <button onclick="addTask()">＋</button>
     </div>
   </div>
@@ -299,7 +341,16 @@ body.scrolled .cd{max-height:0;padding-top:0;padding-bottom:0;opacity:0;}
       <div class="bcard"><div class="bcard-lbl">Gasto</div><div class="bcard-val" id="b-spent">0€</div></div>
       <div class="bcard"><div class="bcard-lbl">Restante</div><div class="bcard-val" id="b-left">—</div></div>
     </div>
-    <div class="budget-list" id="budget-list"></div>
+    <div class="chart-wrap" id="chart-wrap" style="display:none">
+    <div class="chart-title">Distribuição por divisão</div>
+    <div class="chart-canvas-wrap"><canvas id="budgetChart" height="220"></canvas></div>
+    <div class="chart-legend" id="chart-legend"></div>
+  </div>
+  <div class="chart-wrap" id="top-wrap" style="display:none">
+    <div class="chart-title">Produtos mais caros</div>
+    <div class="top-items-list" id="top-items-list"></div>
+  </div>
+  <div class="budget-list" id="budget-list"></div>
   </div>
 
 </div>
@@ -468,15 +519,16 @@ function renderTimeline(){
 }
 
 // ── Header colapsível ao scroll (throttled com rAF) ──────────────
-let _scrollTicking=false;
+let _scrollTicking=false,_lastScrollY=0;
 function onScroll(){
   if(_scrollTicking)return;
   _scrollTicking=true;
   requestAnimationFrame(()=>{
     const y=window.scrollY;
-    const isScrolled=document.body.classList.contains('scrolled');
-    if(!isScrolled&&y>80) document.body.classList.add('scrolled');
-    else if(isScrolled&&y<40) document.body.classList.remove('scrolled');
+    const scrollingDown=y>_lastScrollY;
+    _lastScrollY=y;
+    if(scrollingDown&&y>10) document.body.classList.add('scrolled');
+    else if(y<5) document.body.classList.remove('scrolled');
     _scrollTicking=false;
   });
 }
@@ -495,12 +547,20 @@ function switchTab(el,name){
 function renderAdmin(){
   if(!S)return;
   const done=S.tasks.filter(t=>t.done).length,total=S.tasks.length;
+  const prioLabel={1:'🔴',2:'🟡',3:'🔵',0:''};
+  const sorted=[...S.tasks].sort((a,b)=>{
+    if(a.done!==b.done)return a.done?1:-1;
+    const pa=a.prio||0,pb=b.prio||0;
+    if(pa&&pb)return pa-pb;
+    if(pa)return -1;if(pb)return 1;return 0;
+  });
   document.getElementById('task-wrap').innerHTML=
     !total?'<div style="padding:18px;text-align:center;color:var(--text3);font-size:.84rem;">Sem tarefas 🎉</div>'
     :`<div class="task-card">${
-      S.tasks.map(t=>`
+      sorted.map(t=>`
         <div class="task-row">
           <div class="cb ${t.done?'on':''}" onclick="togT('${t.id}')"></div>
+          ${t.prio?`<button class="prio-btn prio-${t.prio}" onclick="cyclePrio('${t.id}')" title="Mudar prioridade">${prioLabel[t.prio]}</button>`:`<button class="prio-btn prio-0" onclick="cyclePrio('${t.id}')" title="Definir prioridade">·</button>`}
           <span class="task-txt ${t.done?'done':''}" onclick="togT('${t.id}')">${t.text}</span>
           <span class="btn-del" onclick="delT('${t.id}')">×</span>
         </div>`).join('')
@@ -511,9 +571,17 @@ function renderAdmin(){
 }
 function togT(id){const t=S.tasks.find(x=>x.id===id);if(t){t.done=!t.done;save();}}
 function delT(id){S.tasks=S.tasks.filter(t=>t.id!==id);save();}
+
+// ── Task priority cycle ───────────────────────────────────────────────────────
+function cyclePrio(id){
+  const t=S.tasks.find(t=>t.id===id);
+  if(!t)return;
+  t.prio=((t.prio||0)+1)%4;
+  save();
+}
 function addTask(){
   const el=document.getElementById('newTask'),text=el.value.trim();
-  if(!text)return;S.tasks.push({id:uid(),text,done:false});el.value='';save();
+  if(!text)return;const prio=parseInt(document.getElementById('newTaskPrio').value)||0;S.tasks.push({id:uid(),text,done:false,prio});el.value='';save();
 }
 
 // ── Rooms ─────────────────────────────────
@@ -531,7 +599,7 @@ function toggleRoom(rid){
 
 // ── Filtro por marca/loja (persistido) ──
 function getStoreFilter(){try{return localStorage.getItem('storeFilter')||'';}catch(e){return '';}}
-function setStoreFilter(v){try{localStorage.setItem('storeFilter',v);}catch(e){}render();}
+function setStoreFilter(v){try{localStorage.setItem('storeFilter',v);}catch(e){}renderRooms();}
 
 function renderRooms(){
   if(!S)return;
@@ -544,15 +612,12 @@ function renderRooms(){
   // Coleccionar lojas únicas para os chips de filtro
   const storeFilter=getStoreFilter();
   const allStores=[...new Set(S.items.flatMap(i=>i.options.map(o=>o.store).filter(Boolean)))].sort();
-  const chipsHtml=allStores.length>0?`<div class="store-chips">
-    <button class="schip ${!storeFilter?'on':''}" onclick="setStoreFilter('')">Todas</button>
-    ${allStores.map(s=>`<button class="schip ${storeFilter===s?'on':''}" onclick="setStoreFilter('${s.replace(/'/g,"\\'")}')">${s}</button>`).join('')}
-  </div>`:'';
+  const chipsHtml=`<div class="store-search-row"><div class="store-search-wrap"><input class="store-search-input" id="storeSearchInput" type="search" placeholder="Filtrar por loja…" value="${storeFilter||''}" oninput="setStoreFilter(this.value.trim())" onsearch="setStoreFilter(this.value.trim())"></div>${storeFilter?`<button class="store-clear-btn" onclick="setStoreFilter(\'\');setTimeout(()=>{const i=document.getElementById(\'storeSearchInput\');if(i)i.value=\'\';},0)">✕</button>`:''}</div>`;
 
   el.innerHTML=chipsHtml+used.map(room=>{
     const allItems=S.items.filter(i=>i.room===room.id);
     // Aplicar filtro de loja: item visível se tem pelo menos uma opção dessa loja (ou não há filtro)
-    const items=storeFilter?allItems.filter(i=>i.options.some(o=>o.store===storeFilter)):allItems;
+    const sf=storeFilter?storeFilter.toLowerCase():'';const items=sf?allItems.filter(i=>i.options.some(o=>o.store&&o.store.toLowerCase().includes(sf))):allItems;
     if(!items.length&&storeFilter)return ''; // esconde a área se não tem itens dessa loja
     const open=isRoomOpen(room.id);
     return `<div class="room-sect ${open?'':'collapsed'}" data-room="${room.id}">
@@ -580,7 +645,7 @@ function renderRooms(){
             <span class="item-x" onclick="delItem('${item.id}')">×</span>
           </div>
           ${!item.options.length?'<div class="no-opts">Adiciona a primeira opção abaixo.</div>':''}
-          ${(storeFilter?item.options.filter(o=>!o.store||o.store===storeFilter):item.options).map(o=>`
+          ${(sf?item.options.filter(o=>!o.store||o.store.toLowerCase().includes(sf)):item.options).map(o=>`
             <div class="opt-row ${o.selected?'sel':''}">
               <div class="opt-top">
                 ${o.image?`<img class="opt-img" src="https://wsrv.nl/?url=${encodeURIComponent(o.image)}" alt="" loading="lazy" onerror="this.outerHTML='<div class=\\'opt-img-ph\\'>📦</div>'">`:'<div class="opt-img-ph">📦</div>'}
@@ -1133,7 +1198,7 @@ document.querySelectorAll('.overlay').forEach(el=>{
 function render(){renderTimeline();renderAdmin();renderRooms();renderBudget();}
 initFire();
 
-// ── Price parser (handles "1.299,99€", "299€", "1299") ───────────────────────
+// ── Price parser ─────────────────────────────────────────────────────────────
 function parsePrice(str){
   if(!str)return 0;
   let s=str.replace(/[€$£\s]/g,'').trim();
@@ -1143,6 +1208,7 @@ function parsePrice(str){
 }
 
 // ── Budget ────────────────────────────────────────────────────────────────────
+let _budgetChart=null;
 function saveBudget(){
   const v=parseFloat(document.getElementById('budgetInput').value)||0;
   try{localStorage.setItem('budget',v);}catch(e){}
@@ -1154,17 +1220,17 @@ function getBudget(){
 function renderBudget(){
   if(!S)return;
   const budget=getBudget();
-  // Restore input value
   const inp=document.getElementById('budgetInput');
   if(inp&&!inp.value&&budget) inp.value=budget;
 
-  // Collect all selected options with prices
+  // Collect selected options
   const selected=[];
   S.items.forEach(item=>{
+    const room=ROOMS.find(r=>r.id===item.room)||{n:item.room,c:'#aaa',e:''};
     item.options.forEach(o=>{
       if(o.selected){
         const price=parsePrice(o.price);
-        selected.push({itemName:item.name,optName:o.name,store:o.store,price,priceStr:o.price});
+        selected.push({itemName:item.name,optName:o.name,store:o.store,price,priceStr:o.price,room});
       }
     });
   });
@@ -1183,21 +1249,86 @@ function renderBudget(){
     bLeft.className='bcard-val'+(budget?(left>=0?' positive':' negative'):'');
   }
 
-  const list=document.getElementById('budget-list');
-  if(!list)return;
+  // ── Pie chart by room ─────────────────────────────────────────────────────
+  const chartWrap=document.getElementById('chart-wrap');
+  const topWrap=document.getElementById('top-wrap');
   if(!selected.length){
-    list.innerHTML='<div class="budget-empty">Nenhuma opção escolhida ainda.<br>Vai a Compras e escolhe as tuas opções ✓</div>';
+    if(chartWrap)chartWrap.style.display='none';
+    if(topWrap)topWrap.style.display='none';
+    const list=document.getElementById('budget-list');
+    if(list)list.innerHTML='<div class="budget-empty">Nenhuma opção escolhida ainda.<br>Vai a Compras e escolhe as tuas opções ✓</div>';
     return;
   }
-  list.innerHTML=selected.map(s=>`
+
+  if(chartWrap)chartWrap.style.display='';
+  if(topWrap)topWrap.style.display='';
+
+  // Group by room
+  const byRoom={};
+  selected.forEach(s=>{
+    const key=s.room.id||s.room.n;
+    if(!byRoom[key]) byRoom[key]={room:s.room,total:0};
+    byRoom[key].total+=s.price;
+  });
+  const roomEntries=Object.values(byRoom).filter(r=>r.total>0).sort((a,b)=>b.total-a.total);
+
+  // Draw/update chart
+  const ctx=document.getElementById('budgetChart');
+  if(ctx){
+    if(_budgetChart) _budgetChart.destroy();
+    _budgetChart=new Chart(ctx,{
+      type:'doughnut',
+      data:{
+        labels:roomEntries.map(r=>r.room.e+' '+r.room.n),
+        datasets:[{
+          data:roomEntries.map(r=>r.total),
+          backgroundColor:roomEntries.map(r=>r.room.c),
+          borderWidth:2,
+          borderColor:'var(--cream)'
+        }]
+      },
+      options:{
+        responsive:true,
+        plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>fmt(ctx.raw)}}},
+        cutout:'60%'
+      }
+    });
+  }
+
+  // Legend
+  const legend=document.getElementById('chart-legend');
+  if(legend) legend.innerHTML=roomEntries.map(r=>`
+    <div class="chart-legend-item">
+      <div class="chart-legend-dot" style="background:${r.room.c}"></div>
+      <span class="chart-legend-label">${r.room.e} ${r.room.n}</span>
+      <span class="chart-legend-val">${fmt(r.total)}</span>
+    </div>`).join('');
+
+  // Top expensive items
+  const topList=document.getElementById('top-items-list');
+  if(topList){
+    const sorted=[...selected].filter(s=>s.price>0).sort((a,b)=>b.price-a.price).slice(0,5);
+    topList.innerHTML=sorted.map((s,i)=>`
+      <div class="top-item-row">
+        <div class="top-item-rank">${i+1}</div>
+        <div class="top-item-info">
+          <div class="top-item-name">${s.itemName} · ${s.optName}</div>
+          <div class="top-item-room">${s.room.e} ${s.room.n}${s.store?' · '+s.store:''}</div>
+        </div>
+        <div class="top-item-price">${s.priceStr}€</div>
+      </div>`).join('');
+  }
+
+  // Item list
+  const list=document.getElementById('budget-list');
+  if(list) list.innerHTML=selected.map(s=>`
     <div class="budget-item">
       <div class="budget-item-info">
         <div class="budget-item-name">${s.itemName}</div>
         <div class="budget-item-opt">${s.optName}${s.store?' · '+s.store:''}</div>
       </div>
       <div class="budget-item-price">${s.priceStr?s.priceStr+'€':'—'}</div>
-    </div>
-  `).join('');
+    </div>`).join('');
 }
 
 // ── Move item to room ─────────────────────────────────────────────────────────
