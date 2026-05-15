@@ -497,27 +497,66 @@ function onUrlInput(){
   btn.className='fetch-btn'+(url.startsWith('http')?' vis':'');
 }
 
-// ── Detectar tamanho e cor a partir de qualquer texto (slug, título, descrição) ──
+// ── Detectar tamanho, cor e material a partir de qualquer texto ──
 const COLOR_WORDS=['branco','preto','cinzento','cinza','antracite','bege','castanho','carvalho','natural','azul','navy','verde','rosa','amarelo','vermelho','laranja','dourado','prateado','cromado','nogueira','fendi','creme','marfim','grafite','mostarda','terracota','turquesa','salmão','salmao','lilás','lilas','roxo'];
 const COLOR_QUAL=['claro','escuro','tingido','acastanhado','queimado','quente','frio'];
+const MATERIAL_WORDS=['madeira','carvalho','freixo','pinho','nogueira','mogno','bambu','rattan','vime','metal','aço','aco','alumínio','aluminio','ferro','vidro','espelho','tecido','veludo','chenille','poliéster','poliester','algodão','algodao','linho','seda','la','lã','couro','pele','plástico','plastico','cerâmica','ceramica','mármore','marmore','espuma','memory foam','látex','latex','melamina','contraplacado','mdf'];
 function extractSizeColor(text){
-  if(!text)return{size:'',color:''};
+  if(!text)return{size:'',color:'',material:''};
   const t=text.toLowerCase().replace(/×/g,'x');
   // Tamanho: 140x190cm, 140 x 200 cm, 140-x-200-cm, 193x140x23,5cm
-  // Separador aceita combinações de -, x, ×, espaço (ex.: "-x-" no Beliani)
   let size='';
   const m=t.match(/(\d{2,3})[\s\-x×]{1,3}(\d{2,3})(?:[\s\-x×]{1,3}(\d{2,3}(?:[,.]\d+)?))?[\s\-]*cm\b/);
   if(m){
     size=m[3]?`${m[1]}×${m[2]}×${m[3]} cm`:`${m[1]}×${m[2]} cm`;
   }
-  // Cor: procura uma cor conhecida + qualificador opcional ("castanho claro")
+  // Cor
   let color='';
   for(const c of COLOR_WORDS){
     const re=new RegExp(`\\b${c}(?:[\\s-]+(${COLOR_QUAL.join('|')}))?\\b`,'i');
     const cm=t.match(re);
     if(cm){color=cm[1]?`${c} ${cm[1]}`:c;break;}
   }
-  return{size,color};
+  // Material
+  let material='';
+  for(const w of MATERIAL_WORDS){
+    const re=new RegExp(`\\b${w.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}\\b`,'i');
+    if(re.test(t)){material=w;break;}
+  }
+  return{size,color,material};
+}
+
+// ── Resumir o nome: remove dimensões, cor, material — sobra produto + modelo ──
+function shortenName(name,size,color,material){
+  if(!name)return name;
+  let n=name;
+  // Remove tamanhos (140x190cm, 140 x 200 cm, etc.)
+  n=n.replace(/\b\d{2,3}[\s\-x×]{1,3}\d{2,3}(?:[\s\-x×]{1,3}\d{2,3}(?:[,.]\d+)?)?[\s\-]*cm\b/gi,'');
+  n=n.replace(/\b\d{2,3}[\s\-x×]{1,3}\d{2,3}(?:[\s\-x×]{1,3}\d{2,3}(?:[,.]\d+)?)?\b/g,'');
+  // Remove cor (com qualificador "claro/escuro")
+  if(color){
+    const parts=color.split(' ');
+    parts.forEach(w=>{
+      n=n.replace(new RegExp(`\\b${w}\\b`,'gi'),'');
+    });
+  }
+  // Remove material genérico no fim (só palavras simples, não toca em marcas)
+  ['tecido','poliéster','poliester','chenille','veludo'].forEach(w=>{
+    n=n.replace(new RegExp(`\\b${w}\\b`,'gi'),'');
+  });
+  // Limpa conectores órfãos deixados depois de remover cor/material
+  // (ex.: "em chenille verde e madeira" → "em e madeira" → "madeira")
+  n=n.replace(/\b(em|com)\s+(e|de|com)\b/gi,'$2');
+  n=n.replace(/\b(em|com)\s+(?=\s|$)/gi,'');
+  n=n.replace(/\s+e\s+e\s+/gi,' e ');
+  // Limpa espaços duplicados e pontuação solta
+  n=n.replace(/\s{2,}/g,' ').replace(/\s+([,.\-·|])/g,'$1').replace(/^[\s,.\-·|]+|[\s,.\-·|]+$/g,'').trim();
+  // Trunca a ~60 chars sem cortar palavra a meio
+  if(n.length>60){
+    const cut=n.slice(0,60);
+    n=cut.slice(0,cut.lastIndexOf(' ')||60)+'…';
+  }
+  return n||name; // fallback: se ficou vazio, devolve original
 }
 
 // ── Extract info from URL slug (fallback for SPAs like OLX) ──
@@ -773,29 +812,40 @@ async function fetchInfo(){
   const enough=r=>r&&r.name&&r.name.length>=8&&r.price;
 
   let result=null;
-  const proxies=[
-    // 🌍 Cloudflare Worker próprio (se configurado) — passa por anti-bot
-    ...(HAS_WORKER?[WORKER_URL.replace(/\/+$/,'')+'/?url='+encodeURIComponent(url)]:[]),
-    // Proxies CORS clássicos
-    'https://api.allorigins.win/raw?url='+encodeURIComponent(url),
-    'https://api.allorigins.win/get?url='+encodeURIComponent(url),
-    'https://api.codetabs.com/v1/proxy?quest='+encodeURIComponent(url),
-    'https://corsproxy.io/?'+encodeURIComponent(url),
-    // Proxies adicionais — ajudam quando o site tem anti-bot básico
-    'https://api.cors.lol/?url='+encodeURIComponent(url),
-    'https://corsproxy.org/?url='+encodeURIComponent(url),
-    'https://thingproxy.freeboard.io/fetch/'+url,
-  ];
-  for(const p of proxies){
+
+  // 🌍 ATALHO RÁPIDO: se o Worker está configurado, tenta-o primeiro
+  //    isoladamente. Se devolver dados úteis (nome + preço), paramos já —
+  //    ~1-3s em vez de ~15s com a cascata completa de proxies públicos.
+  if(HAS_WORKER){
     try{
-      const r=await tryProxy(p);
+      const r=await tryProxy(WORKER_URL.replace(/\/+$/,'')+'/?url='+encodeURIComponent(url));
       result=merge(result,r);
-      if(enough(result))break;
     }catch(e){}
   }
-  // 🆘 Último recurso: r.jina.ai — usa browser headless para renderizar
-  // a página. Devolve markdown/plaintext (não HTML), por isso tem parser próprio.
-  // Costuma vencer sites com anti-bot (Leroy Merlin, etc.).
+
+  // Cascata de fallback (apenas se o Worker falhou ou não está configurado)
+  if(!enough(result)){
+    const proxies=[
+      // Proxies CORS clássicos
+      'https://api.allorigins.win/raw?url='+encodeURIComponent(url),
+      'https://api.allorigins.win/get?url='+encodeURIComponent(url),
+      'https://api.codetabs.com/v1/proxy?quest='+encodeURIComponent(url),
+      'https://corsproxy.io/?'+encodeURIComponent(url),
+      // Proxies adicionais — ajudam quando o site tem anti-bot básico
+      'https://api.cors.lol/?url='+encodeURIComponent(url),
+      'https://corsproxy.org/?url='+encodeURIComponent(url),
+      'https://thingproxy.freeboard.io/fetch/'+url,
+    ];
+    for(const p of proxies){
+      try{
+        const r=await tryProxy(p);
+        result=merge(result,r);
+        if(enough(result))break;
+      }catch(e){}
+    }
+  }
+  // 🆘 Último recurso: r.jina.ai — usa browser headless para renderizar.
+  //    Costuma vencer sites com anti-bot quando o Worker não chega lá.
   if(!enough(result)){
     try{
       const r=await jinaFetch(url);
@@ -819,31 +869,41 @@ async function fetchInfo(){
 
   try{
     if(result){
-      if(result.name)document.getElementById('oName').value=result.name;
+      // Consolidar atributos: pega o melhor de cada fonte (URL slug, nome, descrição)
+      const a=extractSizeColor(url);
+      const b=extractSizeColor(result.name||'');
+      const c=extractSizeColor(result.desc||'');
+      const size    =result.size    ||a.size    ||b.size    ||c.size    ||'';
+      const color   =result.color   ||a.color   ||b.color   ||c.color   ||'';
+      const material=                a.material ||b.material||c.material||'';
+
+      // Nome resumido (produto + modelo): remove tamanho, cor e material genérico
+      const shortName=shortenName(result.name||'',size,color,material);
+      if(shortName)document.getElementById('oName').value=shortName;
       if(result.store)document.getElementById('oStore').value=result.store;
       if(result.price)document.getElementById('oPrice').value=result.price;
-      // Notas: prioriza Tamanho + Cor. Vai buscar primeiro ao que vem
-      // estruturado (JSON-LD), depois faz fallback ao slug do URL e ao nome.
+
+      // Notas: Tamanho · Cor · Material (e fallback à descrição se nada saiu)
       const notes=document.getElementById('oNotes');
       if(!notes.value){
-        const a=extractSizeColor(url);
-        const b=extractSizeColor(result.name||'');
-        const c=extractSizeColor(result.desc||'');
-        const size =result.size ||a.size ||b.size ||c.size ||'';
-        const color=result.color||a.color||b.color||c.color||'';
+        const cap=s=>s?s.charAt(0).toUpperCase()+s.slice(1):s;
         const parts=[];
-        if(size) parts.push('Tamanho: '+size);
-        if(color)parts.push('Cor: '+color.charAt(0).toUpperCase()+color.slice(1));
+        if(size)    parts.push('Tamanho: '+size);
+        if(color)   parts.push('Cor: '+cap(color));
+        if(material)parts.push('Material: '+cap(material));
         if(parts.length){
           notes.value=parts.join(' · ');
         }else if(result.desc){
-          // Sem tamanho/cor — fallback para a descrição truncada como antes
           notes.value=result.desc.slice(0,300);
         }
       }
       ok.className='fetch-ok vis';
+      const got=[];
+      if(shortName)got.push('nome');
+      if(result.price)got.push('preço');
+      if(size||color||material)got.push('detalhes');
       if(!result.price)document.getElementById('fetchOk').textContent='⚠️ Sem preço (site carrega-o por JS) — confirma manualmente.';
-      else document.getElementById('fetchOk').textContent='✓ Encontrado: nome'+(result.price?', preço':'')+(notes.value?', tamanho/cor':'')+'.';
+      else document.getElementById('fetchOk').textContent='✓ Encontrado: '+got.join(', ')+'.';
     }else{
       err.className='fetch-err vis';
     }
