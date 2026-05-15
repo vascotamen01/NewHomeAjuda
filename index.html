@@ -530,7 +530,7 @@ function renderRooms(){
           ${item.options.map(o=>`
             <div class="opt-row ${o.selected?'sel':''}">
               <div class="opt-top">
-                ${o.image?`<img class="opt-img" src="${o.image}" alt="" loading="lazy" onerror="this.outerHTML='<div class=\\'opt-img-ph\\'>📦</div>'">`:'<div class="opt-img-ph">📦</div>'}
+                ${o.image?`<img class="opt-img" src="https://wsrv.nl/?url=${encodeURIComponent(o.image)}" alt="" loading="lazy" onerror="this.outerHTML='<div class=\\'opt-img-ph\\'>📦</div>'">`:'<div class="opt-img-ph">📦</div>'}
                 <div style="flex:1;min-width:0">
                   <div class="opt-name">
                     ${o.selected?'<span class="opt-sel-dot"></span>':''}
