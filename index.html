@@ -41,7 +41,7 @@ body.scrolled .app-top{box-shadow:0 4px 18px rgba(0,0,0,.18);}
 body.scrolled .hero{height:56px;min-height:0;max-height:56px;}
 body.scrolled .hero img{transform:scale(1.05);filter:brightness(.55);}
 body.scrolled .hero-overlay{background:linear-gradient(to bottom, rgba(20,14,8,.55) 0%, rgba(20,14,8,.85) 100%);}
-body.scrolled .hero-content{padding:0 16px;display:flex;flex-direction:row;align-items:center;gap:8px;position:absolute;left:0;right:130px;top:0;bottom:0;}
+body.scrolled .hero-content{padding:0 16px;display:flex;flex-direction:row;align-items:center;gap:8px;position:absolute;left:0;right:130px;top:0;bottom:0;justify-content:flex-start;}
 body.scrolled .hero-tag{opacity:0;max-height:0;margin:0;}
 body.scrolled .hero-addr{opacity:0;max-height:0;margin:0;}
 body.scrolled .hero-title{font-size:1rem;}
@@ -395,6 +395,24 @@ body.scrolled .hero-title{font-size:1rem;font-weight:900;white-space:nowrap;lett
 }
 @media(min-width:521px){.task-meta-mobile{display:none;}}
 
+
+/* ── Item header budget input ── */
+.item-hdr-budget{
+  width:64px;
+  border:none;
+  border-bottom:1.5px solid rgba(0,0,0,.12);
+  background:transparent;
+  font-family:var(--font);
+  font-size:.75rem;
+  font-weight:700;
+  color:var(--text2);
+  text-align:center;
+  padding:2px 2px;
+  flex-shrink:0;
+}
+.item-hdr-budget:focus{outline:none;border-bottom-color:var(--sage);}
+.item-hdr-budget::placeholder{color:var(--text3);font-weight:400;}
+
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 </head>
@@ -492,6 +510,7 @@ body.scrolled .hero-title{font-size:1rem;font-weight:900;white-space:nowrap;lett
             style="width:90px;border:none;border-bottom:2px solid var(--sage);background:transparent;font-family:var(--font);font-size:1.4rem;font-weight:900;color:var(--text);text-align:center;display:none;padding:0;outline:none;"
             min="0" step="100" oninput="saveBudget()" onblur="hideBudgetInput()">
           <div style="font-size:.6rem;color:var(--sage);margin-top:4px;">toque para editar</div>
+          <div id="budget-auto-hint" style="font-size:.58rem;color:var(--text3);margin-top:2px;"></div>
         </div>
       </div>
       <div class="bcard"><div class="bcard-lbl">Gasto</div><div class="bcard-val" id="b-spent">0€</div></div>
@@ -1087,6 +1106,12 @@ function renderRoomsList(){
           <div class="item-hdr ${isItemOpen(item.id)?'':'collapsed'}" onclick="toggleItem('${item.id}')">
             <div class="item-color-bar" style="background:${room.c}"></div>
             <span class="item-name">${item.name}</span>
+            <input class="item-hdr-budget" type="number" min="0" step="50"
+              placeholder="€ orç."
+              value="${item.budget||''}"
+              onchange="setItemBudget('${item.id}',this.value)"
+              onclick="event.stopPropagation()"
+              title="Orçamento para este artigo">
             <span class="item-tag ${chosen?'c':'p'}">${chosen?'✓ Escolhido':'A decidir'}</span>
             <button class="move-room-btn" onclick="event.stopPropagation();openMoveRoom('${item.id}')">⇄</button>
             <span class="item-x" onclick="event.stopPropagation();delItem('${item.id}')">×</span>
@@ -1114,17 +1139,6 @@ function renderRoomsList(){
                 <button class="chip ch-d" onclick="delOpt('${item.id}','${o.id}')">Remover</button>
               </div>
             </div>`).join('')}
-          </div>
-          <div class="item-budget-row">
-            <span class="item-budget-lbl">Orçamento artigo</span>
-            <input class="item-budget-input" type="number" min="0" step="50"
-              placeholder="—"
-              value="${item.budget||''}"
-              onchange="setItemBudget('${item.id}',this.value)"
-              onclick="event.stopPropagation()"
-              title="Orçamento máximo para este artigo">
-            <span class="item-budget-unit">€</span>
-            ${item.budget&&item.options.some(o=>o.selected)?`<span style="margin-left:auto;font-size:.7rem;color:${parsePrice(item.options.find(o=>o.selected)?.price||'0')>item.budget?'#ef4444':'#22c55e'};font-weight:700;">${parsePrice(item.options.find(o=>o.selected)?.price||'0')>item.budget?'⚠️ Acima':'✓ Dentro'}</span>`:''}
           </div>
           <div class="add-opt-wrap">
             <button class="add-opt-btn" onclick="openAddOpt('${item.id}')">＋ Adicionar opção</button>
@@ -1689,9 +1703,17 @@ function getBudget(){
 }
 function renderBudget(){
   if(!S)return;
-  const budget=getBudget();
+  // Auto-budget: sum of all item budgets if no manual budget set
+  const itemBudgetSum=S.items.reduce((a,i)=>a+(parseFloat(i.budget)||0),0);
+  const manualBudget=getBudget();
+  const budget=manualBudget||itemBudgetSum;
   const inp=document.getElementById('budgetInput');
-  if(inp&&!inp.value&&budget) inp.value=budget;
+  if(inp){
+    if(!inp.value&&budget) inp.value=budget;
+    // Show auto-calculated hint
+    const hint=document.getElementById('budget-auto-hint');
+    if(hint) hint.textContent=(!manualBudget&&itemBudgetSum)?`Auto: soma dos artigos (${fmt(itemBudgetSum)})`:'';
+  }
 
   // Collect selected options
   const selected=[];
