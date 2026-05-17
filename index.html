@@ -461,6 +461,7 @@ body.scrolled .hero-title{font-size:1rem;font-weight:900;white-space:nowrap;lett
   <button class="tab-btn" data-tab="orcamento" onclick="switchTab(this,'orcamento')"><span class="tab-icon">💰</span> Orçamento</button>
 </div>
 </div><!-- /app-top -->
+<div id="scroll-sentinel" aria-hidden="true" style="height:1px;pointer-events:none;visibility:hidden;"></div>
 
 <div class="content">
 
@@ -751,27 +752,20 @@ function renderTimeline(){
 }
 
 // ── Header colapsível ao scroll (throttled com rAF) ──────────────
-let _scrollTicking=false,_lastScrollY=0;
-function onScroll(){
-  if(_scrollTicking)return;
-  _scrollTicking=true;
-  requestAnimationFrame(()=>{
-    const y=window.scrollY;
-    const goingDown=y>_lastScrollY;
-    _lastScrollY=y;
-    const isScrolled=document.body.classList.contains('scrolled');
-    // Collapse: scrolling down past 50px
-    if(!isScrolled&&goingDown&&y>50){
-      document.body.classList.add('scrolled');
-    }
-    // Expand: scrolling up AND near top (within 30px)
-    if(isScrolled&&!goingDown&&y<30){
-      document.body.classList.remove('scrolled');
-    }
-    _scrollTicking=false;
+// Use IntersectionObserver on sentinel — no scroll event feedback loop
+(function(){
+  const sentinel=document.getElementById('scroll-sentinel');
+  if(!sentinel)return;
+  const obs=new IntersectionObserver(([entry])=>{
+    // sentinel leaving viewport → collapse hero; entering → expand
+    document.body.classList.toggle('scrolled',!entry.isIntersecting);
+  },{
+    // trigger when sentinel fully hidden behind the sticky header (~56px)
+    rootMargin:'-56px 0px 0px 0px',
+    threshold:0
   });
-}
-window.addEventListener('scroll',onScroll,{passive:true});
+  obs.observe(sentinel);
+})();
 
 // ── Tabs ──────────────────────────────────
 function switchTab(el,name){
