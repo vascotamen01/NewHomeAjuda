@@ -41,7 +41,7 @@ body.scrolled .app-top{box-shadow:0 4px 18px rgba(0,0,0,.18);}
 body.scrolled .hero{height:56px;min-height:0;max-height:56px;}
 body.scrolled .hero img{transform:scale(1.05);filter:brightness(.55);}
 body.scrolled .hero-overlay{background:linear-gradient(to bottom, rgba(20,14,8,.55) 0%, rgba(20,14,8,.85) 100%);}
-body.scrolled .hero-content{padding:6px 160px 4px 16px;display:flex;flex-direction:column;justify-content:center;gap:2px;}
+body.scrolled .hero-content{padding:0 16px;display:flex;flex-direction:row;align-items:center;gap:10px;position:absolute;left:0;right:145px;top:0;bottom:8px;}
 body.scrolled .hero-tag{opacity:0;max-height:0;margin:0;}
 body.scrolled .hero-addr{opacity:0;max-height:0;margin:0;}
 body.scrolled .hero-title{font-size:1rem;}
@@ -69,37 +69,34 @@ body.scrolled .cd{max-height:0;padding-top:0;padding-bottom:0;opacity:0;}
 .tabs{display:flex;margin:8px 16px;background:var(--surface);border-radius:13px;padding:4px;box-shadow:0 1px 4px rgba(0,0,0,.08),0 0 0 1px rgba(0,0,0,.04);transition:margin .3s ease;}
 body.scrolled .tabs{
   position:absolute;
-  right:12px;
+  right:10px;
   top:50%;
   transform:translateY(-50%);
   margin:0;
-  background:rgba(20,14,8,.45);
-  backdrop-filter:blur(12px);
-  -webkit-backdrop-filter:blur(12px);
-  border:1px solid rgba(255,255,255,.15);
-  border-radius:14px;
-  padding:4px;
+  background:rgba(20,14,8,.5);
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:12px;
+  padding:3px;
   width:auto;
   z-index:60;
 }
 body.scrolled .tab-btn{
-  padding:7px 14px;
+  padding:6px 12px;
   font-size:0;
-  color:rgba(255,255,255,.6);
-  font-weight:600;
+  color:rgba(255,255,255,.55);
   display:flex;
   align-items:center;
   justify-content:center;
+  border-radius:9px;
 }
 body.scrolled .tab-btn.active{
-  background:rgba(255,255,255,.2);
+  background:rgba(255,255,255,.18);
   color:#fff;
   box-shadow:none;
 }
-body.scrolled .tab-btn .tab-icon{
-  font-size:1.1rem;
-  line-height:1;
-}
+body.scrolled .tab-btn .tab-icon{font-size:1rem;line-height:1;}
 .tab-btn{flex:1;padding:9px 6px;border:none;background:transparent;border-radius:10px;font-size:.78rem;font-weight:700;color:var(--text2);cursor:pointer;font-family:var(--font);transition:all .2s;}
 .tab-btn.active{background:var(--sage);color:#fff;box-shadow:0 2px 8px rgba(107,143,105,.35);}
 
@@ -340,7 +337,7 @@ body.scrolled .tab-btn .tab-icon{
 .hero-mini-track{display:none;height:2px;background:rgba(255,255,255,.15);border-radius:2px;width:100%;margin-top:3px;}
 .hero-mini-fill{height:2px;background:linear-gradient(90deg,var(--wood),var(--sage));border-radius:2px;transition:width .5s ease;}
 body.scrolled .hero-mini-track{display:block;}
-body.scrolled .hero-title{font-size:.88rem;}
+body.scrolled .hero-title{font-size:.9rem;white-space:nowrap;}
 
 /* ── Budget room breakdown ── */
 .room-breakdown{margin-top:16px;}
@@ -376,7 +373,6 @@ body.scrolled .hero-title{font-size:.88rem;}
 .item-budget-input:focus{outline:none;border-bottom-color:var(--sage);}
 .item-budget-unit{font-size:.72rem;color:var(--text3);}
 /* Label manager button */
-.label-mgr-btn{padding:5px 10px;border-radius:8px;border:1.5px solid var(--border);background:transparent;font-size:.72rem;font-weight:600;cursor:pointer;font-family:var(--font);color:var(--text2);float:right;margin-bottom:6px;}
 
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
@@ -454,7 +450,6 @@ body.scrolled .hero-title{font-size:.88rem;}
         </div>
       </div>
     </div>
-    <button class="label-mgr-btn" onclick="openLabelMgr()">🏷️ Etiquetas</button>
     <div id="task-wrap" style="margin-top:8px"></div>
   </div>
 
@@ -536,7 +531,10 @@ body.scrolled .hero-title{font-size:.88rem;}
       </div>
     </div>
     <div class="task-modal-field">
-      <label>Etiqueta</label>
+      <label style="display:flex;align-items:center;justify-content:space-between;">
+        Etiqueta
+        <button onclick="openLabelMgr()" style="font-size:.65rem;padding:3px 8px;border-radius:6px;border:1px solid var(--border);background:transparent;cursor:pointer;font-family:var(--font);color:var(--text2);">✏️ Gerir</button>
+      </label>
       <div class="task-label-chips" id="teLabelChips"></div>
     </div>
     <div class="m-btns">
