@@ -752,19 +752,17 @@ function renderTimeline(){
 }
 
 // ── Header colapsível ao scroll (throttled com rAF) ──────────────
-// Use IntersectionObserver on sentinel — no scroll event feedback loop
+// Observe the hero element directly — collapses when hero is mostly scrolled past
 (function(){
-  const sentinel=document.getElementById('scroll-sentinel');
-  if(!sentinel)return;
+  const hero=document.querySelector('.hero');
+  if(!hero)return;
   const obs=new IntersectionObserver(([entry])=>{
-    // sentinel leaving viewport → collapse hero; entering → expand
-    document.body.classList.toggle('scrolled',!entry.isIntersecting);
+    // collapse when less than 25% of hero is visible
+    document.body.classList.toggle('scrolled', entry.intersectionRatio<0.25);
   },{
-    // trigger when sentinel fully hidden behind the sticky header (~56px)
-    rootMargin:'-56px 0px 0px 0px',
-    threshold:0
+    threshold:[0,0.1,0.25,0.5,1]
   });
-  obs.observe(sentinel);
+  obs.observe(hero);
 })();
 
 // ── Tabs ──────────────────────────────────
