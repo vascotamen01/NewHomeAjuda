@@ -504,8 +504,9 @@ body.scrolled .compact-tabs{
   transition:background .15s, color .15s;
 }
 .compact-tab-btn.active{
-  background:rgba(255,255,255,.2);
+  background:var(--sage);
   color:#fff;
+  box-shadow:0 1px 4px rgba(107,143,105,.4);
 }
 /* ══ Keep main tabs always visible below hero ═══════════════════════════════ */
 
@@ -887,12 +888,13 @@ function renderTimeline(){
 
 // ── Tabs ──────────────────────────────────
 function switchTab(el,name){
-  document.querySelectorAll('.tab-btn').forEach(t=>t.classList.remove('active'));
+  // Clear active from all tab buttons in both bars
+  document.querySelectorAll('.tab-btn,.compact-tab-btn').forEach(t=>t.classList.remove('active'));
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
-  el.classList.add('active');
+  // Activate all buttons that match this tab (main + compact)
+  document.querySelectorAll('[data-tab="'+name+'"]').forEach(t=>t.classList.add('active'));
   document.getElementById('panel-'+name).classList.add('active');
   document.getElementById('fab').className='fab'+(name==='compras'?'':' h');
-
   if(name==='orcamento') renderBudget();
 }
 
