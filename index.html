@@ -26,7 +26,7 @@ body{font-family:var(--font);background:var(--cream);color:var(--text);}
 #sync-bar{position:fixed;top:0;left:0;right:0;height:2px;background:var(--sage);opacity:0;transition:opacity .3s;z-index:200;}
 
 /* ── HERO (colapsível ao scroll) ── */
-.app-top{position:relative;z-index:1;}
+.app-top{position:relative;z-index:1;padding-top:56px;}
 body.scrolled .app-top{box-shadow:0 4px 18px rgba(0,0,0,.18);}
 
 .hero{position:relative;height:52vw;min-height:190px;max-height:300px;overflow:hidden;}
@@ -431,108 +431,69 @@ body.scrolled .tab-btn .tab-icon{font-size:1.3rem;line-height:1;}
 .label-group-body.closed{max-height:0;}
 
 
-/* ══ COMPACT STICKY BAR ══════════════════════════════════════════════════════
-   Always 56px tall, overlaps hero bottom via margin-top:-56px.
-   Transparent until scrolled past hero, then solid dark bar.
-   Zero layout impact = zero jumps.                                          */
+/* ══ FIXED HEADER ══════════════════════════════════════════════════════════ */
 .compact-bar{
-  position:sticky;
-  top:0;
-  z-index:50;
+  position:fixed;
+  top:0;left:0;right:0;
   height:56px;
-  margin-top:-56px;
+  z-index:100;
   display:flex;
   align-items:center;
   padding:0 10px;
   gap:8px;
-  background:rgba(20,14,8,0);
-  backdrop-filter:blur(0px);
-  -webkit-backdrop-filter:blur(0px);
-  transition:background .3s ease, backdrop-filter .3s ease, box-shadow .3s ease;
-  pointer-events:none;
+  background:rgba(0,0,0,0);
+  transition:background .3s ease, box-shadow .3s ease;
 }
-/* Title + days: hidden until scrolled */
-.compact-title,.compact-days{
-  opacity:0;transition:opacity .25s ease;flex-shrink:0;
+body.scrolled .compact-bar{
+  background:rgba(20,14,8,.93);
+  box-shadow:0 2px 12px rgba(0,0,0,.35);
+}
+/* Title+days: hidden on hero, visible when scrolled */
+.compact-title{
+  font-size:.95rem;font-weight:900;color:#fff;
+  letter-spacing:-.02em;white-space:nowrap;flex-shrink:0;
+  opacity:0;transition:opacity .25s ease;
+}
+.compact-days{
+  font-size:.7rem;color:rgba(255,255,255,.6);
+  font-weight:600;white-space:nowrap;flex-shrink:0;
+  opacity:0;transition:opacity .25s ease;
 }
 body.scrolled .compact-title,body.scrolled .compact-days{opacity:1;}
-/* Track bar: hidden on mobile, fades in on desktop when scrolled */
+/* Track bar: desktop only, scrolled only */
 .compact-track-wrap{
-  flex:1;min-width:0;padding:0 8px;
+  flex:1;min-width:0;padding:0 10px;display:none;
   opacity:0;transition:opacity .3s ease;
-  display:none;
 }
-.compact-track-bar{height:3px;background:rgba(255,255,255,.15);border-radius:2px;overflow:hidden;}
-.compact-track-fill{height:3px;background:linear-gradient(90deg,var(--wood),var(--sage));border-radius:2px;width:0%;transition:width .5s ease;}
 @media(min-width:521px){
   .compact-track-wrap{display:block;}
   body.scrolled .compact-track-wrap{opacity:1;}
 }
-/* Tabs: always visible and tappable, floated right */
+.compact-track-bar{height:3px;background:rgba(255,255,255,.15);border-radius:2px;overflow:hidden;}
+.compact-track-fill{height:3px;background:linear-gradient(90deg,var(--wood),var(--sage));border-radius:2px;width:0%;transition:width .5s ease;}
+/* Tabs: always visible, push to right */
 .compact-tabs{
-  display:flex;gap:2px;margin-left:auto;flex-shrink:0;
+  margin-left:auto;display:flex;gap:2px;flex-shrink:0;
   background:rgba(0,0,0,.3);
-  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
   border:1px solid rgba(255,255,255,.12);
   border-radius:12px;padding:3px;
-  pointer-events:auto;
-  transition:background .25s ease;
 }
-body.scrolled .compact-tabs{background:rgba(255,255,255,.1);}
+body.scrolled .compact-tabs{background:rgba(255,255,255,.08);}
 .compact-tab-btn{
   display:flex;flex-direction:row;align-items:center;gap:5px;
   padding:6px 10px;border:none;background:transparent;
-  border-radius:9px;cursor:pointer;
-  color:rgba(255,255,255,.65);
-  font-family:var(--font);
-  transition:background .15s,color .15s;
+  border-radius:9px;cursor:pointer;color:rgba(255,255,255,.7);
+  font-family:var(--font);transition:background .15s,color .15s;
+  -webkit-tap-highlight-color:transparent;
+  touch-action:manipulation;
 }
-.compact-tab-btn.active{background:var(--sage);color:#fff;box-shadow:0 1px 4px rgba(107,143,105,.4);}
-.ctab-icon{font-size:.95rem;line-height:1;flex-shrink:0;}
-.ctab-lbl{font-size:.72rem;font-weight:600;white-space:nowrap;}
-/* Collapsed: hide labels, show only icons */
+.compact-tab-btn.active{background:var(--sage);color:#fff;}
+.ctab-icon{font-size:.95rem;line-height:1;}
+.ctab-lbl{font-size:.72rem;font-weight:700;}
+/* Collapsed: icons only */
 body.scrolled .ctab-lbl{display:none;}
-body.scrolled .compact-tab-btn{padding:7px 10px;}
-body.scrolled .compact-bar{
-  background:rgba(20,14,8,.92);
-  backdrop-filter:blur(16px);
-  -webkit-backdrop-filter:blur(16px);
-  box-shadow:0 2px 12px rgba(0,0,0,.3);
-}
+body.scrolled .compact-tab-btn{padding:7px 11px;}
 
-
-
-.compact-tabs{
-  display:flex;
-  gap:2px;
-  background:rgba(0,0,0,.25);
-  backdrop-filter:blur(8px);
-  -webkit-backdrop-filter:blur(8px);
-  border:1px solid rgba(255,255,255,.1);
-  border-radius:12px;
-  padding:3px;
-  transition:background .25s ease;
-}
-body.scrolled .compact-tabs{
-  background:rgba(255,255,255,.1);
-  border:1px solid rgba(255,255,255,.12);
-}
-.compact-tab-btn{
-  padding:7px 13px;
-  border:none;
-  background:transparent;
-  border-radius:9px;
-  cursor:pointer;
-  font-size:1.1rem;
-  line-height:1;
-  color:rgba(255,255,255,.6);
-  transition:background .15s, color .15s;
-}
-.compact-tab-btn.active{
-  background:var(--sage);
-  color:#fff;
-  box-shadow:0 1px 4px rgba(107,143,105,.4);
-}
 /* ══ Keep main tabs always visible below hero ═══════════════════════════════ */
 
 
@@ -895,18 +856,16 @@ function renderTimeline(){
 
 // ── Header colapsível ao scroll (throttled com rAF) ──────────────
 // Fixed header: simple scrollY threshold — no layout feedback loop
-// Simple scroll handler — compact bar is sticky, hero is normal flow
-// No layout changes = no jumps. Just toggle body.scrolled via scrollY.
+// Fixed header scroll handler — simple and reliable on all devices
 (function(){
   let ticking=false;
   function check(){
     const hero=document.querySelector('.hero');
     if(!hero)return;
-    // Collapse when hero bottom has scrolled past viewport top
-    const heroBottom=hero.getBoundingClientRect().bottom;
-    const shouldScroll=heroBottom<56;
+    const heroH=hero.offsetHeight;
+    const y=window.scrollY||window.pageYOffset;
+    const shouldScroll=y>heroH*0.6;
     document.body.classList.toggle('scrolled',shouldScroll);
-    // Keep compact days in sync
     const t=document.querySelector('.hero-title');
     const cd=document.getElementById('compactDays');
     if(t&&cd) cd.textContent=t.getAttribute('data-days')||'';
@@ -916,8 +875,7 @@ function renderTimeline(){
     ticking=true;
     requestAnimationFrame(()=>{check();ticking=false;});
   },{passive:true});
-  // Initial check
-  setTimeout(check,200);
+  setTimeout(check,100);
 })();
 
 // ── Tabs ──────────────────────────────────
