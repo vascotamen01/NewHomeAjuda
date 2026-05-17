@@ -454,19 +454,19 @@ body.scrolled .hero-title{font-size:1rem;font-weight:900;white-space:nowrap;lett
       </button>
       <div id="newTaskForm" style="display:none;margin-top:8px;background:var(--surface);border-radius:14px;padding:14px;box-shadow:0 1px 4px rgba(0,0,0,.07),0 0 0 1px rgba(0,0,0,.04);">
         <input id="newTask" placeholder="Descrição da tarefa…" style="width:100%;padding:10px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--cream);font-family:var(--font);font-size:.9rem;color:var(--text);box-sizing:border-box;margin-bottom:8px;" onkeydown="if(event.key==='Enter')addTask()">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
-          <select id="newTaskPrio" style="padding:9px 8px;border-radius:10px;border:1.5px solid var(--border);background:var(--surface);font-family:var(--font);font-size:.8rem;color:var(--text);cursor:pointer;">
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px;">
+          <select id="newTaskPrio" style="padding:9px 6px;border-radius:10px;border:1.5px solid var(--border);background:var(--surface);font-family:var(--font);font-size:.78rem;color:var(--text);cursor:pointer;">
             <option value="n">— Prioridade</option>
             <option value="c">🔴 Crítica</option>
             <option value="h">🟠 Alta</option>
             <option value="m">🟡 Média</option>
             <option value="l">🔵 Baixa</option>
           </select>
-          <input type="date" id="newTaskDate" style="padding:9px 8px;border-radius:10px;border:1.5px solid var(--border);background:var(--surface);font-family:var(--font);font-size:.78rem;color:var(--text);">
+          <input type="date" id="newTaskDate" style="padding:9px 6px;border-radius:10px;border:1.5px solid var(--border);background:var(--surface);font-family:var(--font);font-size:.75rem;color:var(--text);">
+          <select id="newTaskLabel" style="padding:9px 6px;border-radius:10px;border:1.5px solid var(--border);background:var(--surface);font-family:var(--font);font-size:.78rem;color:var(--text);cursor:pointer;">
+            <option value="">— Etiqueta</option>
+          </select>
         </div>
-        <select id="newTaskLabel" style="width:100%;padding:9px 8px;border-radius:10px;border:1.5px solid var(--border);background:var(--surface);font-family:var(--font);font-size:.8rem;color:var(--text);cursor:pointer;margin-bottom:10px;">
-          <option value="">— Etiqueta</option>
-        </select>
         <div style="display:flex;gap:8px;">
           <button onclick="toggleNewTaskForm()" style="flex:1;padding:10px;border-radius:10px;border:1.5px solid var(--border);background:transparent;font-family:var(--font);font-size:.84rem;cursor:pointer;color:var(--text2);">Cancelar</button>
           <button onclick="addTask()" style="flex:2;padding:10px;border-radius:10px;border:none;background:var(--sage);color:#fff;font-family:var(--font);font-size:.84rem;font-weight:700;cursor:pointer;">＋ Adicionar</button>
@@ -850,7 +850,7 @@ function renderAdmin(){
       </div>
       <div class="task-cell" onclick="event.stopPropagation()">
         <select class="task-label-sel" onchange="setTaskLabel('${t.id}',this.value)" ${labelBadge}>
-          <option value="">—</option>
+          <option value="" ${!t.label?'selected':''}>—</option>
           ${LABELS.map(l=>`<option value="${l.k}" ${t.label===l.k?'selected':''} style="color:${l.c}">${l.l}</option>`).join('')}
         </select>
       </div>
@@ -962,10 +962,10 @@ function saveEditTask(){
   t.prio=document.getElementById('tePrio').value;
   t.due=document.getElementById('teDue').value;
   const labelVal=document.getElementById('teLabelChips').dataset.label;
-  t.label=labelVal||null;
+  t.label=(labelVal===''||labelVal===undefined)?null:labelVal;
   closeO('taskEditOv');save();
 }
-function setTaskLabel(id,val){const t=S.tasks.find(t=>t.id===id);if(t){t.label=val||null;save();}}
+function setTaskLabel(id,val){const t=S.tasks.find(t=>t.id===id);if(t){t.label=val===''||val===null?null:val;save();}}
 function togT(id){const t=S.tasks.find(x=>x.id===id);if(t){t.done=!t.done;save();}}
 function delT(id){S.tasks=S.tasks.filter(t=>t.id!==id);save();}
 function editTask(id,val){const t=S.tasks.find(t=>t.id===id);if(t&&val.trim()){t.text=val.trim();save();}}
