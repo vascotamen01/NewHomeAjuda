@@ -26,7 +26,7 @@ body{font-family:var(--font);background:var(--cream);color:var(--text);}
 #sync-bar{position:fixed;top:0;left:0;right:0;height:2px;background:var(--sage);opacity:0;transition:opacity .3s;z-index:200;}
 
 /* ── HERO (colapsível ao scroll) ── */
-.app-top{position:sticky;top:0;z-index:50;transition:box-shadow .3s ease;}
+.app-top{position:fixed;top:0;left:0;right:0;z-index:50;transition:box-shadow .3s ease;}
 body.scrolled .app-top{box-shadow:0 4px 18px rgba(0,0,0,.18);}
 
 .hero{position:relative;height:52vw;min-height:190px;max-height:300px;overflow:hidden;will-change:height,max-height;transition:height .35s cubic-bezier(.4,0,.2,1),max-height .35s cubic-bezier(.4,0,.2,1);}
@@ -102,7 +102,7 @@ body.scrolled .tab-btn .tab-icon{font-size:1.3rem;line-height:1;}
 .tab-btn.active{background:var(--sage);color:#fff;box-shadow:0 2px 8px rgba(107,143,105,.35);}
 
 /* ── CONTENT ── */
-.content{padding:0 16px 100px;}
+.content{padding:0 16px 100px;transition:padding-top .35s cubic-bezier(.4,0,.2,1);}
 .panel{display:none;}
 .panel.active{display:block;animation:fadeUp .18s ease;}
 @keyframes fadeUp{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
@@ -769,18 +769,38 @@ function renderTimeline(){
 }
 
 // ── Header colapsível ao scroll (throttled com rAF) ──────────────
-// Observe hero — collapse when scrolled 60px past top
+// Fixed header: simple scrollY threshold — no layout feedback loop
 (function(){
-  const sentinel=document.getElementById('scroll-sentinel');
-  if(!sentinel)return;
-  let loaded=false;
-  // Small delay so initial intersection doesn't trigger collapse on load
-  setTimeout(()=>loaded=true,300);
-  const obs=new IntersectionObserver(([entry])=>{
-    if(!loaded)return;
-    document.body.classList.toggle('scrolled',!entry.isIntersecting);
-  },{threshold:0, rootMargin:'-60px 0px 0px 0px'});
-  obs.observe(sentinel);
+  function setHeaderPadding(){
+    const h=document.querySelector('.app-top');
+    const c=document.querySelector('.content');
+    if(h&&c) c.style.paddingTop=h.offsetHeight+'px';
+  }
+
+  function applyScroll(){
+    const y=window.scrollY;
+    const isScrolled=document.body.classList.contains('scrolled');
+    if(!isScrolled && y>80){
+      document.body.classList.add('scrolled');
+      // After hero collapses, update content padding
+      setTimeout(setHeaderPadding,380);
+    } else if(isScrolled && y<30){
+      document.body.classList.remove('scrolled');
+      setTimeout(setHeaderPadding,380);
+    }
+  }
+
+  // Set initial padding after fonts/images settle
+  window.addEventListener('load',setHeaderPadding);
+  setTimeout(setHeaderPadding,100);
+  window.addEventListener('resize',setHeaderPadding);
+
+  let ticking=false;
+  window.addEventListener('scroll',()=>{
+    if(ticking)return;
+    ticking=true;
+    requestAnimationFrame(()=>{applyScroll();ticking=false;});
+  },{passive:true});
 })();
 
 // ── Tabs ──────────────────────────────────
