@@ -41,7 +41,7 @@ body.scrolled .app-top{box-shadow:0 4px 18px rgba(0,0,0,.18);}
 body.scrolled .hero{height:56px;min-height:0;max-height:56px;}
 body.scrolled .hero img{transform:scale(1.05);filter:brightness(.55);}
 body.scrolled .hero-overlay{background:linear-gradient(to bottom, rgba(20,14,8,.55) 0%, rgba(20,14,8,.85) 100%);}
-body.scrolled .hero-content{padding:6px 42% 4px 16px;display:flex;flex-direction:column;justify-content:center;gap:2px;}
+body.scrolled .hero-content{padding:6px 52% 4px 16px;display:flex;flex-direction:column;justify-content:center;gap:2px;}
 body.scrolled .hero-tag{opacity:0;max-height:0;margin:0;}
 body.scrolled .hero-addr{opacity:0;max-height:0;margin:0;}
 body.scrolled .hero-title{font-size:1rem;}
@@ -69,31 +69,42 @@ body.scrolled .cd{max-height:0;padding-top:0;padding-bottom:0;opacity:0;}
 .tabs{display:flex;margin:8px 16px;background:var(--surface);border-radius:13px;padding:4px;box-shadow:0 1px 4px rgba(0,0,0,.08),0 0 0 1px rgba(0,0,0,.04);transition:margin .3s ease;}
 body.scrolled .tabs{
   position:absolute;
-  right:10px;
-  top:50%;
-  transform:translateY(-50%);
+  right:0;
+  top:0;
+  bottom:0;
+  width:50%;
+  transform:none;
   margin:0;
-  background:rgba(255,255,255,.12);
-  backdrop-filter:blur(10px);
-  -webkit-backdrop-filter:blur(10px);
-  border:1px solid rgba(255,255,255,.15);
-  padding:3px;
-  width:auto;
-  max-width:62%;
+  background:rgba(0,0,0,.35);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  border-left:1px solid rgba(255,255,255,.1);
+  border-radius:0;
+  padding:4px 6px;
   z-index:60;
+  display:flex;
+  align-items:center;
 }
 body.scrolled .tab-btn{
-  padding:5px 10px;
-  font-size:.65rem;
-  color:rgba(255,255,255,.75);
+  flex:1;
+  padding:6px 4px;
+  font-size:0;
+  color:rgba(255,255,255,.65);
   font-weight:600;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:0;
 }
 body.scrolled .tab-btn.active{
-  background:rgba(255,255,255,.22);
+  background:rgba(255,255,255,.18);
   color:#fff;
   box-shadow:none;
 }
-body.scrolled .tab-icon{font-size:.8rem;}
+body.scrolled .tab-btn .tab-icon{
+  font-size:1.2rem;
+  line-height:1;
+}
 .tab-btn{flex:1;padding:9px 6px;border:none;background:transparent;border-radius:10px;font-size:.78rem;font-weight:700;color:var(--text2);cursor:pointer;font-family:var(--font);transition:all .2s;}
 .tab-btn.active{background:var(--sage);color:#fff;box-shadow:0 2px 8px rgba(107,143,105,.35);}
 
