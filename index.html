@@ -26,7 +26,7 @@ body{font-family:var(--font);background:var(--cream);color:var(--text);}
 #sync-bar{position:fixed;top:0;left:0;right:0;height:2px;background:var(--sage);opacity:0;transition:opacity .3s;z-index:200;}
 
 /* ── HERO (colapsível ao scroll) ── */
-.app-top{position:fixed;top:0;left:0;right:0;z-index:50;transition:box-shadow .3s ease;}
+.app-top{position:relative;z-index:1;}
 body.scrolled .app-top{box-shadow:0 4px 18px rgba(0,0,0,.18);}
 
 .hero{position:relative;height:52vw;min-height:190px;max-height:300px;overflow:hidden;will-change:height,max-height;transition:height .35s cubic-bezier(.4,0,.2,1),max-height .35s cubic-bezier(.4,0,.2,1);}
@@ -38,24 +38,24 @@ body.scrolled .app-top{box-shadow:0 4px 18px rgba(0,0,0,.18);}
 .hero-addr{font-size:.75rem;color:rgba(255,255,255,.5);margin-top:4px;letter-spacing:.01em;transition:opacity .25s ease, max-height .35s ease;max-height:20px;overflow:hidden;}
 
 /* Estado compacto (scrolled): hero encolhe a 56px, mostra só "Casa Nova · 109 d" */
-body.scrolled .hero{height:56px;min-height:0;max-height:56px;}
-body.scrolled .hero img{transform:scale(1.05);filter:brightness(.55);}
-body.scrolled .hero-overlay{background:linear-gradient(to bottom, rgba(20,14,8,.55) 0%, rgba(20,14,8,.85) 100%);}
-body.scrolled .hero-content{padding:0 0 0 16px;display:flex;flex-direction:row;align-items:center;gap:8px;position:absolute;left:0;right:130px;top:0;bottom:0;}
-body.scrolled .hero-tag{opacity:0;max-height:0;margin:0;}
-body.scrolled .hero-addr{opacity:0;max-height:0;margin:0;}
+
+
+
+
+
+
 body.scrolled .hero-title{font-size:1rem;}
-body.scrolled .hero-title::after{content:attr(data-days);font-size:.75rem;font-weight:700;color:rgba(255,255,255,.6);margin-left:10px;letter-spacing:0;}
+
 
 /* Sync pill */
 .sync-pill{display:none;}
-body.scrolled .sync-pill{top:14px;}
+
 .sdot{width:5px;height:5px;border-radius:50%;background:#6ee7b7;}
 .sdot.off{background:#fca5a5;}
 
 /* ── COUNTDOWN (encolhe junto com o hero) ── */
 .cd{background:var(--dark2);display:flex;align-items:center;padding:12px 20px;gap:16px;transition:max-height .35s ease, padding .35s ease, opacity .25s ease;max-height:80px;overflow:hidden;}
-body.scrolled .cd{max-height:0;padding-top:0;padding-bottom:0;opacity:0;}
+
 .cd-nums{display:flex;align-items:baseline;gap:4px;flex-shrink:0;}
 .cdn{font-size:1.9rem;font-weight:900;color:#fff;letter-spacing:-.04em;line-height:1;}
 .cdu{font-size:.65rem;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.06em;}
@@ -102,7 +102,7 @@ body.scrolled .tab-btn .tab-icon{font-size:1.3rem;line-height:1;}
 .tab-btn.active{background:var(--sage);color:#fff;box-shadow:0 2px 8px rgba(107,143,105,.35);}
 
 /* ── CONTENT ── */
-.content{padding:0 16px 100px;transition:padding-top .35s cubic-bezier(.4,0,.2,1);}
+.content{padding:0 16px 100px;}
 .panel{display:none;}
 .panel.active{display:block;animation:fadeUp .18s ease;}
 @keyframes fadeUp{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
@@ -336,7 +336,7 @@ body.scrolled .tab-btn .tab-icon{font-size:1.3rem;line-height:1;}
 
 /* ── Mini track in collapsed hero ── */
 .hero-mini-track{display:none!important;}.hero-mini-fill{display:none!important;}
-body.scrolled .hero-title{font-size:1rem;font-weight:900;white-space:nowrap;letter-spacing:-.02em;}
+
 
 /* ── Budget room breakdown ── */
 .room-breakdown{margin-top:16px;}
@@ -430,6 +430,85 @@ body.scrolled .hero-title{font-size:1rem;font-weight:900;white-space:nowrap;lett
 .label-group-body.open{max-height:2000px;}
 .label-group-body.closed{max-height:0;}
 
+
+/* ══ COMPACT STICKY BAR ══════════════════════════════════════════════════════
+   Always 56px tall, overlaps hero bottom via margin-top:-56px.
+   Transparent until scrolled past hero, then solid dark bar.
+   Zero layout impact = zero jumps.                                          */
+.compact-bar{
+  position:sticky;
+  top:0;
+  z-index:50;
+  height:56px;
+  margin-top:-56px;
+  display:flex;
+  align-items:center;
+  padding:0 14px;
+  gap:10px;
+  background:rgba(20,14,8,0);
+  backdrop-filter:blur(0px);
+  -webkit-backdrop-filter:blur(0px);
+  transition:background .3s ease, backdrop-filter .3s ease, box-shadow .3s ease;
+  pointer-events:none;
+}
+body.scrolled .compact-bar{
+  background:rgba(20,14,8,.92);
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  box-shadow:0 2px 12px rgba(0,0,0,.3);
+  pointer-events:auto;
+}
+.compact-title{
+  font-size:1rem;
+  font-weight:900;
+  color:#fff;
+  letter-spacing:-.02em;
+  white-space:nowrap;
+  opacity:0;
+  transition:opacity .25s ease;
+}
+body.scrolled .compact-title{opacity:1;}
+.compact-days{
+  font-size:.72rem;
+  color:rgba(255,255,255,.55);
+  font-weight:600;
+  white-space:nowrap;
+  opacity:0;
+  transition:opacity .25s ease;
+}
+body.scrolled .compact-days{opacity:1;}
+.compact-spacer{flex:1;}
+.compact-tabs{
+  display:flex;
+  gap:2px;
+  background:rgba(255,255,255,0);
+  border-radius:12px;
+  padding:3px;
+  opacity:0;
+  transition:opacity .25s ease, background .25s ease;
+}
+body.scrolled .compact-tabs{
+  opacity:1;
+  background:rgba(255,255,255,.1);
+  border:1px solid rgba(255,255,255,.12);
+}
+.compact-tab-btn{
+  padding:7px 13px;
+  border:none;
+  background:transparent;
+  border-radius:9px;
+  cursor:pointer;
+  font-size:1.1rem;
+  line-height:1;
+  color:rgba(255,255,255,.6);
+  transition:background .15s, color .15s;
+}
+.compact-tab-btn.active{
+  background:rgba(255,255,255,.2);
+  color:#fff;
+}
+/* ══ Keep main tabs always visible below hero ═══════════════════════════════ */
+
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 </head>
@@ -478,7 +557,18 @@ body.scrolled .hero-title{font-size:1rem;font-weight:900;white-space:nowrap;lett
   <button class="tab-btn" data-tab="orcamento" onclick="switchTab(this,'orcamento')"><span class="tab-icon">💰</span> Orçamento</button>
 </div>
 </div><!-- /app-top -->
-<div id="scroll-sentinel" aria-hidden="true" style="height:1px;pointer-events:none;visibility:hidden;"></div>
+
+<!-- Compact sticky bar — always present, fades in when scrolled -->
+<div class="compact-bar" id="compactBar">
+  <span class="compact-title">Casa Nova</span>
+  <span class="compact-days" id="compactDays"></span>
+  <div class="compact-spacer"></div>
+  <div class="compact-tabs">
+    <button class="compact-tab-btn active" data-tab="admin" onclick="switchTab(this,'admin',true)">🏛️</button>
+    <button class="compact-tab-btn" data-tab="compras" onclick="switchTab(this,'compras',true)">🛒</button>
+    <button class="compact-tab-btn" data-tab="orcamento" onclick="switchTab(this,'orcamento',true)">💰</button>
+  </div>
+</div>
 
 <div class="content">
 
@@ -770,37 +860,29 @@ function renderTimeline(){
 
 // ── Header colapsível ao scroll (throttled com rAF) ──────────────
 // Fixed header: simple scrollY threshold — no layout feedback loop
+// Simple scroll handler — compact bar is sticky, hero is normal flow
+// No layout changes = no jumps. Just toggle body.scrolled via scrollY.
 (function(){
-  function setHeaderPadding(){
-    const h=document.querySelector('.app-top');
-    const c=document.querySelector('.content');
-    if(h&&c) c.style.paddingTop=h.offsetHeight+'px';
-  }
-
-  function applyScroll(){
-    const y=window.scrollY;
-    const isScrolled=document.body.classList.contains('scrolled');
-    if(!isScrolled && y>80){
-      document.body.classList.add('scrolled');
-      // After hero collapses, update content padding
-      setTimeout(setHeaderPadding,380);
-    } else if(isScrolled && y<30){
-      document.body.classList.remove('scrolled');
-      setTimeout(setHeaderPadding,380);
-    }
-  }
-
-  // Set initial padding after fonts/images settle
-  window.addEventListener('load',setHeaderPadding);
-  setTimeout(setHeaderPadding,100);
-  window.addEventListener('resize',setHeaderPadding);
-
   let ticking=false;
+  function check(){
+    const hero=document.querySelector('.hero');
+    if(!hero)return;
+    // Collapse when hero bottom has scrolled past viewport top
+    const heroBottom=hero.getBoundingClientRect().bottom;
+    const shouldScroll=heroBottom<56;
+    document.body.classList.toggle('scrolled',shouldScroll);
+    // Keep compact days in sync
+    const t=document.querySelector('.hero-title');
+    const cd=document.getElementById('compactDays');
+    if(t&&cd) cd.textContent='· '+t.getAttribute('data-days');
+  }
   window.addEventListener('scroll',()=>{
     if(ticking)return;
     ticking=true;
-    requestAnimationFrame(()=>{applyScroll();ticking=false;});
+    requestAnimationFrame(()=>{check();ticking=false;});
   },{passive:true});
+  // Initial check
+  setTimeout(check,200);
 })();
 
 // ── Tabs ──────────────────────────────────
