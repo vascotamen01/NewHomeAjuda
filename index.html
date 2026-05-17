@@ -26,7 +26,7 @@ body{font-family:var(--font);background:var(--cream);color:var(--text);}
 #sync-bar{position:fixed;top:0;left:0;right:0;height:2px;background:var(--sage);opacity:0;transition:opacity .3s;z-index:200;}
 
 /* ── HERO (colapsível ao scroll) ── */
-.app-top{position:relative;z-index:1;padding-top:56px;}
+.app-top{position:relative;z-index:1;}
 body.scrolled .app-top{box-shadow:0 4px 18px rgba(0,0,0,.18);}
 
 .hero{position:relative;height:52vw;min-height:190px;max-height:300px;overflow:hidden;}
@@ -66,7 +66,7 @@ body.scrolled .hero-title{font-size:1rem;}
 .cd-fill{height:3px;background:linear-gradient(90deg,var(--wood),var(--sage));border-radius:2px;transition:width .8s;}
 
 /* ── TABS ── */
-.tabs{display:none;}
+.tabs{display:none;}.cd{display:none;}
 body.scrolled .tabs{
   position:absolute;
   right:10px;
@@ -431,71 +431,99 @@ body.scrolled .tab-btn .tab-icon{font-size:1.3rem;line-height:1;}
 .label-group-body.closed{max-height:0;}
 
 
-/* ══ FIXED HEADER ══════════════════════════════════════════════════════════ */
+/* ══ COMPACT FIXED HEADER ═══════════════════════════════════════════════════ */
 .compact-bar{
-  position:fixed;
-  top:0;left:0;right:0;
-  height:56px;
-  z-index:100;
-  display:flex;
-  align-items:center;
-  padding:0 10px;
-  gap:8px;
-  background:rgba(0,0,0,0);
-  transition:background .3s ease, box-shadow .3s ease;
+  position:fixed;top:0;left:0;right:0;height:50px;z-index:100;
+  display:flex;align-items:center;padding:0 14px;gap:8px;
+  background:rgba(20,14,8,0);
+  transition:background .3s ease,box-shadow .3s ease;
+  opacity:0;pointer-events:none;
 }
 body.scrolled .compact-bar{
+  opacity:1;pointer-events:auto;
   background:rgba(20,14,8,.93);
   box-shadow:0 2px 12px rgba(0,0,0,.35);
 }
-/* Title+days: hidden on hero, visible when scrolled */
-.compact-title{
-  font-size:.95rem;font-weight:900;color:#fff;
-  letter-spacing:-.02em;white-space:nowrap;flex-shrink:0;
-  opacity:0;transition:opacity .25s ease;
-}
-.compact-days{
-  font-size:.7rem;color:rgba(255,255,255,.6);
-  font-weight:600;white-space:nowrap;flex-shrink:0;
-  opacity:0;transition:opacity .25s ease;
-}
-body.scrolled .compact-title,body.scrolled .compact-days{opacity:1;}
-/* Track bar: desktop only, scrolled only */
-.compact-track-wrap{
-  flex:1;min-width:0;padding:0 10px;display:none;
-  opacity:0;transition:opacity .3s ease;
-}
-@media(min-width:521px){
-  .compact-track-wrap{display:block;}
-  body.scrolled .compact-track-wrap{opacity:1;}
-}
-.compact-track-bar{height:3px;background:rgba(255,255,255,.15);border-radius:2px;overflow:hidden;}
-.compact-track-fill{height:3px;background:linear-gradient(90deg,var(--wood),var(--sage));border-radius:2px;width:0%;transition:width .5s ease;}
-/* Tabs: always visible, push to right */
-.compact-tabs{
-  margin-left:auto;display:flex;gap:2px;flex-shrink:0;
-  background:rgba(0,0,0,.3);
-  border:1px solid rgba(255,255,255,.12);
-  border-radius:12px;padding:3px;
-}
-body.scrolled .compact-tabs{background:rgba(255,255,255,.08);}
+.compact-title{font-size:.9rem;font-weight:900;color:#fff;white-space:nowrap;flex-shrink:0;}
+.compact-days{font-size:.68rem;color:rgba(255,255,255,.6);font-weight:600;white-space:nowrap;flex-shrink:0;}
+.compact-spacer{flex:1;}
+.compact-tabs{display:flex;gap:2px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:10px;padding:3px;}
 .compact-tab-btn{
-  display:flex;flex-direction:row;align-items:center;gap:5px;
-  padding:6px 10px;border:none;background:transparent;
-  border-radius:9px;cursor:pointer;color:rgba(255,255,255,.7);
-  font-family:var(--font);transition:background .15s,color .15s;
-  -webkit-tap-highlight-color:transparent;
-  touch-action:manipulation;
+  padding:6px 13px;border:none;background:transparent;border-radius:7px;
+  cursor:pointer;font-size:1.1rem;line-height:1;color:rgba(255,255,255,.7);
+  touch-action:manipulation;-webkit-tap-highlight-color:transparent;
+  transition:background .15s,color .15s;
 }
 .compact-tab-btn.active{background:var(--sage);color:#fff;}
-.ctab-icon{font-size:.95rem;line-height:1;}
-.ctab-lbl{font-size:.72rem;font-weight:700;}
-/* Collapsed: icons only */
-body.scrolled .ctab-lbl{display:none;}
-body.scrolled .compact-tab-btn{padding:7px 11px;}
 
 /* ══ Keep main tabs always visible below hero ═══════════════════════════════ */
 
+
+
+/* ── Horizontal nav bar ── */
+.nav-bar{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:10px 16px;
+  background:var(--surface);
+  border-top:1px solid var(--border);
+}
+.nav-left{
+  display:flex;
+  align-items:baseline;
+  gap:3px;
+  flex-shrink:0;
+  white-space:nowrap;
+}
+.nav-left .cdn{font-size:1.3rem;font-weight:900;color:var(--text);}
+.nav-left .cdu{font-size:.6rem;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;}
+.nav-left .cdsep{color:var(--border);margin:0 3px;font-size:.9rem;}
+.nav-track{
+  flex:1;
+  min-width:0;
+}
+.nav-track-lbl{
+  font-size:.55rem;
+  color:var(--text3);
+  text-transform:uppercase;
+  letter-spacing:.06em;
+  margin-bottom:4px;
+}
+.nav-tabs{
+  display:flex;
+  gap:3px;
+  flex-shrink:0;
+  background:rgba(0,0,0,.04);
+  border-radius:10px;
+  padding:3px;
+}
+.nav-tabs .tab-btn{
+  padding:6px 10px;
+  font-size:.75rem;
+  border-radius:7px;
+  border:none;
+  background:transparent;
+  color:var(--text2);
+  cursor:pointer;
+  font-family:var(--font);
+  font-weight:600;
+  display:flex;
+  align-items:center;
+  gap:4px;
+  touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;
+}
+.nav-tabs .tab-btn.active{
+  background:var(--sage);
+  color:#fff;
+  box-shadow:0 1px 4px rgba(107,143,105,.4);
+}
+.nav-tabs .tab-icon{font-size:.85rem;}
+@media(max-width:400px){
+  .nav-tabs .tab-btn span:not(.tab-icon){display:none;}
+  .nav-tabs .tab-btn{padding:6px 9px;}
+}
 
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
@@ -526,23 +554,22 @@ body.scrolled .compact-tab-btn{padding:7px 11px;}
   </div>
 </div>
 
-<!-- COUNTDOWN -->
-<div class="cd">
-  <div class="cd-nums">
-    <span class="cdn" id="cdD">—</span><span class="cdu">dias</span>
+<!-- NAV BAR: countdown + track + tabs -->
+<div class="nav-bar" id="navBar">
+  <div class="nav-left">
+    <span class="cdn" id="cdD">—</span><span class="cdu">d</span>
     <span class="cdsep">·</span>
-    <span class="cdn" id="cdW">—</span><span class="cdu">sem.</span>
+    <span class="cdn" id="cdW">—</span><span class="cdu">sem</span>
   </div>
-  <div class="cd-prog">
-    <div class="cd-plbl">Mai → Ago 2026</div>
+  <div class="nav-track">
+    <div class="nav-track-lbl">Mai → Ago 2026</div>
     <div class="cd-track"><div class="cd-fill" id="pf" style="width:0%"></div></div>
   </div>
-</div>
-<!-- TABS -->
-<div class="tabs">
-  <button class="tab-btn active" data-tab="admin" onclick="switchTab(this,'admin')"><span class="tab-icon">🏛️</span> Admin</button>
-  <button class="tab-btn" data-tab="compras" onclick="switchTab(this,'compras')"><span class="tab-icon">🛒</span> Compras</button>
-  <button class="tab-btn" data-tab="orcamento" onclick="switchTab(this,'orcamento')"><span class="tab-icon">💰</span> Orçamento</button>
+  <div class="nav-tabs">
+    <button class="tab-btn active" data-tab="admin" onclick="switchTab(this,'admin')"><span class="tab-icon">🏛️</span> Admin</button>
+    <button class="tab-btn" data-tab="compras" onclick="switchTab(this,'compras')"><span class="tab-icon">🛒</span> Compras</button>
+    <button class="tab-btn" data-tab="orcamento" onclick="switchTab(this,'orcamento')"><span class="tab-icon">💰</span> Orçamento</button>
+  </div>
 </div>
 </div><!-- /app-top -->
 
@@ -550,19 +577,11 @@ body.scrolled .compact-tab-btn{padding:7px 11px;}
 <div class="compact-bar" id="compactBar">
   <span class="compact-title">Casa Nova</span>
   <span class="compact-days" id="compactDays"></span>
-  <div class="compact-track-wrap">
-    <div class="compact-track-bar"><div class="compact-track-fill" id="compactFill"></div></div>
-  </div>
+  <div class="compact-spacer"></div>
   <div class="compact-tabs">
-    <button class="compact-tab-btn active" data-tab="admin" onclick="switchTab(this,'admin',true)">
-      <span class="ctab-icon">🏛️</span><span class="ctab-lbl">Admin</span>
-    </button>
-    <button class="compact-tab-btn" data-tab="compras" onclick="switchTab(this,'compras',true)">
-      <span class="ctab-icon">🛒</span><span class="ctab-lbl">Compras</span>
-    </button>
-    <button class="compact-tab-btn" data-tab="orcamento" onclick="switchTab(this,'orcamento',true)">
-      <span class="ctab-icon">💰</span><span class="ctab-lbl">Orçamento</span>
-    </button>
+    <button class="compact-tab-btn active" data-tab="admin" onclick="switchTab(this,'admin')">🏛️</button>
+    <button class="compact-tab-btn" data-tab="compras" onclick="switchTab(this,'compras')">🛒</button>
+    <button class="compact-tab-btn" data-tab="orcamento" onclick="switchTab(this,'orcamento')">💰</button>
   </div>
 </div>
 
@@ -856,19 +875,20 @@ function renderTimeline(){
 
 // ── Header colapsível ao scroll (throttled com rAF) ──────────────
 // Fixed header: simple scrollY threshold — no layout feedback loop
-// Fixed header scroll handler — simple and reliable on all devices
+// Show compact header when nav-bar scrolls out of view
 (function(){
   let ticking=false;
   function check(){
-    const hero=document.querySelector('.hero');
-    if(!hero)return;
-    const heroH=hero.offsetHeight;
-    const y=window.scrollY||window.pageYOffset;
-    const shouldScroll=y>heroH*0.6;
-    document.body.classList.toggle('scrolled',shouldScroll);
+    const nav=document.getElementById('navBar');
+    if(!nav)return;
+    const navBottom=nav.getBoundingClientRect().bottom;
+    document.body.classList.toggle('scrolled', navBottom<=0);
     const t=document.querySelector('.hero-title');
     const cd=document.getElementById('compactDays');
     if(t&&cd) cd.textContent=t.getAttribute('data-days')||'';
+    const cf=document.getElementById('compactFill');
+    const pf=document.getElementById('pf');
+    if(cf&&pf) cf.style.width=pf.style.width;
   }
   window.addEventListener('scroll',()=>{
     if(ticking)return;
@@ -880,10 +900,8 @@ function renderTimeline(){
 
 // ── Tabs ──────────────────────────────────
 function switchTab(el,name){
-  // Clear active from all tab buttons in both bars
   document.querySelectorAll('.tab-btn,.compact-tab-btn').forEach(t=>t.classList.remove('active'));
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
-  // Activate all buttons that match this tab (main + compact)
   document.querySelectorAll('[data-tab="'+name+'"]').forEach(t=>t.classList.add('active'));
   document.getElementById('panel-'+name).classList.add('active');
   document.getElementById('fab').className='fab'+(name==='compras'?'':' h');
