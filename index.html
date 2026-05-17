@@ -67,7 +67,9 @@ body.scrolled .cd{max-height:0;padding-top:0;padding-bottom:0;opacity:0;}
 
 /* ── TABS ── */
 .tabs{display:flex;margin:8px 16px;background:var(--surface);border-radius:13px;padding:4px;box-shadow:0 1px 4px rgba(0,0,0,.08),0 0 0 1px rgba(0,0,0,.04);transition:margin .3s ease;}
-body.scrolled .tabs{margin:6px 12px;}
+body.scrolled .tabs{margin:4px 12px;}
+body.scrolled .tab-btn{padding:6px 4px;font-size:.65rem;}
+body.scrolled .tab-btn .tab-icon{font-size:.9rem;}
 .tab-btn{flex:1;padding:9px 6px;border:none;background:transparent;border-radius:10px;font-size:.78rem;font-weight:700;color:var(--text2);cursor:pointer;font-family:var(--font);transition:all .2s;}
 .tab-btn.active{background:var(--sage);color:#fff;box-shadow:0 2px 8px rgba(107,143,105,.35);}
 
@@ -240,12 +242,12 @@ body.scrolled .tabs{margin:6px 12px;}
 
 /* ── TASKS TABLE ── */
 .task-table{background:var(--surface);border-radius:14px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.07),0 0 0 1px rgba(0,0,0,.04);margin-bottom:10px;}
-.task-thead{display:grid;grid-template-columns:28px 1fr 72px 32px 24px;gap:0;background:rgba(0,0,0,.04);padding:0;}
+.task-thead{display:grid;grid-template-columns:28px 1fr 90px 72px 20px 24px;gap:0;background:rgba(0,0,0,.04);padding:0;}
 .task-th{padding:7px 6px;font-size:.63rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);cursor:pointer;user-select:none;display:flex;align-items:center;gap:2px;transition:color .15s;}
 .task-th:hover{color:var(--text);}
 .task-th.sorted{color:var(--sage);}
 .task-th .sort-arrow{font-size:.55rem;}
-.task-row{display:grid;grid-template-columns:28px 1fr 72px 32px 24px;gap:0;border-bottom:1px solid var(--border);align-items:center;min-height:44px;cursor:pointer;}
+.task-row{display:grid;grid-template-columns:28px 1fr 90px 72px 20px 24px;gap:0;border-bottom:1px solid var(--border);align-items:center;min-height:44px;cursor:pointer;}
 .task-row:last-child{border-bottom:none;}
 .task-row:active{background:rgba(0,0,0,.03);}
 .task-cell{padding:6px 4px;display:flex;align-items:center;}
@@ -325,6 +327,27 @@ body.scrolled .hero-title{font-size:.88rem;}
 .room-row.collapsible{cursor:pointer;}
 .room-row.collapsible .room-row-name::after{content:' ▾';font-size:.65rem;color:var(--text3);}
 
+
+/* ── Label manager ── */
+.label-mgr-row{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border);}
+.label-mgr-row:last-child{border-bottom:none;}
+.label-color-swatch{width:24px;height:24px;border-radius:50%;flex-shrink:0;cursor:pointer;border:2px solid transparent;}
+.label-mgr-text{flex:1;border:none;background:transparent;font-family:var(--font);font-size:.86rem;color:var(--text);padding:2px 4px;border-radius:4px;}
+.label-mgr-text:focus{outline:2px solid var(--sage);background:var(--cream);}
+.label-add-row{display:flex;gap:8px;margin-top:10px;}
+/* Inline label select in task table */
+.task-label-sel{appearance:none;-webkit-appearance:none;border:none;background:transparent;font-size:.7rem;cursor:pointer;max-width:80px;color:var(--text2);font-family:var(--font);}
+
+
+/* ── Budget per article ── */
+.item-budget-row{display:flex;align-items:center;gap:8px;padding:8px 14px;background:rgba(107,143,105,.06);border-top:1px solid var(--border);}
+.item-budget-lbl{font-size:.68rem;color:var(--text3);font-weight:600;}
+.item-budget-input{border:none;border-bottom:1.5px solid var(--border);background:transparent;font-family:var(--font);font-size:.84rem;font-weight:700;color:var(--text);width:80px;padding:2px 4px;text-align:right;}
+.item-budget-input:focus{outline:none;border-bottom-color:var(--sage);}
+.item-budget-unit{font-size:.72rem;color:var(--text3);}
+/* Label manager button */
+.label-mgr-btn{padding:5px 10px;border-radius:8px;border:1.5px solid var(--border);background:transparent;font-size:.72rem;font-weight:600;cursor:pointer;font-family:var(--font);color:var(--text2);float:right;margin-bottom:6px;}
+
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 </head>
@@ -363,15 +386,15 @@ body.scrolled .hero-title{font-size:.88rem;}
     <span class="cdn" id="cdW">—</span><span class="cdu">sem.</span>
   </div>
   <div class="cd-prog">
-    <div class="cd-plbl">Jan → Ago 2026</div>
+    <div class="cd-plbl">Mai → Ago 2026</div>
     <div class="cd-track"><div class="cd-fill" id="pf" style="width:0%"></div></div>
   </div>
 </div>
 <!-- TABS -->
 <div class="tabs">
-  <button class="tab-btn active" data-tab="admin" onclick="switchTab(this,'admin')">🏛️ Admin</button>
-  <button class="tab-btn" data-tab="compras" onclick="switchTab(this,'compras')">🛒 Compras</button>
-  <button class="tab-btn" data-tab="orcamento" onclick="switchTab(this,'orcamento')">💰 Orçamento</button>
+  <button class="tab-btn active" data-tab="admin" onclick="switchTab(this,'admin')"><span class="tab-icon">🏛️</span> Admin</button>
+  <button class="tab-btn" data-tab="compras" onclick="switchTab(this,'compras')"><span class="tab-icon">🛒</span> Compras</button>
+  <button class="tab-btn" data-tab="orcamento" onclick="switchTab(this,'orcamento')"><span class="tab-icon">💰</span> Orçamento</button>
 </div>
 </div><!-- /app-top -->
 
@@ -379,9 +402,7 @@ body.scrolled .hero-title{font-size:.88rem;}
 
   <!-- ADMIN -->
   <div class="panel active" id="panel-admin">
-    <div id="task-wrap"></div>
-    
-    <div style="margin-top:8px">
+    <div style="margin-bottom:8px">
       <button id="newTaskToggle" onclick="toggleNewTaskForm()" style="width:100%;padding:11px;border-radius:12px;border:1.5px dashed var(--border);background:transparent;font-family:var(--font);font-size:.84rem;color:var(--text2);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;">
         <span style="font-size:1.1rem;">＋</span> Nova tarefa
       </button>
@@ -403,6 +424,8 @@ body.scrolled .hero-title{font-size:.88rem;}
         </div>
       </div>
     </div>
+    <button class="label-mgr-btn" onclick="openLabelMgr()">🏷️ Etiquetas</button>
+    <div id="task-wrap" style="margin-top:8px"></div>
   </div>
 
   <!-- COMPRAS -->
@@ -438,6 +461,23 @@ body.scrolled .hero-title{font-size:.88rem;}
   <div class="budget-list" id="budget-list"></div>
   </div>
 
+</div>
+
+<!-- Label Manager Modal -->
+<div class="overlay" id="labelMgrOv">
+  <div class="modal" style="padding:20px 20px 40px;">
+    <div class="m-handle"></div>
+    <div class="m-title">Gerir etiquetas</div>
+    <div id="labelMgrList"></div>
+    <div class="label-add-row">
+      <input id="newLabelText" class="task-modal-input" placeholder="Nova etiqueta…" style="flex:1;">
+      <input type="color" id="newLabelColor" value="#6b8f69" style="width:40px;height:40px;border-radius:8px;border:none;cursor:pointer;">
+      <button onclick="addLabel()" style="padding:10px 14px;border-radius:10px;border:none;background:var(--sage);color:#fff;font-weight:700;cursor:pointer;font-family:var(--font);">＋</button>
+    </div>
+    <div class="m-btns" style="margin-top:14px;">
+      <button class="btn-ok" onclick="closeO('labelMgrOv')">Fechar</button>
+    </div>
+  </div>
 </div>
 
 <!-- Task Edit Modal -->
@@ -628,7 +668,7 @@ function save(){
 
 // ── Timeline ──────────────────────────────
 function renderTimeline(){
-  const s=new Date('2026-01-01'),e=new Date('2026-08-01'),n=new Date();
+  const s=new Date('2026-05-01'),e=new Date('2026-08-01'),n=new Date();
   const pct=Math.min(100,Math.max(0,(n-s)/(e-s)*100));
   const days=Math.max(0,Math.round((e-n)/86400000));
   document.getElementById('pf').style.width=pct.toFixed(1)+'%';
@@ -700,6 +740,9 @@ function sortedTasks(){
     if(_taskSort==='text'){
       return (a.text||'').localeCompare(b.text||'','pt');
     }
+    if(_taskSort==='label'){
+      return (a.label||'zzz').localeCompare(b.label||'zzz');
+    }
     // secondary: always priority
     const pa=prioOrder[a.prio||'n']??4, pb=prioOrder[b.prio||'n']??4;
     return pa-pb;
@@ -707,13 +750,17 @@ function sortedTasks(){
 }
 
 function thArrow(col){return _taskSort===col?'<span class="sort-arrow">▲</span>':'';}
-const LABELS=[
-  {k:'casa',l:'🏠 Casa',c:'#6b8f69'},
-  {k:'doc',l:'📄 Docs',c:'#2563eb'},
+// Labels are stored in S.labels — fallback to defaults if not set
+const DEFAULT_LABELS=[
+  {k:'reuniao',l:'📅 Reunião',c:'#2563eb'},
   {k:'compra',l:'🛒 Compra',c:'#ca8a04'},
   {k:'urgente',l:'⚡ Urgente',c:'#dc2626'},
-  {k:'outro',l:'💬 Outro',c:'#7c3aed'},
+  {k:'doc',l:'📄 Documento',c:'#7c3aed'},
+  {k:'outro',l:'💬 Outro',c:'#6b8f69'},
 ];
+function getLabels(){return (S&&S.labels&&S.labels.length)?S.labels:DEFAULT_LABELS;}
+// alias for use throughout
+Object.defineProperty(window,'LABELS',{get:()=>getLabels()});
 
 function renderAdmin(){
   if(!S)return;
@@ -725,6 +772,7 @@ function renderAdmin(){
   const thead=`<div class="task-thead">
       <div class="task-th"></div>
       <div class="task-th ${_taskSort==='text'?'sorted':''}" onclick="setTaskSort('text')">Tarefa ${thArrow('text')}</div>
+      <div class="task-th ${_taskSort==='label'?'sorted':''}" onclick="setTaskSort('label')">Etiq. ${thArrow('label')}</div>
       <div class="task-th ${_taskSort==='date'?'sorted':''}" onclick="setTaskSort('date')">📅 ${thArrow('date')}</div>
       <div class="task-th ${_taskSort==='prio'?'sorted':''}" onclick="setTaskSort('prio')">P ${thArrow('prio')}</div>
       <div class="task-th"></div>
@@ -733,11 +781,15 @@ function renderAdmin(){
   const taskRow=t=>{
     const dc=t.due?(t.due<today?'overdue':t.due<=soon?'soon':''):'';
     const label=LABELS.find(l=>l.k===t.label);
+    const labelBadge=label?`style="color:${label.c};font-weight:700;font-size:.68rem;"`:'';
     return `<div class="task-row" onclick="openEditTask('${t.id}')">
       <div class="task-cell" onclick="event.stopPropagation();togT('${t.id}')"><div class="cb ${t.done?'on':''}"></div></div>
-      <div class="task-name-cell ${t.done?'done-txt':''}">
-        ${t.text}
-        ${label?`<span style="margin-left:5px;font-size:.63rem;padding:1px 6px;border-radius:10px;background:${label.c}22;color:${label.c};font-weight:700;">${label.l}</span>`:''}
+      <div class="task-name-cell ${t.done?'done-txt':''}">${t.text}</div>
+      <div class="task-cell" onclick="event.stopPropagation()">
+        <select class="task-label-sel" onchange="setTaskLabel('${t.id}',this.value)" ${labelBadge}>
+          <option value="">—</option>
+          ${LABELS.map(l=>`<option value="${l.k}" ${t.label===l.k?'selected':''} style="color:${l.c}">${l.l}</option>`).join('')}
+        </select>
       </div>
       <div class="task-cell"><span class="task-date-small ${dc}">${t.due?t.due.slice(5):'—'}</span></div>
       <div class="task-cell">${prioDot(t.prio)}</div>
@@ -767,6 +819,48 @@ function renderAdmin(){
 }
 
 
+
+// ── Label manager ─────────────────────────────────────────────────────────────
+function openLabelMgr(){
+  if(!S.labels)S.labels=[...DEFAULT_LABELS];
+  renderLabelMgr();
+  openO('labelMgrOv');
+}
+function renderLabelMgr(){
+  const list=document.getElementById('labelMgrList');
+  if(!list)return;
+  const labels=getLabels();
+  list.innerHTML=labels.map((lb,i)=>`
+    <div class="label-mgr-row">
+      <input type="color" class="label-color-swatch" value="${lb.c}"
+        onchange="updateLabel(${i},'c',this.value)" style="background:${lb.c};">
+      <input class="label-mgr-text" value="${lb.l}"
+        onchange="updateLabel(${i},'l',this.value)"
+        onkeydown="if(event.key==='Enter')this.blur()">
+      <span class="btn-del" onclick="delLabel(${i})">×</span>
+    </div>`).join('');
+}
+function updateLabel(i,field,val){
+  if(!S.labels)S.labels=[...DEFAULT_LABELS];
+  if(S.labels[i])S.labels[i][field]=val;
+  save();renderAdmin();
+}
+function addLabel(){
+  if(!S.labels)S.labels=[...DEFAULT_LABELS];
+  const text=document.getElementById('newLabelText').value.trim();
+  const color=document.getElementById('newLabelColor').value;
+  if(!text)return;
+  const k='lbl_'+uid().slice(0,6);
+  S.labels.push({k,l:text,c:color});
+  document.getElementById('newLabelText').value='';
+  save();renderLabelMgr();renderAdmin();
+}
+function delLabel(i){
+  if(!S.labels)return;
+  S.labels.splice(i,1);
+  save();renderLabelMgr();renderAdmin();
+}
+
 // ── Task edit modal ───────────────────────────────────────────────────────────
 let _editTaskId=null;
 function openEditTask(id){
@@ -776,7 +870,7 @@ function openEditTask(id){
   document.getElementById('tePrio').value=t.prio||'n';
   document.getElementById('teDue').value=t.due||'';
   // label chips
-  document.getElementById('teLabelChips').innerHTML=LABELS.map(l=>`
+  document.getElementById('teLabelChips').innerHTML=getLabels().map(l=>`
     <button class="label-chip ${t.label===l.k?'on':''}"
       style="background:${t.label===l.k?l.c+'22':'transparent'};color:${l.c};border-color:${t.label===l.k?l.c:'var(--border)'}"
       onclick="toggleLabel('${l.k}')">${l.l}</button>`).join('');
@@ -808,6 +902,7 @@ function saveEditTask(){
   t.label=labelVal||null;
   closeO('taskEditOv');save();
 }
+function setTaskLabel(id,val){const t=S.tasks.find(t=>t.id===id);if(t){t.label=val||null;save();}}
 function togT(id){const t=S.tasks.find(x=>x.id===id);if(t){t.done=!t.done;save();}}
 function delT(id){S.tasks=S.tasks.filter(t=>t.id!==id);save();}
 function editTask(id,val){const t=S.tasks.find(t=>t.id===id);if(t&&val.trim()){t.text=val.trim();save();}}
@@ -949,6 +1044,17 @@ function renderRoomsList(){
               </div>
             </div>`).join('')}
           </div>
+          <div class="item-budget-row">
+            <span class="item-budget-lbl">Orçamento artigo</span>
+            <input class="item-budget-input" type="number" min="0" step="50"
+              placeholder="—"
+              value="${item.budget||''}"
+              onchange="setItemBudget('${item.id}',this.value)"
+              onclick="event.stopPropagation()"
+              title="Orçamento máximo para este artigo">
+            <span class="item-budget-unit">€</span>
+            ${item.budget&&item.options.some(o=>o.selected)?`<span style="margin-left:auto;font-size:.7rem;color:${parsePrice(item.options.find(o=>o.selected)?.price||'0')>item.budget?'#ef4444':'#22c55e'};font-weight:700;">${parsePrice(item.options.find(o=>o.selected)?.price||'0')>item.budget?'⚠️ Acima':'✓ Dentro'}</span>`:''}
+          </div>
           <div class="add-opt-wrap">
             <button class="add-opt-btn" onclick="openAddOpt('${item.id}')">＋ Adicionar opção</button>
           </div>
@@ -966,6 +1072,10 @@ function pickOpt(iid,oid){
 function delOpt(iid,oid){
   const it=S.items.find(i=>i.id===iid);
   if(it){it.options=it.options.filter(o=>o.id!==oid);save();}
+}
+function setItemBudget(id,val){
+  const item=S.items.find(i=>i.id===id);
+  if(item){item.budget=parseFloat(val)||null;save();}
 }
 function delItem(id){if(!confirm('Remover?'))return;S.items=S.items.filter(i=>i.id!==id);save();}
 
