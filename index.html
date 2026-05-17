@@ -48,7 +48,7 @@ body.scrolled .hero-title{font-size:1rem;}
 body.scrolled .hero-title::after{content:attr(data-days);font-size:.7rem;font-weight:600;color:rgba(255,255,255,.55);margin-left:10px;letter-spacing:0;}
 
 /* Sync pill */
-.sync-pill{position:absolute;top:calc(env(safe-area-inset-top)+12px);right:16px;display:flex;align-items:center;gap:5px;background:rgba(0,0,0,.3);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:4px 10px;font-size:.6rem;color:rgba(255,255,255,.5);transition:top .3s ease;}
+.sync-pill{display:none;}
 body.scrolled .sync-pill{top:14px;}
 .sdot{width:5px;height:5px;border-radius:50%;background:#6ee7b7;}
 .sdot.off{background:#fca5a5;}
@@ -66,7 +66,8 @@ body.scrolled .cd{max-height:0;padding-top:0;padding-bottom:0;opacity:0;}
 .cd-fill{height:3px;background:linear-gradient(90deg,var(--wood),var(--sage));border-radius:2px;transition:width .8s;}
 
 /* ── TABS ── */
-.tabs{display:flex;margin:12px 16px 8px;background:var(--surface);border-radius:13px;padding:4px;box-shadow:0 1px 4px rgba(0,0,0,.08),0 0 0 1px rgba(0,0,0,.04);}
+.tabs{display:flex;margin:8px 16px;background:var(--surface);border-radius:13px;padding:4px;box-shadow:0 1px 4px rgba(0,0,0,.08),0 0 0 1px rgba(0,0,0,.04);transition:margin .3s ease;}
+body.scrolled .tabs{margin:6px 12px;}
 .tab-btn{flex:1;padding:9px 6px;border:none;background:transparent;border-radius:10px;font-size:.78rem;font-weight:700;color:var(--text2);cursor:pointer;font-family:var(--font);transition:all .2s;}
 .tab-btn.active{background:var(--sage);color:#fff;box-shadow:0 2px 8px rgba(107,143,105,.35);}
 
@@ -203,9 +204,11 @@ body.scrolled .cd{max-height:0;padding-top:0;padding-bottom:0;opacity:0;}
 
 /* ── BUDGET TAB ── */
 .budget-summary{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:20px;}
-.bcard{background:var(--surface);border-radius:14px;padding:14px 12px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,.07),0 0 0 1px rgba(0,0,0,.04);}
-.bcard-lbl{font-size:.65rem;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);font-weight:600;margin-bottom:6px;}
-.bcard-val{font-size:1.4rem;font-weight:800;color:var(--text);}
+.bcard{background:var(--surface);border-radius:16px;padding:16px 14px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,.07),0 0 0 1px rgba(0,0,0,.04);display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.bcard-lbl{font-size:.62rem;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);font-weight:700;margin-bottom:8px;}
+.bcard-val{font-size:1.5rem;font-weight:900;color:var(--text);line-height:1;}
+.bcard.clickable{cursor:pointer;transition:box-shadow .15s;}
+.bcard.clickable:hover{box-shadow:0 2px 8px rgba(0,0,0,.12),0 0 0 2px var(--sage);}
 .bcard-val.positive{color:#22c55e;}
 .bcard-val.negative{color:#ef4444;}
 .budget-set-row{display:flex;gap:8px;align-items:center;margin-bottom:20px;}
@@ -306,6 +309,22 @@ body.scrolled .cd{max-height:0;padding-top:0;padding-bottom:0;opacity:0;}
 .hero-mini-fill{height:2px;background:linear-gradient(90deg,var(--wood),var(--sage));border-radius:2px;transition:width .5s ease;}
 body.scrolled .hero-mini-track{display:block;}
 body.scrolled .hero-title{font-size:.88rem;}
+
+/* ── Budget room breakdown ── */
+.room-breakdown{margin-top:16px;}
+.room-breakdown-title{font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);margin-bottom:10px;}
+.room-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);}
+.room-row:last-child{border-bottom:none;}
+.room-dot-lg{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.room-row-name{flex:1;font-size:.84rem;font-weight:600;}
+.room-row-bar-wrap{width:90px;height:5px;background:var(--border);border-radius:3px;overflow:hidden;}
+.room-row-bar{height:5px;border-radius:3px;transition:width .4s ease;}
+.room-row-val{font-size:.84rem;font-weight:800;min-width:52px;text-align:right;}
+.sub-items{padding:4px 0 4px 20px;}
+.sub-item-row{display:flex;align-items:center;justify-content:space-between;padding:3px 0;font-size:.76rem;color:var(--text2);}
+.room-row.collapsible{cursor:pointer;}
+.room-row.collapsible .room-row-name::after{content:' ▾';font-size:.65rem;color:var(--text3);}
+
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 </head>
@@ -348,14 +367,13 @@ body.scrolled .hero-title{font-size:.88rem;}
     <div class="cd-track"><div class="cd-fill" id="pf" style="width:0%"></div></div>
   </div>
 </div>
-</div><!-- /app-top -->
-
 <!-- TABS -->
 <div class="tabs">
   <button class="tab-btn active" data-tab="admin" onclick="switchTab(this,'admin')">🏛️ Admin</button>
   <button class="tab-btn" data-tab="compras" onclick="switchTab(this,'compras')">🛒 Compras</button>
   <button class="tab-btn" data-tab="orcamento" onclick="switchTab(this,'orcamento')">💰 Orçamento</button>
 </div>
+</div><!-- /app-top -->
 
 <div class="content">
 
@@ -363,17 +381,27 @@ body.scrolled .hero-title{font-size:.88rem;}
   <div class="panel active" id="panel-admin">
     <div id="task-wrap"></div>
     
-    <div class="add-row" style="margin-top:8px">
-      <input id="newTask" placeholder="Nova tarefa…" onkeydown="if(event.key==='Enter')addTask()">
-      <select id="newTaskPrio" style="padding:10px 6px;border-radius:10px;border:1.5px solid var(--border);background:var(--surface);font-family:var(--font);font-size:.8rem;color:var(--text);cursor:pointer;">
-        <option value="n">— Prioridade</option>
-        <option value="c">🔴 Crítica</option>
-        <option value="h">🟠 Alta</option>
-        <option value="m">🟡 Média</option>
-        <option value="l">🔵 Baixa</option>
-      </select>
-      <input type="date" id="newTaskDate" style="padding:10px 6px;border-radius:10px;border:1.5px solid var(--border);background:var(--surface);font-family:var(--font);font-size:.78rem;color:var(--text);">
-      <button onclick="addTask()">＋</button>
+    <div style="margin-top:8px">
+      <button id="newTaskToggle" onclick="toggleNewTaskForm()" style="width:100%;padding:11px;border-radius:12px;border:1.5px dashed var(--border);background:transparent;font-family:var(--font);font-size:.84rem;color:var(--text2);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;">
+        <span style="font-size:1.1rem;">＋</span> Nova tarefa
+      </button>
+      <div id="newTaskForm" style="display:none;margin-top:8px;background:var(--surface);border-radius:14px;padding:14px;box-shadow:0 1px 4px rgba(0,0,0,.07),0 0 0 1px rgba(0,0,0,.04);">
+        <input id="newTask" placeholder="Descrição da tarefa…" style="width:100%;padding:10px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--cream);font-family:var(--font);font-size:.9rem;color:var(--text);box-sizing:border-box;margin-bottom:8px;" onkeydown="if(event.key==='Enter')addTask()">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+          <select id="newTaskPrio" style="padding:9px 8px;border-radius:10px;border:1.5px solid var(--border);background:var(--surface);font-family:var(--font);font-size:.8rem;color:var(--text);cursor:pointer;">
+            <option value="n">— Prioridade</option>
+            <option value="c">🔴 Crítica</option>
+            <option value="h">🟠 Alta</option>
+            <option value="m">🟡 Média</option>
+            <option value="l">🔵 Baixa</option>
+          </select>
+          <input type="date" id="newTaskDate" style="padding:9px 8px;border-radius:10px;border:1.5px solid var(--border);background:var(--surface);font-family:var(--font);font-size:.78rem;color:var(--text);">
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button onclick="toggleNewTaskForm()" style="flex:1;padding:10px;border-radius:10px;border:1.5px solid var(--border);background:transparent;font-family:var(--font);font-size:.84rem;cursor:pointer;color:var(--text2);">Cancelar</button>
+          <button onclick="addTask()" style="flex:2;padding:10px;border-radius:10px;border:none;background:var(--sage);color:#fff;font-family:var(--font);font-size:.84rem;font-weight:700;cursor:pointer;">＋ Adicionar</button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -384,18 +412,19 @@ body.scrolled .hero-title{font-size:.88rem;}
 
   <div class="panel" id="panel-orcamento">
     <div class="budget-summary">
-      <div class="bcard" onclick="const i=document.getElementById('budgetInput');const t=document.getElementById('b-total-txt');if(i&&t){t.style.display='none';i.style.display='';i.focus();}" style="cursor:pointer;">
+      <div class="bcard clickable" id="bcard-total"
+        onclick="const i=document.getElementById('budgetInput');const t=document.getElementById('b-total-txt');if(i&&t){t.style.display='none';i.style.display='';i.focus();}">
         <div class="bcard-lbl">Orçamento</div>
-        <div class="bcard-val" id="b-total" style="display:flex;align-items:center;gap:4px;">
-          <span id="b-total-txt">—</span>
-          <input type="number" id="budgetInput" placeholder="0"
-            style="width:80px;border:none;border-bottom:1.5px solid var(--sage);background:transparent;font-family:var(--font);font-size:1rem;font-weight:800;color:var(--text);text-align:center;display:none;"
+        <div class="bcard-val" id="b-total">
+          <span id="b-total-txt" style="display:block;">—</span>
+          <input type="number" id="budgetInput" placeholder="€"
+            style="width:90px;border:none;border-bottom:2px solid var(--sage);background:transparent;font-family:var(--font);font-size:1.4rem;font-weight:900;color:var(--text);text-align:center;display:none;padding:0;outline:none;"
             min="0" step="100" oninput="saveBudget()" onblur="hideBudgetInput()">
-          <span style="font-size:.75rem;color:var(--text3);">✏️</span>
+          <div style="font-size:.6rem;color:var(--sage);margin-top:4px;">toque para editar</div>
         </div>
       </div>
       <div class="bcard"><div class="bcard-lbl">Gasto</div><div class="bcard-val" id="b-spent">0€</div></div>
-      <div class="bcard"><div class="bcard-lbl">Restante</div><div class="bcard-val" id="b-left">—</div></div>
+      <div class="bcard"><div class="bcard-lbl">Restante</div><div class="bcard-val positive" id="b-left">—</div></div>
     </div>
     <div class="chart-wrap" id="chart-wrap" style="display:none">
     <div class="chart-title">Distribuição por divisão</div>
@@ -693,34 +722,48 @@ function renderAdmin(){
   const soon=new Date(Date.now()+3*86400000).toISOString().slice(0,10);
   const prioDot=p=>`<div class="prio-dot ${p||'n'}"></div>`;
 
+  const thead=`<div class="task-thead">
+      <div class="task-th"></div>
+      <div class="task-th ${_taskSort==='text'?'sorted':''}" onclick="setTaskSort('text')">Tarefa ${thArrow('text')}</div>
+      <div class="task-th ${_taskSort==='date'?'sorted':''}" onclick="setTaskSort('date')">📅 ${thArrow('date')}</div>
+      <div class="task-th ${_taskSort==='prio'?'sorted':''}" onclick="setTaskSort('prio')">P ${thArrow('prio')}</div>
+      <div class="task-th"></div>
+    </div>`;
+
+  const taskRow=t=>{
+    const dc=t.due?(t.due<today?'overdue':t.due<=soon?'soon':''):'';
+    const label=LABELS.find(l=>l.k===t.label);
+    return `<div class="task-row" onclick="openEditTask('${t.id}')">
+      <div class="task-cell" onclick="event.stopPropagation();togT('${t.id}')"><div class="cb ${t.done?'on':''}"></div></div>
+      <div class="task-name-cell ${t.done?'done-txt':''}">
+        ${t.text}
+        ${label?`<span style="margin-left:5px;font-size:.63rem;padding:1px 6px;border-radius:10px;background:${label.c}22;color:${label.c};font-weight:700;">${label.l}</span>`:''}
+      </div>
+      <div class="task-cell"><span class="task-date-small ${dc}">${t.due?t.due.slice(5):'—'}</span></div>
+      <div class="task-cell">${prioDot(t.prio)}</div>
+      <div class="task-cell" onclick="event.stopPropagation();delT('${t.id}')"><span class="btn-del">×</span></div>
+    </div>`;
+  };
+
+  // Group by label
+  const groups={};
+  sortedTasks().forEach(t=>{
+    const k=t.label||'_none';
+    if(!groups[k])groups[k]=[];
+    groups[k].push(t);
+  });
+  const labelOrder=[...LABELS.map(l=>l.k),'_none'];
+  const groupHtml=labelOrder.filter(k=>groups[k]?.length).map(k=>{
+    const lbl=LABELS.find(l=>l.k===k);
+    const header=lbl
+      ?`<div style="padding:6px 10px 4px;font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:${lbl.c};border-bottom:1px solid var(--border);display:flex;align-items:center;gap:5px;"><span>${lbl.l}</span><span style="font-size:.6rem;opacity:.5;">${groups[k].length}</span></div>`
+      :'';
+    return `<div class="task-table" style="margin-bottom:8px;">${header}${thead}${groups[k].map(taskRow).join('')}</div>`;
+  }).join('');
+
   document.getElementById('task-wrap').innerHTML=
     !total?'<div style="padding:18px;text-align:center;color:var(--text3);font-size:.84rem;">Sem tarefas 🎉</div>'
-    :`<div class="task-table">
-      <div class="task-thead">
-        <div class="task-th"></div>
-        <div class="task-th ${_taskSort==='text'?'sorted':''}" onclick="setTaskSort('text')">Tarefa ${thArrow('text')}</div>
-        <div class="task-th ${_taskSort==='date'?'sorted':''}" onclick="setTaskSort('date')">📅 ${thArrow('date')}</div>
-        <div class="task-th ${_taskSort==='prio'?'sorted':''}" onclick="setTaskSort('prio')">P ${thArrow('prio')}</div>
-        <div class="task-th"></div>
-      </div>
-      ${sortedTasks().map(t=>{
-        const dc=t.due?(t.due<today?'overdue':t.due<=soon?'soon':''):'';
-        const label=LABELS.find(l=>l.k===t.label);
-        return `<div class="task-row" onclick="openEditTask('${t.id}')">
-          <div class="task-cell" onclick="event.stopPropagation();togT('${t.id}')">
-            <div class="cb ${t.done?'on':''}"></div>
-          </div>
-          <div class="task-name-cell ${t.done?'done-txt':''}">
-            ${t.text}
-            ${label?`<span style="margin-left:5px;font-size:.65rem;padding:1px 6px;border-radius:10px;background:${label.c}22;color:${label.c};font-weight:700;">${label.l}</span>`:''}
-          </div>
-          <div class="task-cell"><span class="task-date-small ${dc}">${t.due?t.due.slice(5):'—'}</span></div>
-          <div class="task-cell">${prioDot(t.prio)}</div>
-          <div class="task-cell" onclick="event.stopPropagation();delT('${t.id}')"><span class="btn-del">×</span></div>
-        </div>`;
-      }).join('')}
-    </div>
-    <div style="text-align:right;padding:4px 2px;font-size:.7rem;color:var(--text3)">${done}/${total} concluídas</div>`;
+    :groupHtml+`<div style="text-align:right;padding:4px 2px;font-size:.7rem;color:var(--text3)">${done}/${total} concluídas</div>`;
 }
 
 
@@ -771,15 +814,23 @@ function editTask(id,val){const t=S.tasks.find(t=>t.id===id);if(t&&val.trim()){t
 function setPrio(id,prio){const t=S.tasks.find(t=>t.id===id);if(t){t.prio=prio;save();}}
 function setDue(id,val){const t=S.tasks.find(t=>t.id===id);if(t){t.due=val;save();}}
 
+function toggleNewTaskForm(){
+  const form=document.getElementById('newTaskForm');
+  const btn=document.getElementById('newTaskToggle');
+  const show=form.style.display==='none';
+  form.style.display=show?'':'none';
+  if(show) document.getElementById('newTask').focus();
+}
 function addTask(){
   const el=document.getElementById('newTask'),text=el.value.trim();
   if(!text)return;
   const prio=document.getElementById('newTaskPrio').value||'n';
   const due=document.getElementById('newTaskDate').value||'';
-  S.tasks.push({id:uid(),text,done:false,prio,due});
+  S.tasks.unshift({id:uid(),text,done:false,prio,due});
   el.value='';
   document.getElementById('newTaskDate').value='';
   document.getElementById('newTaskPrio').value='n';
+  document.getElementById('newTaskForm').style.display='none';
   save();
 }
 
@@ -821,7 +872,7 @@ function renderFilterBar(){
 
 // ── Item collapse ─────────────────────────────────────────────────────────────
 function isItemOpen(id){
-  try{const s=JSON.parse(localStorage.getItem('itemOpen')||'{}');return s[id]!==false;}catch(e){return true;}
+  try{const s=JSON.parse(localStorage.getItem('itemOpen')||'{}');return s[id]===true;}catch(e){return false;}
 }
 function toggleItem(id){
   try{
@@ -1482,9 +1533,9 @@ function renderBudget(){
   const bLeft=document.getElementById('b-left');
   if(bTotal){
     const txt=document.getElementById('b-total-txt');
-    if(txt) txt.textContent=budget?fmt(budget):'Def. orçamento';
+    if(txt){txt.textContent=budget?fmt(budget):'—';txt.style.display='';}
     const inp=document.getElementById('budgetInput');
-    if(inp&&!inp.value&&budget) inp.value=budget;
+    if(inp){inp.style.display='none';if(budget)inp.value=budget;}
   }
   if(bSpent) bSpent.textContent=fmt(spent);
   if(bLeft){
@@ -1563,15 +1614,32 @@ function renderBudget(){
   }
 
   // Item list
+  // ── Room breakdown ──────────────────────────────────────────────────────
   const list=document.getElementById('budget-list');
-  if(list) list.innerHTML=selected.map(s=>`
-    <div class="budget-item">
-      <div class="budget-item-info">
-        <div class="budget-item-name">${s.itemName}</div>
-        <div class="budget-item-opt">${s.optName}${s.store?' · '+s.store:''}</div>
+  if(list){
+    const maxTotal=Math.max(...roomEntries.map(r=>r.total),1);
+    // Build room breakdown with sub-items
+    const roomBreakdown=roomEntries.map(r=>{
+      const roomItems=selected.filter(s=>s.room.id===r.room.id);
+      const subHtml=roomItems.map(s=>`
+        <div class="sub-item-row">
+          <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:60%">${s.itemName}${s.optName?' · '+s.optName:''}</span>
+          <span style="font-weight:700;">${s.priceStr?s.priceStr+'€':'—'}</span>
+        </div>`).join('');
+      const barPct=(r.total/maxTotal*100).toFixed(1);
+      return `<div class="room-row collapsible" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'':'none'">
+        <div class="room-dot-lg" style="background:${r.room.c}"></div>
+        <span class="room-row-name">${r.room.e} ${r.room.n}</span>
+        <div class="room-row-bar-wrap"><div class="room-row-bar" style="width:${barPct}%;background:${r.room.c}"></div></div>
+        <span class="room-row-val">${fmt(r.total)}</span>
       </div>
-      <div class="budget-item-price">${s.priceStr?s.priceStr+'€':'—'}</div>
-    </div>`).join('');
+      <div class="sub-items" style="display:none">${subHtml}</div>`;
+    }).join('');
+    list.innerHTML=`<div class="room-breakdown">
+      <div class="room-breakdown-title">Por divisão</div>
+      ${roomBreakdown}
+    </div>`;
+  }
 }
 
 // ── Move item to room ─────────────────────────────────────────────────────────
