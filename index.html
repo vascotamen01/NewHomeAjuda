@@ -29,7 +29,7 @@ body{font-family:var(--font);background:var(--cream);color:var(--text);}
 .app-top{position:relative;z-index:1;}
 body.scrolled .app-top{box-shadow:0 4px 18px rgba(0,0,0,.18);}
 
-.hero{position:relative;height:52vw;min-height:190px;max-height:300px;overflow:hidden;will-change:height,max-height;transition:height .35s cubic-bezier(.4,0,.2,1),max-height .35s cubic-bezier(.4,0,.2,1);}
+.hero{position:relative;height:52vw;min-height:190px;max-height:300px;overflow:hidden;}
 .hero img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 35%;transition:transform .35s ease, filter .35s ease;}
 .hero-overlay{position:absolute;inset:0;background:linear-gradient(to bottom, rgba(20,14,8,.2) 0%, rgba(20,14,8,.72) 85%);transition:background .35s ease;}
 .hero-content{position:absolute;bottom:0;left:0;right:0;padding:18px 20px 14px;transition:padding .35s ease;}
@@ -335,7 +335,7 @@ body.scrolled .tab-btn .tab-icon{font-size:1.3rem;line-height:1;}
 .opt-name-link:hover{text-decoration:underline;color:var(--sage);}
 
 /* ── Mini track in collapsed hero ── */
-.hero-mini-track{display:none!important;}.hero-mini-fill{display:none!important;}
+
 
 
 /* ── Budget room breakdown ── */
@@ -878,7 +878,6 @@ function renderTimeline(){
   // Atributo usado no estado colapsado do header (CSS: .hero-title::after)
   const title=document.querySelector('.hero-title');
   if(title)title.setAttribute('data-days','· '+days+' dias');
-  const hf=document.getElementById('heroFill');if(hf)hf.style.width=pct.toFixed(1)+'%';
   const cf=document.getElementById('compactFill');if(cf)cf.style.width=pct.toFixed(1)+'%';
 }
 
