@@ -443,13 +443,33 @@ body.scrolled .tab-btn .tab-icon{font-size:1.3rem;line-height:1;}
   margin-top:-56px;
   display:flex;
   align-items:center;
-  padding:0 14px;
-  gap:10px;
+  padding:0 10px 0 14px;
+  gap:8px;
   background:rgba(20,14,8,0);
   backdrop-filter:blur(0px);
   -webkit-backdrop-filter:blur(0px);
   transition:background .3s ease, backdrop-filter .3s ease, box-shadow .3s ease;
   pointer-events:none;
+}
+.compact-track-wrap{
+  flex:1;
+  padding:0 8px;
+  opacity:0;
+  transition:opacity .3s ease;
+}
+body.scrolled .compact-track-wrap{opacity:1;}
+.compact-track-bar{
+  height:3px;
+  background:rgba(255,255,255,.15);
+  border-radius:2px;
+  overflow:hidden;
+}
+.compact-track-fill{
+  height:3px;
+  background:linear-gradient(90deg,var(--wood),var(--sage));
+  border-radius:2px;
+  width:0%;
+  transition:width .5s ease;
 }
 body.scrolled .compact-bar{
   background:rgba(20,14,8,.92);
@@ -477,7 +497,7 @@ body.scrolled .compact-title{opacity:1;}
   transition:opacity .25s ease;
 }
 body.scrolled .compact-days{opacity:1;}
-.compact-spacer{flex:1;}
+
 .compact-tabs{
   display:flex;
   gap:2px;
@@ -563,7 +583,9 @@ body.scrolled .compact-tabs{
 <div class="compact-bar" id="compactBar">
   <span class="compact-title">Casa Nova</span>
   <span class="compact-days" id="compactDays"></span>
-  <div class="compact-spacer"></div>
+  <div class="compact-track-wrap">
+    <div class="compact-track-bar"><div class="compact-track-fill" id="compactFill"></div></div>
+  </div>
   <div class="compact-tabs">
     <button class="compact-tab-btn active" data-tab="admin" onclick="switchTab(this,'admin',true)">🏛️</button>
     <button class="compact-tab-btn" data-tab="compras" onclick="switchTab(this,'compras',true)">🛒</button>
@@ -857,6 +879,7 @@ function renderTimeline(){
   const title=document.querySelector('.hero-title');
   if(title)title.setAttribute('data-days','· '+days+' dias');
   const hf=document.getElementById('heroFill');if(hf)hf.style.width=pct.toFixed(1)+'%';
+  const cf=document.getElementById('compactFill');if(cf)cf.style.width=pct.toFixed(1)+'%';
 }
 
 // ── Header colapsível ao scroll (throttled com rAF) ──────────────
@@ -875,7 +898,7 @@ function renderTimeline(){
     // Keep compact days in sync
     const t=document.querySelector('.hero-title');
     const cd=document.getElementById('compactDays');
-    if(t&&cd) cd.textContent='· '+t.getAttribute('data-days');
+    if(t&&cd) cd.textContent=t.getAttribute('data-days')||'';
   }
   window.addEventListener('scroll',()=>{
     if(ticking)return;
