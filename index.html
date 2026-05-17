@@ -443,7 +443,7 @@ body.scrolled .tab-btn .tab-icon{font-size:1.3rem;line-height:1;}
   margin-top:-56px;
   display:flex;
   align-items:center;
-  padding:0 10px 0 14px;
+  padding:0 10px;
   gap:8px;
   background:rgba(20,14,8,0);
   backdrop-filter:blur(0px);
@@ -451,52 +451,56 @@ body.scrolled .tab-btn .tab-icon{font-size:1.3rem;line-height:1;}
   transition:background .3s ease, backdrop-filter .3s ease, box-shadow .3s ease;
   pointer-events:none;
 }
-.compact-bar .compact-tabs{pointer-events:auto;}
+/* Title + days: hidden until scrolled */
+.compact-title,.compact-days{
+  opacity:0;transition:opacity .25s ease;flex-shrink:0;
+}
+body.scrolled .compact-title,body.scrolled .compact-days{opacity:1;}
+/* Track bar: hidden on mobile, fades in on desktop when scrolled */
 .compact-track-wrap{
-  flex:1;
-  padding:0 8px;
-  opacity:0;
-  transition:opacity .3s ease;
+  flex:1;min-width:0;padding:0 8px;
+  opacity:0;transition:opacity .3s ease;
+  display:none;
 }
-body.scrolled .compact-track-wrap{opacity:1;}
-.compact-track-bar{
-  height:3px;
-  background:rgba(255,255,255,.15);
-  border-radius:2px;
-  overflow:hidden;
+.compact-track-bar{height:3px;background:rgba(255,255,255,.15);border-radius:2px;overflow:hidden;}
+.compact-track-fill{height:3px;background:linear-gradient(90deg,var(--wood),var(--sage));border-radius:2px;width:0%;transition:width .5s ease;}
+@media(min-width:521px){
+  .compact-track-wrap{display:block;}
+  body.scrolled .compact-track-wrap{opacity:1;}
 }
-.compact-track-fill{
-  height:3px;
-  background:linear-gradient(90deg,var(--wood),var(--sage));
-  border-radius:2px;
-  width:0%;
-  transition:width .5s ease;
+/* Tabs: always visible and tappable, floated right */
+.compact-tabs{
+  display:flex;gap:2px;margin-left:auto;flex-shrink:0;
+  background:rgba(0,0,0,.3);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:12px;padding:3px;
+  pointer-events:auto;
+  transition:background .25s ease;
 }
+body.scrolled .compact-tabs{background:rgba(255,255,255,.1);}
+.compact-tab-btn{
+  display:flex;flex-direction:row;align-items:center;gap:5px;
+  padding:6px 10px;border:none;background:transparent;
+  border-radius:9px;cursor:pointer;
+  color:rgba(255,255,255,.65);
+  font-family:var(--font);
+  transition:background .15s,color .15s;
+}
+.compact-tab-btn.active{background:var(--sage);color:#fff;box-shadow:0 1px 4px rgba(107,143,105,.4);}
+.ctab-icon{font-size:.95rem;line-height:1;flex-shrink:0;}
+.ctab-lbl{font-size:.72rem;font-weight:600;white-space:nowrap;}
+/* Collapsed: hide labels, show only icons */
+body.scrolled .ctab-lbl{display:none;}
+body.scrolled .compact-tab-btn{padding:7px 10px;}
 body.scrolled .compact-bar{
   background:rgba(20,14,8,.92);
   backdrop-filter:blur(16px);
   -webkit-backdrop-filter:blur(16px);
   box-shadow:0 2px 12px rgba(0,0,0,.3);
 }
-.compact-title{
-  font-size:1rem;
-  font-weight:900;
-  color:#fff;
-  letter-spacing:-.02em;
-  white-space:nowrap;
-  opacity:0;
-  transition:opacity .25s ease;
-}
-body.scrolled .compact-title{opacity:1;}
-.compact-days{
-  font-size:.72rem;
-  color:rgba(255,255,255,.55);
-  font-weight:600;
-  white-space:nowrap;
-  opacity:0;
-  transition:opacity .25s ease;
-}
-body.scrolled .compact-days{opacity:1;}
+
+
 
 .compact-tabs{
   display:flex;
@@ -531,14 +535,6 @@ body.scrolled .compact-tabs{
 }
 /* ══ Keep main tabs always visible below hero ═══════════════════════════════ */
 
-
-/* Mobile: compact bar = title + days + icons only (no track bar) */
-@media(max-width:520px){
-  .compact-track-wrap{display:none!important;}
-  .compact-title{font-size:.92rem;}
-  .compact-days{font-size:.68rem;}
-  .compact-tab-btn{padding:7px 11px;}
-}
 
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
@@ -597,9 +593,15 @@ body.scrolled .compact-tabs{
     <div class="compact-track-bar"><div class="compact-track-fill" id="compactFill"></div></div>
   </div>
   <div class="compact-tabs">
-    <button class="compact-tab-btn active" data-tab="admin" onclick="switchTab(this,'admin',true)">🏛️</button>
-    <button class="compact-tab-btn" data-tab="compras" onclick="switchTab(this,'compras',true)">🛒</button>
-    <button class="compact-tab-btn" data-tab="orcamento" onclick="switchTab(this,'orcamento',true)">💰</button>
+    <button class="compact-tab-btn active" data-tab="admin" onclick="switchTab(this,'admin',true)">
+      <span class="ctab-icon">🏛️</span><span class="ctab-lbl">Admin</span>
+    </button>
+    <button class="compact-tab-btn" data-tab="compras" onclick="switchTab(this,'compras',true)">
+      <span class="ctab-icon">🛒</span><span class="ctab-lbl">Compras</span>
+    </button>
+    <button class="compact-tab-btn" data-tab="orcamento" onclick="switchTab(this,'orcamento',true)">
+      <span class="ctab-icon">💰</span><span class="ctab-lbl">Orçamento</span>
+    </button>
   </div>
 </div>
 
