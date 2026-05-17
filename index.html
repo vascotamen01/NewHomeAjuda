@@ -1703,17 +1703,27 @@ function getBudget(){
 }
 function renderBudget(){
   if(!S)return;
+  // fmt must be defined first — used throughout
+  const fmt=v=>v===0?'0€':v.toLocaleString('pt-PT',{minimumFractionDigits:0,maximumFractionDigits:0})+'€';
+
   // Auto-budget: sum of all item budgets if no manual budget set
   const itemBudgetSum=S.items.reduce((a,i)=>a+(parseFloat(i.budget)||0),0);
   const manualBudget=getBudget();
   const budget=manualBudget||itemBudgetSum;
-  const inp=document.getElementById('budgetInput');
-  if(inp){
-    if(!inp.value&&budget) inp.value=budget;
-    // Show auto-calculated hint
-    const hint=document.getElementById('budget-auto-hint');
-    if(hint) hint.textContent=(!manualBudget&&itemBudgetSum)?`Auto: soma dos artigos (${fmt(itemBudgetSum)})`:'';
+
+  // Update budget card immediately (even if no options selected yet)
+  const bTotal=document.getElementById('b-total');
+  if(bTotal){
+    const txt=document.getElementById('b-total-txt');
+    if(txt){txt.textContent=budget?fmt(budget):'—';txt.style.display='';}
+    const inp2=document.getElementById('budgetInput');
+    if(inp2){inp2.style.display='none';if(budget)inp2.value=budget;}
   }
+  const hint=document.getElementById('budget-auto-hint');
+  if(hint) hint.textContent=(!manualBudget&&itemBudgetSum)?`Auto: soma dos artigos (${fmt(itemBudgetSum)})`:'';
+
+  const inp=document.getElementById('budgetInput');
+  if(inp&&!inp.value&&budget) inp.value=budget;
 
   // Collect selected options
   const selected=[];
@@ -1729,17 +1739,9 @@ function renderBudget(){
 
   const spent=selected.reduce((a,s)=>a+s.price,0);
   const left=budget-spent;
-  const fmt=v=>v===0?'0€':v.toLocaleString('pt-PT',{minimumFractionDigits:0,maximumFractionDigits:0})+'€';
 
-  const bTotal=document.getElementById('b-total');
   const bSpent=document.getElementById('b-spent');
   const bLeft=document.getElementById('b-left');
-  if(bTotal){
-    const txt=document.getElementById('b-total-txt');
-    if(txt){txt.textContent=budget?fmt(budget):'—';txt.style.display='';}
-    const inp=document.getElementById('budgetInput');
-    if(inp){inp.style.display='none';if(budget)inp.value=budget;}
-  }
   if(bSpent) bSpent.textContent=fmt(spent);
   if(bLeft){
     bLeft.textContent=budget?fmt(left):'—';
