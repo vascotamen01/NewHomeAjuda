@@ -41,7 +41,7 @@ body.scrolled .app-top{box-shadow:0 4px 18px rgba(0,0,0,.18);}
 body.scrolled .hero{height:56px;min-height:0;max-height:56px;}
 body.scrolled .hero img{transform:scale(1.05);filter:brightness(.55);}
 body.scrolled .hero-overlay{background:linear-gradient(to bottom, rgba(20,14,8,.55) 0%, rgba(20,14,8,.85) 100%);}
-body.scrolled .hero-content{padding:0 16px;display:flex;flex-direction:row;align-items:center;gap:8px;position:absolute;left:0;right:130px;top:0;bottom:0;justify-content:flex-start;}
+body.scrolled .hero-content{padding:0 0 0 16px;display:flex;flex-direction:row;align-items:center;gap:8px;position:absolute;left:0;right:130px;top:0;bottom:0;}
 body.scrolled .hero-tag{opacity:0;max-height:0;margin:0;}
 body.scrolled .hero-addr{opacity:0;max-height:0;margin:0;}
 body.scrolled .hero-title{font-size:1rem;}
@@ -66,7 +66,7 @@ body.scrolled .cd{max-height:0;padding-top:0;padding-bottom:0;opacity:0;}
 .cd-fill{height:3px;background:linear-gradient(90deg,var(--wood),var(--sage));border-radius:2px;transition:width .8s;}
 
 /* ── TABS ── */
-.tabs{display:flex;margin:8px 16px;background:var(--surface);border-radius:13px;padding:4px;box-shadow:0 1px 4px rgba(0,0,0,.08),0 0 0 1px rgba(0,0,0,.04);transition:margin .3s ease;}
+.tabs{display:flex;margin:8px 16px;background:var(--surface);border-radius:13px;padding:4px;box-shadow:0 1px 4px rgba(0,0,0,.08),0 0 0 1px rgba(0,0,0,.04);}
 body.scrolled .tabs{
   position:absolute;
   right:10px;
@@ -81,6 +81,7 @@ body.scrolled .tabs{
   padding:3px;
   width:auto;
   z-index:60;
+  transition:none;
 }
 body.scrolled .tab-btn{
   padding:8px 14px;
@@ -412,6 +413,22 @@ body.scrolled .hero-title{font-size:1rem;font-weight:900;white-space:nowrap;lett
 }
 .item-hdr-budget:focus{outline:none;border-bottom-color:var(--sage);}
 .item-hdr-budget::placeholder{color:var(--text3);font-weight:400;}
+
+
+/* ── Collapsible label group ── */
+.label-group-hdr{
+  display:flex;align-items:center;gap:6px;
+  padding:7px 10px 5px;
+  font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;
+  cursor:pointer;user-select:none;
+  border-bottom:1px solid var(--border);
+}
+.label-group-hdr:active{opacity:.7;}
+.label-group-chevron{font-size:.6rem;transition:transform .2s ease;margin-left:auto;color:var(--text3);}
+.label-group-hdr.collapsed .label-group-chevron{transform:rotate(-90deg);}
+.label-group-body{overflow:hidden;transition:max-height .25s ease;}
+.label-group-body.open{max-height:2000px;}
+.label-group-body.closed{max-height:0;}
 
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
@@ -752,17 +769,18 @@ function renderTimeline(){
 }
 
 // ── Header colapsível ao scroll (throttled com rAF) ──────────────
-// Observe the hero element directly — collapses when hero is mostly scrolled past
+// Observe hero — collapse when scrolled 60px past top
 (function(){
-  const hero=document.querySelector('.hero');
-  if(!hero)return;
+  const sentinel=document.getElementById('scroll-sentinel');
+  if(!sentinel)return;
+  let loaded=false;
+  // Small delay so initial intersection doesn't trigger collapse on load
+  setTimeout(()=>loaded=true,300);
   const obs=new IntersectionObserver(([entry])=>{
-    // collapse when less than 25% of hero is visible
-    document.body.classList.toggle('scrolled', entry.intersectionRatio<0.25);
-  },{
-    threshold:[0,0.1,0.25,0.5,1]
-  });
-  obs.observe(hero);
+    if(!loaded)return;
+    document.body.classList.toggle('scrolled',!entry.isIntersecting);
+  },{threshold:0, rootMargin:'-60px 0px 0px 0px'});
+  obs.observe(sentinel);
 })();
 
 // ── Tabs ──────────────────────────────────
@@ -815,11 +833,11 @@ function sortedTasks(){
 function thArrow(col){return _taskSort===col?'<span class="sort-arrow">▲</span>':'';}
 // Labels are stored in S.labels — fallback to defaults if not set
 const DEFAULT_LABELS=[
-  {k:'reuniao',l:'📅 Reunião',c:'#2563eb'},
-  {k:'compra',l:'🛒 Compra',c:'#ca8a04'},
-  {k:'urgente',l:'⚡ Urgente',c:'#dc2626'},
-  {k:'doc',l:'📄 Documento',c:'#7c3aed'},
-  {k:'outro',l:'💬 Outro',c:'#6b8f69'},
+  {k:'reuniao',l:'📅 Reunião',c:'#4f7196'},
+  {k:'compra',l:'🛒 Compra',c:'#7a6845'},
+  {k:'urgente',l:'⚡ Urgente',c:'#a03030'},
+  {k:'doc',l:'📄 Documento',c:'#5a5a8a'},
+  {k:'outro',l:'💬 Outro',c:'#4a7a5a'},
 ];
 function getLabels(){if(!S)return DEFAULT_LABELS;return Array.isArray(S.labels)?S.labels:DEFAULT_LABELS;}
 // alias for use throughout
@@ -879,7 +897,20 @@ function renderAdmin(){
     const header=lbl
       ?`<div style="padding:6px 10px 4px;font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:${lbl.c};border-bottom:1px solid var(--border);display:flex;align-items:center;gap:5px;"><span>${lbl.l}</span><span style="font-size:.6rem;opacity:.5;">${groups[k].length}</span></div>`
       :'';
-    return `<div class="task-table" style="margin-bottom:8px;">${header}${thead}${groups[k].map(taskRow).join('')}</div>`;
+    const gid='grp_'+k;
+    const isOpen=localStorage.getItem('grp_'+k)!=='0';
+    const hdrClass=isOpen?'':'collapsed';
+    const bodyClass=isOpen?'open':'closed';
+    return `<div class="task-table" style="margin-bottom:8px;">
+      ${lbl?`<div class="label-group-hdr ${hdrClass}" style="color:${lbl.c}" onclick="toggleGroup('${gid}',this)">
+        <span>${lbl.l}</span>
+        <span style="font-size:.6rem;opacity:.5;margin-left:2px;">${groups[k].length}</span>
+        <span class="label-group-chevron">▾</span>
+      </div>`:''}
+      <div class="label-group-body ${bodyClass}" id="${gid}">
+        ${thead}${groups[k].map(taskRow).join('')}
+      </div>
+    </div>`;
   }).join('');
 
   document.getElementById('task-wrap').innerHTML=
@@ -970,6 +1001,16 @@ function saveEditTask(){
   const labelVal=document.getElementById('teLabelChips').dataset.label;
   t.label=(labelVal===''||labelVal===undefined)?null:labelVal;
   closeO('taskEditOv');save();
+}
+
+function toggleGroup(gid,hdr){
+  const body=document.getElementById(gid);
+  if(!body)return;
+  const isOpen=body.classList.contains('open');
+  body.classList.toggle('open',!isOpen);
+  body.classList.toggle('closed',isOpen);
+  hdr.classList.toggle('collapsed',isOpen);
+  try{localStorage.setItem(gid,isOpen?'0':'1');}catch(e){}
 }
 function setTaskLabel(id,val){const t=S.tasks.find(t=>t.id===id);if(t){t.label=val===''||val===null?null:val;save();}}
 function togT(id){const t=S.tasks.find(x=>x.id===id);if(t){t.done=!t.done;save();}}
