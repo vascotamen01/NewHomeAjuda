@@ -815,7 +815,7 @@ const DEFAULT_LABELS=[
   {k:'doc',l:'📄 Documento',c:'#7c3aed'},
   {k:'outro',l:'💬 Outro',c:'#6b8f69'},
 ];
-function getLabels(){return (S&&S.labels&&S.labels.length)?S.labels:DEFAULT_LABELS;}
+function getLabels(){if(!S)return DEFAULT_LABELS;return Array.isArray(S.labels)?S.labels:DEFAULT_LABELS;}
 // alias for use throughout
 Object.defineProperty(window,'LABELS',{get:()=>getLabels()});
 
