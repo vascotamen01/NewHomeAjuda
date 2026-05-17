@@ -751,23 +751,22 @@ function renderTimeline(){
 }
 
 // ── Header colapsível ao scroll (throttled com rAF) ──────────────
-let _scrollTicking=false,_lastScrollY=0,_scrollCooldown=false;
+let _scrollTicking=false,_lastScrollY=0;
 function onScroll(){
-  if(_scrollTicking||_scrollCooldown)return;
+  if(_scrollTicking)return;
   _scrollTicking=true;
   requestAnimationFrame(()=>{
     const y=window.scrollY;
     const goingDown=y>_lastScrollY;
     _lastScrollY=y;
     const isScrolled=document.body.classList.contains('scrolled');
-    if(!isScrolled&&goingDown&&y>30){
+    // Collapse: scrolling down past 50px
+    if(!isScrolled&&goingDown&&y>50){
       document.body.classList.add('scrolled');
-      _scrollCooldown=true;
-      setTimeout(()=>_scrollCooldown=false,600);
-    }else if(isScrolled&&y===0){
+    }
+    // Expand: scrolling up AND near top (within 30px)
+    if(isScrolled&&!goingDown&&y<30){
       document.body.classList.remove('scrolled');
-      _scrollCooldown=true;
-      setTimeout(()=>_scrollCooldown=false,600);
     }
     _scrollTicking=false;
   });
@@ -781,11 +780,7 @@ function switchTab(el,name){
   el.classList.add('active');
   document.getElementById('panel-'+name).classList.add('active');
   document.getElementById('fab').className='fab'+(name==='compras'?'':' h');
-  // Keep scrolled state — freeze the cooldown so hero doesn't re-expand
-  if(document.body.classList.contains('scrolled')){
-    _scrollCooldown=true;
-    setTimeout(()=>_scrollCooldown=false,800);
-  }
+
   if(name==='orcamento') renderBudget();
 }
 
