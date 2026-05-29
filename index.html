@@ -828,20 +828,92 @@ function defaultData(){
   };
 }
 
+// ── localStorage helpers ──────────────────
+const LS_KEY = 'casanova_estado';
+function lsSave(data){
+  try{ localStorage.setItem(LS_KEY, JSON.stringify(data)); }catch(e){}
+}
+function lsLoad(){
+  try{
+    const raw = localStorage.getItem(LS_KEY);
+    if(!raw) return null;
+    const d = JSON.parse(raw);
+    // Consider it real data if it has tasks or items beyond the built-in defaults
+    if(d && (
+      (Array.isArray(d.tasks) && d.tasks.length > 0) ||
+      (Array.isArray(d.items) && d.items.length > 0)
+    )) return d;
+  }catch(e){}
+  return null;
+}
+// Returns true only if data looks like the hardcoded defaultData (no real user content)
+function isDefaultData(d){
+  if(!d) return true;
+  const defaultItemNames = ['Cama de casal','Colchão','Sofá'];
+  const defaultTaskTexts = ['Assinar contrato de arrendamento'];
+  if(!Array.isArray(d.items) || !Array.isArray(d.tasks)) return true;
+  // If ANY item or task name differs from known defaults, it's real data
+  const hasRealItem = d.items.some(i => !defaultItemNames.includes(i.name));
+  const hasRealTask = d.tasks.some(t => !defaultTaskTexts.includes(t.text) && t.text);
+  // Also real if user added more items/tasks than the 3 defaults
+  if(d.items.length > 3 || d.tasks.length > 8) return false;
+  return !(hasRealItem || hasRealTask);
+}
+
 // ── Firebase ──────────────────────────────
+let _firebaseReady = false;
 function initFire(){
-  if(!IS_CFG){ hide(true); S=defaultData(); render(); return; }
+  if(!IS_CFG){
+    hide(true);
+    S = lsLoad() || defaultData();
+    render();
+    return;
+  }
   try{
     firebase.initializeApp(firebaseConfig);
-    db=firebase.firestore();
-    docRef=db.collection('mudanca').doc('estado');
-    docRef.onSnapshot(doc=>{
+    db = firebase.firestore();
+    docRef = db.collection('mudanca').doc('estado');
+    docRef.onSnapshot(doc => {
+      _firebaseReady = true;
+      const fbData = doc.exists ? doc.data() : null;
+      const localData = lsLoad();
+
+      if(!doc.exists){
+        // Document missing in Firebase — use localStorage if available, else defaults
+        S = localData || defaultData();
+        // Write to Firebase only if we have real data (never write defaults over nothing)
+        if(localData && !isDefaultData(localData)){
+          docRef.set(S);
+        } else if(!localData){
+          // First ever use — write defaults to both
+          S = defaultData();
+          lsSave(S);
+          docRef.set(S);
+        }
+      } else if(isDefaultData(fbData) && localData && !isDefaultData(localData)){
+        // Firebase has defaults but localStorage has real data — restore from localStorage
+        S = localData;
+        docRef.set(S); // push real data back to Firebase
+      } else {
+        // Firebase has real data — use it and sync to localStorage
+        S = fbData;
+        lsSave(S);
+      }
       hide(true);
-      S=doc.exists?doc.data():defaultData();
-      if(!doc.exists)docRef.set(S);
       render();
-    },()=>{hide(false);S=defaultData();render();});
-  }catch(e){hide(false);S=defaultData();render();}
+    }, () => {
+      // Firebase error (offline, permissions, etc.) — fall back to localStorage
+      const localData = lsLoad();
+      S = localData || defaultData();
+      hide(false);
+      render();
+    });
+  }catch(e){
+    const localData = lsLoad();
+    S = localData || defaultData();
+    hide(false);
+    render();
+  }
 }
 function hide(ok){
   const l=document.getElementById('loading');
@@ -850,12 +922,52 @@ function hide(ok){
   document.getElementById('slbl').textContent=ok?'Sincronizado':'Sem ligação';
 }
 function save(){
-  if(!S)return; render();
-  if(docRef){
+  if(!S) return;
+  // Always save to localStorage first — this is the safety net
+  lsSave(S);
+  render();
+  if(docRef && _firebaseReady){
     const b=document.getElementById('sync-bar');
     b.style.opacity='1';
-    docRef.set(S).then(()=>setTimeout(()=>b.style.opacity='0',700));
+    docRef.set(S).then(()=>setTimeout(()=>b.style.opacity='0',700)).catch(()=>{});
   }
+}
+
+// ── Export / Import backup ─────────────────
+function exportData(){
+  if(!S) return;
+  const json = JSON.stringify(S, null, 2);
+  const blob = new Blob([json], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'casanova_backup_' + new Date().toISOString().slice(0,10) + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+function importData(){
+  const inp = document.createElement('input');
+  inp.type = 'file';
+  inp.accept = '.json';
+  inp.onchange = e => {
+    const file = e.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      try{
+        const d = JSON.parse(ev.target.result);
+        if(!d.tasks || !d.items) throw new Error('Formato inválido');
+        if(!confirm('Substituir todos os dados actuais pelos do ficheiro?')) return;
+        S = d;
+        save();
+        alert('Dados importados com sucesso!');
+      }catch(ex){
+        alert('Erro ao importar: ' + ex.message);
+      }
+    };
+    reader.readAsText(file);
+  };
+  inp.click();
 }
 
 // ── Timeline ──────────────────────────────
