@@ -6,17 +6,26 @@
 <title>Casa Nova · Ajuda</title>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
 :root {
-  --sage:    #6B8F69; --sage-lt: #EDF3EC; --sage-dk: #4A6A48;
-  --wood:    #A8622E; --wood-lt: #F5EAD8;
-  --cream:   #F5F0E8; --dark: #1C1410; --dark2: #2A1E14;
-  --text:    #2A1E12; --text2: #7A6858; --text3: #B0A090;
-  --border:  #E2D8CC; --red: #C06848; --surface: #FFFFFF;
-  --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
+  /* ── Soft Pastel palette ── */
+  --sage:    #6FA28F; --sage-lt: #E9F3EF; --sage-dk: #517F6D;
+  --wood:    #C97B4A; --wood-lt: #F8E8DC;
+  --cream:   #FDFBF7; --dark: #2B2420; --dark2: #362D26;
+  --text:    #3A322C; --text2: #79695B; --text3: #B0A395;
+  --border:  #ECE3D6; --red: #C05A45; --surface: #FFFFFF;
+  --vasco:   #6E93B0; --vasco-lt: #E8F1F6;
+  --rita:    #B06C93; --rita-lt: #FBEEF5;
+  --font: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --r-sm: 10px; --r-md: 14px; --r-lg: 20px;
+  --sh-sm: 0 1px 3px rgba(58,50,44,.06), 0 0 0 1px rgba(58,50,44,.035);
+  --sh-md: 0 4px 16px rgba(58,50,44,.08), 0 0 0 1px rgba(58,50,44,.035);
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
-body{font-family:var(--font);background:var(--cream);color:var(--text);}
+body{font-family:var(--font);background:var(--cream);color:var(--text);-webkit-font-smoothing:antialiased;}
 
 /* ── LOADING ── */
 #loading{position:fixed;inset:0;background:var(--dark);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:999;gap:16px;transition:opacity .5s;}
@@ -141,6 +150,18 @@ body.scrolled .tab-btn .tab-icon{font-size:1.3rem;line-height:1;}
 .room-body{padding:0 10px 8px;max-height:6000px;overflow:hidden;transition:max-height .35s ease, padding .25s ease, opacity .25s ease;opacity:1;}
 .room-sect.collapsed .room-body{max-height:0;padding-top:0;padding-bottom:0;opacity:0;}
 
+/* ── Já Temos (inventário) ── */
+.inv-add-row{display:flex;gap:8px;background:var(--surface);border-radius:var(--r-md);padding:10px;box-shadow:var(--sh-sm);margin-bottom:12px;}
+.inv-add-row input{flex:1;padding:10px 12px;border-radius:var(--r-sm);border:1.5px solid var(--border);background:var(--cream);font-family:var(--font);font-size:.86rem;color:var(--text);}
+.inv-add-row select{padding:10px 10px;border-radius:var(--r-sm);border:1.5px solid var(--border);background:var(--cream);font-family:var(--font);font-size:.82rem;color:var(--text);}
+.inv-add-row button{padding:0 16px;background:var(--sage);color:#fff;border:none;border-radius:var(--r-sm);cursor:pointer;font-size:1.2rem;}
+.inv-group{margin-bottom:8px;background:var(--surface);border-radius:var(--r-md);overflow:hidden;box-shadow:var(--sh-sm);}
+.inv-group-hdr{display:flex;align-items:center;gap:8px;padding:11px 14px;font-size:.82rem;font-weight:700;border-bottom:1px solid var(--border);}
+.inv-row{display:flex;align-items:center;gap:10px;padding:11px 14px;border-bottom:1px solid var(--border);}
+.inv-row:last-child{border-bottom:none;}
+.inv-row-name{flex:1;font-size:.86rem;color:var(--text);}
+.inv-empty{text-align:center;color:var(--text3);padding:32px 0;font-size:.86rem;}
+
 /* ── Chips de filtro por marca/loja ── */
 .store-search-row{display:flex;gap:8px;align-items:center;margin-bottom:14px;}
 .store-search-wrap{position:relative;flex:1;}
@@ -232,25 +253,6 @@ body.scrolled .tab-btn .tab-icon{font-size:1.3rem;line-height:1;}
 .r-btn.sel{border-color:var(--sage);background:var(--sage-lt);}
 .r-btn.sel .rn{color:var(--sage-dk);}
 
-/* ── BUDGET TAB ── */
-.budget-summary{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:20px;}
-.bcard{background:var(--surface);border-radius:16px;padding:16px 14px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,.07),0 0 0 1px rgba(0,0,0,.04);display:flex;flex-direction:column;align-items:center;justify-content:center;}
-.bcard-lbl{font-size:.62rem;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);font-weight:700;margin-bottom:8px;}
-.bcard-val{font-size:1.5rem;font-weight:900;color:var(--text);line-height:1;}
-.bcard.clickable{cursor:pointer;transition:box-shadow .15s;}
-.bcard.clickable:hover{box-shadow:0 2px 8px rgba(0,0,0,.12),0 0 0 2px var(--sage);}
-.bcard-val.positive{color:#22c55e;}
-.bcard-val.negative{color:#ef4444;}
-.budget-set-row{display:flex;gap:8px;align-items:center;margin-bottom:20px;}
-.budget-set-row input{flex:1;padding:10px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--surface);font-size:.9rem;font-family:var(--font);color:var(--text);}
-.budget-set-row button{padding:10px 16px;border-radius:10px;background:var(--sage);color:#fff;border:none;font-weight:700;cursor:pointer;font-family:var(--font);}
-.budget-list{display:flex;flex-direction:column;gap:8px;}
-.budget-item{background:var(--surface);border-radius:12px;padding:12px 14px;box-shadow:0 1px 4px rgba(0,0,0,.06),0 0 0 1px rgba(0,0,0,.04);display:flex;justify-content:space-between;align-items:center;gap:10px;}
-.budget-item-info{flex:1;min-width:0;}
-.budget-item-name{font-size:.85rem;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.budget-item-opt{font-size:.73rem;color:var(--text2);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.budget-item-price{font-size:.95rem;font-weight:800;color:var(--text);flex-shrink:0;}
-.budget-empty{text-align:center;color:var(--text3);padding:32px 0;font-size:.86rem;}
 /* ── MOVE ROOM ── */
 .move-room-btn{font-size:.65rem;padding:2px 7px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text2);cursor:pointer;font-family:var(--font);margin-left:4px;}
 .move-room-picker{position:fixed;inset:0;z-index:500;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.45);backdrop-filter:blur(4px);}
@@ -269,18 +271,18 @@ body.scrolled .tab-btn .tab-icon{font-size:1.3rem;line-height:1;}
 .store-search-clear.on{background:var(--sage);color:#fff;border-color:var(--sage);}
 
 /* ── TASKS TABLE ── */
-.task-table{background:var(--surface);border-radius:14px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.07),0 0 0 1px rgba(0,0,0,.04);margin-bottom:10px;}
-.task-thead{display:grid;grid-template-columns:28px 1fr 90px 72px 20px 24px;gap:0;background:rgba(0,0,0,.04);padding:0;}
+.task-table{background:var(--surface);border-radius:var(--r-md);overflow:hidden;box-shadow:var(--sh-sm);margin-bottom:10px;}
+.task-thead{display:grid;grid-template-columns:28px 1fr 52px 76px 34px 54px 24px;gap:0;background:rgba(0,0,0,.035);padding:0;}
 .task-th{padding:7px 6px;font-size:.63rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);cursor:pointer;user-select:none;display:flex;align-items:center;gap:2px;transition:color .15s;}
 .task-th:hover{color:var(--text);}
 .task-th.sorted{color:var(--sage);}
 .task-th .sort-arrow{font-size:.55rem;}
-.task-row{display:grid;grid-template-columns:28px 1fr 90px 72px 20px 24px;gap:0;border-bottom:1px solid var(--border);align-items:center;min-height:44px;cursor:pointer;}
+.task-row{display:grid;grid-template-columns:28px 1fr 52px 76px 34px 54px 24px;gap:0;border-bottom:1px solid var(--border);align-items:start;padding:4px 0;cursor:pointer;}
 .task-row:last-child{border-bottom:none;}
 .task-row:active{background:rgba(0,0,0,.03);}
 .task-cell{padding:6px 4px;display:flex;align-items:center;}
 .task-cell.grow{flex:1;min-width:0;}
-.task-name-cell{font-size:.84rem;color:var(--text);padding:6px 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.task-name-cell{font-size:.84rem;color:var(--text);padding:8px 6px;white-space:normal;word-break:break-word;line-height:1.35;}
 .task-name-cell.done-txt{text-decoration:line-through;color:var(--text3);}
 .task-date-small{font-size:.65rem;color:var(--text3);white-space:nowrap;padding:0 4px;}
 .task-date-small.overdue{color:#ef4444;font-weight:700;}
@@ -301,23 +303,19 @@ body.scrolled .tab-btn .tab-icon{font-size:1.3rem;line-height:1;}
 .task-label-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px;}
 .label-chip{padding:4px 10px;border-radius:20px;font-size:.72rem;font-weight:600;cursor:pointer;border:1.5px solid transparent;transition:all .15s;}
 .label-chip.on{border-color:currentColor;}
-/* ── BUDGET CHART ── */
-.chart-wrap{background:var(--surface);border-radius:14px;padding:16px;margin-bottom:16px;box-shadow:0 1px 4px rgba(0,0,0,.07),0 0 0 1px rgba(0,0,0,.04);}
-.chart-title{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:12px;}
-.chart-canvas-wrap{max-width:260px;margin:0 auto;}
-.chart-legend{display:flex;flex-direction:column;gap:6px;margin-top:14px;}
-.chart-legend-item{display:flex;align-items:center;gap:8px;font-size:.78rem;}
-.chart-legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
-.chart-legend-label{flex:1;color:var(--text2);}
-.chart-legend-val{font-weight:700;color:var(--text);}
-.top-items-list{display:flex;flex-direction:column;gap:6px;margin-top:8px;}
-.top-item-row{display:flex;align-items:center;gap:10px;padding:8px 10px;background:var(--surface);border-radius:10px;box-shadow:0 1px 3px rgba(0,0,0,.05);}
-.top-item-rank{font-size:.7rem;font-weight:800;color:var(--text3);width:16px;text-align:center;}
-.top-item-info{flex:1;min-width:0;}
-.top-item-name{font-size:.82rem;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.top-item-room{font-size:.7rem;color:var(--text2);}
-.top-item-price{font-weight:800;font-size:.9rem;}
-
+/* ── Responsible (Vasco / Rita) ── */
+.resp-sel{appearance:none;-webkit-appearance:none;border:1.5px solid var(--border);border-radius:20px;background:var(--surface);font-size:.68rem;font-weight:700;cursor:pointer;padding:4px 8px;color:var(--text2);font-family:var(--font);max-width:100%;}
+.resp-sel[data-r="vasco"]{background:var(--vasco-lt);border-color:var(--vasco);color:var(--vasco);}
+.resp-sel[data-r="rita"]{background:var(--rita-lt);border-color:var(--rita);color:var(--rita);}
+.resp-sel-sm{padding:3px 3px;font-size:.66rem;width:100%;text-align:center;}
+.resp-chip{font-size:.65rem;font-weight:700;padding:2px 8px;border-radius:20px;white-space:nowrap;}
+.resp-chip.vasco{background:var(--vasco-lt);color:var(--vasco);}
+.resp-chip.rita{background:var(--rita-lt);color:var(--rita);}
+.resp-filter{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;}
+.resp-filter-btn{padding:7px 13px;border-radius:20px;border:1.5px solid var(--border);background:var(--surface);font-size:.76rem;font-weight:600;color:var(--text2);cursor:pointer;font-family:var(--font);transition:all .15s;}
+.resp-filter-btn.active{background:var(--sage);border-color:var(--sage);color:#fff;}
+.resp-filter-btn.active[data-r="vasco"]{background:var(--vasco);border-color:var(--vasco);}
+.resp-filter-btn.active[data-r="rita"]{background:var(--rita);border-color:var(--rita);}
 
 /* ── Item collapse ── */
 .item-body{overflow:hidden;transition:max-height .28s cubic-bezier(.4,0,.2,1);}
@@ -338,22 +336,6 @@ body.scrolled .tab-btn .tab-icon{font-size:1.3rem;line-height:1;}
 
 
 
-/* ── Budget room breakdown ── */
-.room-breakdown{margin-top:16px;}
-.room-breakdown-title{font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);margin-bottom:10px;}
-.room-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);}
-.room-row:last-child{border-bottom:none;}
-.room-dot-lg{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
-.room-row-name{flex:1;font-size:.84rem;font-weight:600;}
-.room-row-bar-wrap{width:90px;height:5px;background:var(--border);border-radius:3px;overflow:hidden;}
-.room-row-bar{height:5px;border-radius:3px;transition:width .4s ease;}
-.room-row-val{font-size:.84rem;font-weight:800;min-width:52px;text-align:right;}
-.sub-items{padding:4px 0 4px 20px;}
-.sub-item-row{display:flex;align-items:center;justify-content:space-between;padding:3px 0;font-size:.76rem;color:var(--text2);}
-.room-row.collapsible{cursor:pointer;}
-.room-row.collapsible .room-row-name::after{content:' ▾';font-size:.65rem;color:var(--text3);}
-
-
 /* ── Label manager ── */
 .label-mgr-row{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border);}
 .label-mgr-row:last-child{border-bottom:none;}
@@ -371,49 +353,34 @@ body.scrolled .tab-btn .tab-icon{font-size:1.3rem;line-height:1;}
 /* Inline label select in task table */
 .task-label-sel{appearance:none;-webkit-appearance:none;border:none;background:transparent;font-size:.7rem;cursor:pointer;max-width:80px;color:var(--text2);font-family:var(--font);}
 
-
-/* ── Budget per article ── */
-.item-budget-row{display:flex;align-items:center;gap:8px;padding:8px 14px;background:rgba(107,143,105,.06);border-top:1px solid var(--border);}
-.item-budget-lbl{font-size:.68rem;color:var(--text3);font-weight:600;}
-.item-budget-input{border:none;border-bottom:1.5px solid var(--border);background:transparent;font-family:var(--font);font-size:.84rem;font-weight:700;color:var(--text);width:80px;padding:2px 4px;text-align:right;}
-.item-budget-input:focus{outline:none;border-bottom-color:var(--sage);}
-.item-budget-unit{font-size:.72rem;color:var(--text3);}
-/* Label manager button */
-
+/* ── Room manager ── */
+.room-mgr-row{display:flex;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid var(--border);}
+.room-mgr-row:last-child{border-bottom:none;}
+.room-mgr-emoji-btn{width:36px;height:36px;border-radius:10px;border:1.5px solid var(--border);background:var(--surface);font-size:1.1rem;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+.room-mgr-text{flex:1;min-width:0;border:none;background:transparent;font-family:var(--font);font-size:.86rem;color:var(--text);padding:2px 4px;border-radius:4px;}
+.room-mgr-text:focus{outline:2px solid var(--sage);background:var(--cream);}
+.room-mgr-order{display:flex;flex-direction:column;gap:1px;flex-shrink:0;}
+.room-mgr-order button{border:none;background:transparent;color:var(--text3);cursor:pointer;font-size:.7rem;line-height:1;padding:2px 3px;}
+.room-mgr-order button:hover{color:var(--sage);}
+.emoji-picker{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;padding:10px 0;}
+.emoji-picker button{border:1.5px solid var(--border);background:var(--surface);border-radius:8px;font-size:1.05rem;padding:6px 0;cursor:pointer;}
+.emoji-picker button.sel{border-color:var(--sage);background:var(--sage-lt);}
+.room-add-form{display:flex;gap:8px;margin-top:10px;align-items:center;}
 
 /* ── Task table mobile ── */
 @media(max-width:520px){
-  .task-thead{grid-template-columns:28px 1fr 20px 24px!important;}
-  .task-row{grid-template-columns:28px 1fr 20px 24px!important;}
-  .task-th:nth-child(3),.task-th:nth-child(4){display:none;}
-  .task-cell:nth-child(3),.task-cell:nth-child(4){display:none;}
+  .task-thead{grid-template-columns:28px 1fr 24px!important;}
+  .task-row{grid-template-columns:28px 1fr 24px!important;}
+  .task-th:nth-child(3),.task-th:nth-child(4),.task-th:nth-child(5),.task-th:nth-child(6){display:none;}
+  .task-cell:nth-child(3),.task-cell:nth-child(4),.task-cell:nth-child(5),.task-cell:nth-child(6){display:none;}
   .task-name-cell{padding:8px 6px;display:flex;flex-direction:column;gap:2px;}
-  .task-meta-mobile{font-size:.65rem;color:var(--text3);display:flex;gap:8px;flex-wrap:wrap;margin-top:2px;}
+  .task-meta-mobile{font-size:.65rem;color:var(--text3);display:flex;gap:8px;flex-wrap:wrap;margin-top:2px;align-items:center;}
   .task-meta-mobile .m-date{color:var(--text3);}
   .task-meta-mobile .m-date.overdue{color:#ef4444;font-weight:700;}
   .task-meta-mobile .m-date.soon{color:#f97316;}
   .task-meta-mobile .m-label{font-weight:700;}
 }
 @media(min-width:521px){.task-meta-mobile{display:none;}}
-
-
-/* ── Item header budget input ── */
-.item-hdr-budget{
-  width:64px;
-  border:none;
-  border-bottom:1.5px solid rgba(0,0,0,.12);
-  background:transparent;
-  font-family:var(--font);
-  font-size:.75rem;
-  font-weight:700;
-  color:var(--text2);
-  text-align:center;
-  padding:2px 2px;
-  flex-shrink:0;
-}
-.item-hdr-budget:focus{outline:none;border-bottom-color:var(--sage);}
-.item-hdr-budget::placeholder{color:var(--text3);font-weight:400;}
-
 
 /* ── Collapsible label group ── */
 .label-group-hdr{
@@ -525,15 +492,14 @@ body.scrolled .compact-bar{
 }
 
 </style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 </head>
 <body>
 <div id="sync-bar"></div>
 
 <div id="loading">
   <svg width="38" height="38" viewBox="0 0 38 38" fill="none">
-    <path d="M19 3L1 17h5v18h26V17h5L19 3z" stroke="#A8622E" stroke-width="2" stroke-linejoin="round"/>
-    <rect x="14" y="25" width="10" height="10" rx="1" fill="#A8622E" opacity=".35"/>
+    <path d="M19 3L1 17h5v18h26V17h5L19 3z" stroke="#C97B4A" stroke-width="2" stroke-linejoin="round"/>
+    <rect x="14" y="25" width="10" height="10" rx="1" fill="#C97B4A" opacity=".35"/>
   </svg>
   <div class="ring"></div>
   <p>Casa Nova · Ajuda</p>
@@ -567,7 +533,7 @@ body.scrolled .compact-bar{
   <div class="nav-tabs">
     <button class="tab-btn active" data-tab="admin" onclick="switchTab(this,'admin')"><span class="tab-icon">🏛️</span> Admin</button>
     <button class="tab-btn" data-tab="compras" onclick="switchTab(this,'compras')"><span class="tab-icon">🛒</span> Compras</button>
-    <button class="tab-btn" data-tab="orcamento" onclick="switchTab(this,'orcamento')"><span class="tab-icon">💰</span> Orçamento</button>
+    <button class="tab-btn" data-tab="inventario" onclick="switchTab(this,'inventario')"><span class="tab-icon">📦</span> Já Temos</button>
   </div>
 </div>
 </div><!-- /app-top -->
@@ -580,7 +546,7 @@ body.scrolled .compact-bar{
   <div class="compact-tabs">
     <button class="compact-tab-btn active" data-tab="admin" onclick="switchTab(this,'admin')">🏛️</button>
     <button class="compact-tab-btn" data-tab="compras" onclick="switchTab(this,'compras')">🛒</button>
-    <button class="compact-tab-btn" data-tab="orcamento" onclick="switchTab(this,'orcamento')">💰</button>
+    <button class="compact-tab-btn" data-tab="inventario" onclick="switchTab(this,'inventario')">📦</button>
   </div>
 </div>
 
@@ -607,47 +573,40 @@ body.scrolled .compact-bar{
             <option value="">— Etiqueta</option>
           </select>
         </div>
+        <div style="margin-bottom:10px;">
+          <select id="newTaskResp" style="width:100%;padding:9px 6px;border-radius:10px;border:1.5px solid var(--border);background:var(--surface);font-family:var(--font);font-size:.78rem;color:var(--text);cursor:pointer;">
+            <option value="">— Responsável</option>
+            <option value="vasco">Vasco</option>
+            <option value="rita">Rita</option>
+          </select>
+        </div>
         <div style="display:flex;gap:8px;">
           <button onclick="toggleNewTaskForm()" style="flex:1;padding:10px;border-radius:10px;border:1.5px solid var(--border);background:transparent;font-family:var(--font);font-size:.84rem;cursor:pointer;color:var(--text2);">Cancelar</button>
           <button onclick="addTask()" style="flex:2;padding:10px;border-radius:10px;border:none;background:var(--sage);color:#fff;font-family:var(--font);font-size:.84rem;font-weight:700;cursor:pointer;">＋ Adicionar</button>
         </div>
       </div>
     </div>
+    <div id="task-resp-filter-bar"></div>
     <div id="task-wrap" style="margin-top:8px"></div>
   </div>
 
   <!-- COMPRAS -->
   <div class="panel" id="panel-compras">
-    <div id="rooms-wrap"><div id="store-filter-bar"></div><div id="rooms-list"></div></div>
+    <div style="margin-bottom:10px;">
+      <button onclick="openRoomMgr()" style="padding:8px 14px;border-radius:20px;border:1.5px solid var(--border);background:var(--surface);font-family:var(--font);font-size:.76rem;font-weight:600;color:var(--text2);cursor:pointer;">⚙️ Gerir divisões</button>
+    </div>
+    <div id="rooms-wrap"><div id="store-filter-bar"></div><div id="item-resp-filter-bar"></div><div id="rooms-list"></div></div>
   </div>
 
-  <div class="panel" id="panel-orcamento">
-    <div class="budget-summary">
-      <div class="bcard clickable" id="bcard-total"
-        onclick="const i=document.getElementById('budgetInput');const t=document.getElementById('b-total-txt');if(i&&t){t.style.display='none';i.style.display='';i.focus();}">
-        <div class="bcard-lbl">Orçamento</div>
-        <div class="bcard-val" id="b-total">
-          <span id="b-total-txt" style="display:block;">—</span>
-          <input type="number" id="budgetInput" placeholder="€"
-            style="width:90px;border:none;border-bottom:2px solid var(--sage);background:transparent;font-family:var(--font);font-size:1.4rem;font-weight:900;color:var(--text);text-align:center;display:none;padding:0;outline:none;"
-            min="0" step="100" oninput="saveBudget()" onblur="hideBudgetInput()">
-          <div style="font-size:.6rem;color:var(--sage);margin-top:4px;">toque para editar</div>
-          <div id="budget-auto-hint" style="font-size:.58rem;color:var(--text3);margin-top:2px;"></div>
-        </div>
-      </div>
-      <div class="bcard"><div class="bcard-lbl">Gasto</div><div class="bcard-val" id="b-spent">0€</div></div>
-      <div class="bcard"><div class="bcard-lbl">Restante</div><div class="bcard-val positive" id="b-left">—</div></div>
+  <!-- JÁ TEMOS -->
+  <div class="panel" id="panel-inventario">
+    <div class="inv-add-row">
+      <input id="invName" placeholder="O que já têm? ex: Torradeira…" onkeydown="if(event.key==='Enter')addInventoryItem()">
+      <select id="invRoom"></select>
+      <button onclick="addInventoryItem()">＋</button>
     </div>
-    <div class="chart-wrap" id="chart-wrap" style="display:none">
-    <div class="chart-title">Distribuição por divisão</div>
-    <div class="chart-canvas-wrap"><canvas id="budgetChart" height="220"></canvas></div>
-    <div class="chart-legend" id="chart-legend"></div>
-  </div>
-  <div class="chart-wrap" id="top-wrap" style="display:none">
-    <div class="chart-title">Produtos mais caros</div>
-    <div class="top-items-list" id="top-items-list"></div>
-  </div>
-  <div class="budget-list" id="budget-list"></div>
+    <div id="inv-filter-bar"></div>
+    <div id="inv-list"></div>
   </div>
 
 </div>
@@ -660,7 +619,7 @@ body.scrolled .compact-bar{
     <div id="labelMgrList"></div>
     <div class="label-add-row">
       <input id="newLabelText" class="task-modal-input" placeholder="Nova etiqueta…" style="flex:1;">
-      <input type="color" class="label-color-swatch" id="newLabelColor" value="#6b8f69" style="width:40px;height:40px;border-radius:10px;">
+      <input type="color" class="label-color-swatch" id="newLabelColor" value="#6fa28f" style="width:40px;height:40px;border-radius:10px;">
       <button onclick="addLabel()" style="padding:10px 14px;border-radius:10px;border:none;background:var(--sage);color:#fff;font-weight:700;cursor:pointer;font-family:var(--font);">＋</button>
     </div>
     <div class="m-btns" style="margin-top:14px;">
@@ -701,9 +660,36 @@ body.scrolled .compact-bar{
       </label>
       <div class="task-label-chips" id="teLabelChips"></div>
     </div>
+    <div class="task-modal-field">
+      <label>Responsável</label>
+      <select class="task-modal-select" id="teResp">
+        <option value="">— Nenhum</option>
+        <option value="vasco">Vasco</option>
+        <option value="rita">Rita</option>
+      </select>
+    </div>
     <div class="m-btns">
       <button class="btn-no" onclick="closeO('taskEditOv')">Cancelar</button>
       <button class="btn-ok" onclick="saveEditTask()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Room Manager Modal -->
+<div class="overlay" id="roomMgrOv" style="z-index:600;">
+  <div class="modal" style="padding:20px 20px 40px;">
+    <div class="m-handle"></div>
+    <div class="m-title">Gerir divisões</div>
+    <div id="roomMgrList"></div>
+    <div class="room-add-form">
+      <button type="button" class="room-mgr-emoji-btn" id="newRoomEmojiBtn" onclick="toggleRoomEmojiPicker()">📦</button>
+      <input id="newRoomText" class="task-modal-input" placeholder="Nova divisão…" style="flex:1;">
+      <input type="color" class="label-color-swatch" id="newRoomColor" value="#A8C9C0" style="width:40px;height:40px;border-radius:10px;">
+      <button onclick="addRoom()" style="padding:10px 14px;border-radius:10px;border:none;background:var(--sage);color:#fff;font-weight:700;cursor:pointer;font-family:var(--font);">＋</button>
+    </div>
+    <div class="emoji-picker" id="newRoomEmojiPicker" style="display:none;"></div>
+    <div class="m-btns" style="margin-top:14px;">
+      <button class="btn-ok" onclick="closeO('roomMgrOv')">Fechar</button>
     </div>
   </div>
 </div>
@@ -789,15 +775,23 @@ const WORKER_URL = "https://newhomescrapper.vascotamen01.workers.dev";
 const IS_CFG = !firebaseConfig.apiKey.startsWith('COLE-AQUI');
 const HAS_WORKER = !WORKER_URL.startsWith('COLE-AQUI');
 
-const ROOMS = [
-  {id:'sala',    n:'Sala',          e:'🛋️', c:'#7A9B78'},
-  {id:'quarto',  n:'Quarto',        e:'🛏️', c:'#A8622E'},
-  {id:'crianca', n:'Criança',       e:'👶', c:'#C47A5A'},
-  {id:'cozinha', n:'Cozinha',       e:'🍽️', c:'#6B8F69'},
-  {id:'wc',      n:'Casa de Banho', e:'🚿', c:'#4A7A8A'},
-  {id:'escrit',  n:'Escritório',    e:'💻', c:'#6B7A9A'},
-  {id:'outro',   n:'Outro',         e:'📦', c:'#9A8A7A'},
+// Hardcoded fallback list of rooms — used to seed S.rooms on first load for
+// existing users (so saved item.room ids like 'cozinha'/'wc' keep resolving),
+// and as the base for brand-new installs. Never read directly elsewhere —
+// use getRooms() so the fully-editable S.rooms is always the source of truth.
+const ROOMS_DEFAULT = [
+  {id:'sala',    n:'Sala',          e:'🛋️', c:'#A8C9C0'},
+  {id:'quarto',  n:'Quarto',        e:'🛏️', c:'#D8A8C9'},
+  {id:'crianca', n:'Criança',       e:'👶', c:'#F4C9A8'},
+  {id:'cozinha', n:'Cozinha',       e:'🍽️', c:'#A8BFD8'},
+  {id:'wc',      n:'Casa de Banho', e:'🚿', c:'#D9A98C'},
+  {id:'escrit',  n:'Escritório',    e:'💻', c:'#E8D9A0'},
+  {id:'outro',   n:'Outro',         e:'📦', c:'#C7BFDA'},
 ];
+// Palette offered in the room-color picker — same soft/low-saturation register
+// as the room defaults above, so any user-created room stays harmonious.
+const ROOM_COLOR_CHOICES=['#A8C9C0','#D8A8C9','#F4C9A8','#A8BFD8','#D9A98C','#E8D9A0','#C7BFDA','#B7D4A0','#E0B8D0'];
+const ROOM_EMOJI_CHOICES=['🛋️','🛏️','👶','🍽️','🚿','💻','📦','🚪','🌿','🚗','🧺','🧸','🏠','🪑','🧴','🔧','🎮','📚','🐾','🧹','⭐'];
 
 let db, docRef, S=null, _oid=null, _oeid=null, _room='sala';
 const uid = ()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
@@ -824,8 +818,24 @@ function defaultData(){
       {id:uid(),room:'sala',name:'Sofá',options:[
         {id:uid(),name:'KIVIK 3 lugares',store:'IKEA',price:'549',url:'https://www.ikea.com/pt/',notes:'Confirmar medidas da sala',selected:false}
       ]},
-    ]
+    ],
+    rooms:[...ROOMS_DEFAULT.map(r=>({...r}))],
+    inventory:[]
   };
+}
+
+// Rooms are stored in S.rooms so users can fully edit them. For any state
+// loaded before this feature existed (no S.rooms yet), seed it from the
+// hardcoded ROOMS_DEFAULT so existing item.room references keep resolving.
+function getRooms(){
+  if(!S) return ROOMS_DEFAULT;
+  if(!Array.isArray(S.rooms) || !S.rooms.length) S.rooms=[...ROOMS_DEFAULT.map(r=>({...r}))];
+  return S.rooms;
+}
+function getInventory(){
+  if(!S) return [];
+  if(!Array.isArray(S.inventory)) S.inventory=[];
+  return S.inventory;
 }
 
 // ── localStorage helpers ──────────────────
@@ -1016,7 +1026,7 @@ function switchTab(el,name){
   document.querySelectorAll('[data-tab="'+name+'"]').forEach(t=>t.classList.add('active'));
   document.getElementById('panel-'+name).classList.add('active');
   document.getElementById('fab').className='fab'+(name==='compras'?'':' h');
-  if(name==='orcamento') renderBudget();
+  if(name==='inventario') renderInventory();
 }
 
 // ── Admin ─────────────────────────────────
@@ -1070,6 +1080,7 @@ Object.defineProperty(window,'LABELS',{get:()=>getLabels()});
 
 function renderAdmin(){
   if(!S)return;
+  renderTaskRespFilterBar();
   const done=S.tasks.filter(t=>t.done).length,total=S.tasks.length;
   const today=new Date().toISOString().slice(0,10);
   const soon=new Date(Date.now()+3*86400000).toISOString().slice(0,10);
@@ -1081,9 +1092,11 @@ function renderAdmin(){
       <div class="task-th ${_taskSort==='label'?'sorted':''}" onclick="setTaskSort('label')">Etiq. ${thArrow('label')}</div>
       <div class="task-th ${_taskSort==='date'?'sorted':''}" onclick="setTaskSort('date')">📅 ${thArrow('date')}</div>
       <div class="task-th ${_taskSort==='prio'?'sorted':''}" onclick="setTaskSort('prio')">P ${thArrow('prio')}</div>
+      <div class="task-th">Resp.</div>
       <div class="task-th"></div>
     </div>`;
 
+  const respBadge={vasco:'V',rita:'R'};
   const taskRow=t=>{
     const dc=t.due?(t.due<today?'overdue':t.due<=soon?'soon':''):'';
     const label=LABELS.find(l=>l.k===t.label);
@@ -1095,6 +1108,7 @@ function renderAdmin(){
         <div class="task-meta-mobile">
           ${t.due?`<span class="m-date ${dc}">${t.due.slice(5)}</span>`:''}
           ${label?`<span class="m-label" style="color:${label.c}">${label.l}</span>`:''}
+          ${t.responsible?`<span class="resp-chip ${t.responsible}">${t.responsible==='vasco'?'Vasco':'Rita'}</span>`:''}
         </div>
       </div>
       <div class="task-cell" onclick="event.stopPropagation()">
@@ -1105,13 +1119,21 @@ function renderAdmin(){
       </div>
       <div class="task-cell"><span class="task-date-small ${dc}">${t.due?t.due.slice(5):'—'}</span></div>
       <div class="task-cell">${prioDot(t.prio)}</div>
+      <div class="task-cell" onclick="event.stopPropagation()">
+        <select class="resp-sel resp-sel-sm" data-r="${t.responsible||''}" onchange="setTaskResp('${t.id}',this.value)" title="Responsável">
+          <option value="" ${!t.responsible?'selected':''}>—</option>
+          <option value="vasco" ${t.responsible==='vasco'?'selected':''}>V</option>
+          <option value="rita" ${t.responsible==='rita'?'selected':''}>R</option>
+        </select>
+      </div>
       <div class="task-cell" onclick="event.stopPropagation();delT('${t.id}')"><span class="btn-del">×</span></div>
     </div>`;
   };
 
+  const taskRespFilter=getTaskRespFilter();
   // Group by label
   const groups={};
-  sortedTasks().forEach(t=>{
+  sortedTasks().filter(t=>!taskRespFilter||t.responsible===taskRespFilter).forEach(t=>{
     const k=t.label||'_none';
     if(!groups[k])groups[k]=[];
     groups[k].push(t);
@@ -1140,8 +1162,23 @@ function renderAdmin(){
 
   document.getElementById('task-wrap').innerHTML=
     !total?'<div style="padding:18px;text-align:center;color:var(--text3);font-size:.84rem;">Sem tarefas 🎉</div>'
+    :!groupHtml?'<div style="padding:18px;text-align:center;color:var(--text3);font-size:.84rem;">Sem tarefas para este filtro.</div>'
     :groupHtml+`<div style="text-align:right;padding:4px 2px;font-size:.7rem;color:var(--text3)">${done}/${total} concluídas</div>`;
 }
+
+// ── Task responsible filter (mirrors getStoreFilter/setStoreFilter) ──────────
+function getTaskRespFilter(){try{return localStorage.getItem('taskRespFilter')||'';}catch(e){return '';}}
+function setTaskRespFilter(v){try{localStorage.setItem('taskRespFilter',v);}catch(e){}renderAdmin();}
+function renderTaskRespFilterBar(){
+  const bar=document.getElementById('task-resp-filter-bar');
+  if(!bar)return;
+  const cur=getTaskRespFilter();
+  const opts=[['','Todas'],['vasco','Vasco'],['rita','Rita']];
+  bar.innerHTML=`<div class="resp-filter">${opts.map(([v,l])=>
+    `<button class="resp-filter-btn ${cur===v?'active':''}" data-r="${v}" onclick="setTaskRespFilter('${v}')">${l}</button>`
+  ).join('')}</div>`;
+}
+function setTaskResp(id,val){const t=S.tasks.find(t=>t.id===id);if(t){t.responsible=val||null;save();}}
 
 
 
@@ -1194,6 +1231,7 @@ function openEditTask(id){
   document.getElementById('teText').value=t.text||'';
   document.getElementById('tePrio').value=t.prio||'n';
   document.getElementById('teDue').value=t.due||'';
+  const teResp=document.getElementById('teResp');if(teResp)teResp.value=t.responsible||'';
   // label chips
   document.getElementById('teLabelChips').innerHTML=getLabels().map(l=>`
     <button class="label-chip ${t.label===l.k?'on':''}"
@@ -1225,6 +1263,8 @@ function saveEditTask(){
   t.due=document.getElementById('teDue').value;
   const labelVal=document.getElementById('teLabelChips').dataset.label;
   t.label=(labelVal===''||labelVal===undefined)?null:labelVal;
+  const teResp=document.getElementById('teResp');
+  if(teResp)t.responsible=teResp.value||null;
   closeO('taskEditOv');save();
 }
 
@@ -1263,11 +1303,13 @@ function addTask(){
   const prio=document.getElementById('newTaskPrio').value||'n';
   const due=document.getElementById('newTaskDate').value||'';
   const label=document.getElementById('newTaskLabel')?.value||null;
-  S.tasks.unshift({id:uid(),text,done:false,prio,due,label:label||null});
+  const responsible=document.getElementById('newTaskResp')?.value||null;
+  S.tasks.unshift({id:uid(),text,done:false,prio,due,label:label||null,responsible:responsible||null});
   el.value='';
   document.getElementById('newTaskDate').value='';
   document.getElementById('newTaskPrio').value='n';
   const ls=document.getElementById('newTaskLabel');if(ls)ls.value='';
+  const rs=document.getElementById('newTaskResp');if(rs)rs.value='';
   document.getElementById('newTaskForm').style.display='none';
   save();
 }
@@ -1285,11 +1327,115 @@ function toggleRoom(rid){
   if(el)el.classList.toggle('collapsed',!s[rid]);
 }
 
+// ── Room manager (mirrors the label manager: add/rename/delete/reorder/recolor) ──
+let _newRoomEmoji='📦';
+let _editRoomEmojiId=null;
+function openRoomMgr(){
+  renderRoomMgr();
+  openO('roomMgrOv');
+}
+function renderRoomMgr(){
+  const list=document.getElementById('roomMgrList');
+  if(!list)return;
+  const rooms=getRooms();
+  list.innerHTML=rooms.map((r,i)=>`
+    <div class="room-mgr-row">
+      <button type="button" class="room-mgr-emoji-btn" onclick="toggleRoomRowEmoji('${r.id}')" title="Mudar ícone">${r.e}</button>
+      <input class="room-mgr-text" value="${r.n}" onchange="renameRoom('${r.id}',this.value)" onkeydown="if(event.key==='Enter')this.blur()">
+      <input type="color" class="label-color-swatch" value="${r.c}" onchange="setRoomColor('${r.id}',this.value)" style="background:${r.c};width:32px;height:32px;" title="Mudar cor">
+      <div class="room-mgr-order">
+        <button type="button" onclick="moveRoom('${r.id}',-1)" ${i===0?'disabled':''} title="Mover para cima">▲</button>
+        <button type="button" onclick="moveRoom('${r.id}',1)" ${i===rooms.length-1?'disabled':''} title="Mover para baixo">▼</button>
+      </div>
+      <span class="btn-del" onclick="delRoom('${r.id}')" title="Apagar">×</span>
+    </div>
+    ${_editRoomEmojiId===r.id?`<div class="emoji-picker">${ROOM_EMOJI_CHOICES.map(e=>`<button type="button" class="${r.e===e?'sel':''}" onclick="pickRoomEmoji('${r.id}','${e}')">${e}</button>`).join('')}</div>`:''}
+  `).join('');
+}
+function toggleRoomRowEmoji(id){
+  _editRoomEmojiId=_editRoomEmojiId===id?null:id;
+  renderRoomMgr();
+}
+function pickRoomEmoji(id,emoji){
+  const r=getRooms().find(r=>r.id===id);
+  if(r){r.e=emoji;save();}
+  _editRoomEmojiId=null;
+  renderRoomMgr();
+}
+function renameRoom(id,val){
+  const r=getRooms().find(r=>r.id===id);
+  const v=(val||'').trim();
+  if(r&&v){r.n=v;save();}
+  renderRoomMgr();
+}
+function setRoomColor(id,val){
+  const r=getRooms().find(r=>r.id===id);
+  if(r){r.c=val;save();}
+  renderRoomMgr();
+}
+function moveRoom(id,dir){
+  const rooms=getRooms();
+  const i=rooms.findIndex(r=>r.id===id);
+  const j=i+dir;
+  if(i<0||j<0||j>=rooms.length)return;
+  [rooms[i],rooms[j]]=[rooms[j],rooms[i]];
+  save();
+  renderRoomMgr();
+}
+function delRoom(id){
+  const rooms=getRooms();
+  if(rooms.length<=1){alert('Tem de existir sempre pelo menos uma divisão.');return;}
+  const room=rooms.find(r=>r.id===id);
+  if(!room)return;
+  const itemsUsing=S.items.filter(i=>i.room===id).length;
+  const invUsing=getInventory().filter(i=>i.roomId===id).length;
+  const totalUsing=itemsUsing+invUsing;
+  if(totalUsing>0){
+    if(!confirm(`"${room.n}" tem ${totalUsing} artigo(s)/item(ns) associado(s). Ao apagar, passam para "Outro" (ou a primeira divisão restante). Continuar?`))return;
+    let fallback=rooms.find(r=>r.id==='outro'&&r.id!==id)||rooms.find(r=>r.id!==id);
+    S.items.forEach(i=>{if(i.room===id)i.room=fallback.id;});
+    getInventory().forEach(inv=>{if(inv.roomId===id)inv.roomId=fallback.id;});
+  } else {
+    if(!confirm(`Apagar a divisão "${room.n}"?`))return;
+  }
+  S.rooms=rooms.filter(r=>r.id!==id);
+  if(_room===id) _room=S.rooms[0]?.id;
+  save();
+  renderRoomMgr();
+}
+function toggleRoomEmojiPicker(){
+  const picker=document.getElementById('newRoomEmojiPicker');
+  if(!picker)return;
+  const show=picker.style.display==='none';
+  picker.style.display=show?'grid':'none';
+  if(show){
+    picker.innerHTML=ROOM_EMOJI_CHOICES.map(e=>`<button type="button" class="${_newRoomEmoji===e?'sel':''}" onclick="selectNewRoomEmoji('${e}')">${e}</button>`).join('');
+  }
+}
+function selectNewRoomEmoji(e){
+  _newRoomEmoji=e;
+  const btn=document.getElementById('newRoomEmojiBtn');if(btn)btn.textContent=e;
+  const picker=document.getElementById('newRoomEmojiPicker');if(picker)picker.style.display='none';
+}
+function addRoom(){
+  const textEl=document.getElementById('newRoomText');
+  const text=textEl.value.trim();
+  if(!text)return;
+  const color=document.getElementById('newRoomColor').value;
+  const id='room_'+uid().slice(0,6);
+  getRooms().push({id,n:text,e:_newRoomEmoji,c:color});
+  textEl.value='';
+  _newRoomEmoji='📦';
+  const btn=document.getElementById('newRoomEmojiBtn');if(btn)btn.textContent='📦';
+  save();
+  renderRoomMgr();
+}
+
 // ── Filtro por marca/loja (persistido) ──
 function getStoreFilter(){try{return localStorage.getItem('storeFilter')||'';}catch(e){return '';}}
 function setStoreFilter(v){try{localStorage.setItem('storeFilter',v);}catch(e){}renderRoomsList();}
 
-function renderRooms(){renderFilterBar();renderRoomsList();}
+function renderRooms(){renderFilterBar();renderItemRespFilterBar();renderRoomsList();}
 
 function renderFilterBar(){
   const bar=document.getElementById('store-filter-bar');
@@ -1307,6 +1453,69 @@ function renderFilterBar(){
   // keep focus after re-render (only runs once on init)
 }
 
+// ── Já Temos (inventário) ──────────────────────────────────────────────────────
+function getInvRoomFilter(){try{return localStorage.getItem('invRoomFilter')||'';}catch(e){return '';}}
+function setInvRoomFilter(v){try{localStorage.setItem('invRoomFilter',v);}catch(e){}renderInventory();}
+function renderInventory(){
+  if(!S)return;
+  const rooms=getRooms();
+  const inv=getInventory();
+
+  // Keep the room <select> in the add-row fresh (rooms can be edited any time)
+  const roomSel=document.getElementById('invRoom');
+  if(roomSel){
+    const prev=roomSel.value;
+    roomSel.innerHTML=rooms.map(r=>`<option value="${r.id}">${r.e} ${r.n}</option>`).join('');
+    if(rooms.some(r=>r.id===prev)) roomSel.value=prev;
+  }
+
+  // Filter bar
+  const bar=document.getElementById('inv-filter-bar');
+  if(bar){
+    const cur=getInvRoomFilter();
+    bar.innerHTML=`<div class="resp-filter">
+      <button class="resp-filter-btn ${!cur?'active':''}" onclick="setInvRoomFilter('')">Todas</button>
+      ${rooms.map(r=>`<button class="resp-filter-btn ${cur===r.id?'active':''}" onclick="setInvRoomFilter('${r.id}')">${r.e} ${r.n}</button>`).join('')}
+    </div>`;
+  }
+
+  const list=document.getElementById('inv-list');
+  if(!list)return;
+  const filter=getInvRoomFilter();
+  const used=rooms.filter(r=>(!filter||r.id===filter)&&inv.some(i=>i.roomId===r.id));
+  if(!inv.length){
+    list.innerHTML='<div class="inv-empty">Ainda não adicionaste nada. Usa o campo acima para começar.</div>';
+    return;
+  }
+  if(!used.length){
+    list.innerHTML='<div class="inv-empty">Nada nesta divisão.</div>';
+    return;
+  }
+  list.innerHTML=used.map(room=>{
+    const items=inv.filter(i=>i.roomId===room.id);
+    return `<div class="inv-group">
+      <div class="inv-group-hdr"><div class="room-dot" style="background:${room.c}"></div>${room.e} ${room.n} <span class="room-cnt">· ${items.length}</span></div>
+      ${items.map(i=>`<div class="inv-row">
+        <span class="inv-row-name">${i.name}</span>
+        <span class="item-x" onclick="delInventoryItem('${i.id}')">×</span>
+      </div>`).join('')}
+    </div>`;
+  }).join('');
+}
+function addInventoryItem(){
+  const nameEl=document.getElementById('invName');
+  const name=nameEl.value.trim();
+  if(!name)return;
+  const roomId=document.getElementById('invRoom').value||getRooms()[0]?.id;
+  getInventory().push({id:uid(),name,roomId});
+  nameEl.value='';
+  save();
+  nameEl.focus();
+}
+function delInventoryItem(id){
+  S.inventory=getInventory().filter(i=>i.id!==id);
+  save();
+}
 
 // ── Item collapse ─────────────────────────────────────────────────────────────
 function isItemOpen(id){
@@ -1322,7 +1531,7 @@ function toggleItem(id){
 }
 function renderRoomsList(){
   if(!S)return;
-  const used=ROOMS.filter(r=>S.items.some(i=>i.room===r.id));
+  const used=getRooms().filter(r=>S.items.some(i=>i.room===r.id));
   const el=document.getElementById('rooms-list');
   if(!el)return;
   if(!used.length){
@@ -1330,14 +1539,17 @@ function renderRoomsList(){
     return;
   }
   const storeFilter=getStoreFilter();
+  const respFilter=getItemRespFilter();
   const allStores=[...new Set(S.items.flatMap(i=>i.options.map(o=>o.store).filter(Boolean)))].sort();
   const chipsHtml=`<div class="store-search-row"><div class="store-search-wrap"><input class="store-search-input" id="storeSearchInput" type="search" placeholder="Filtrar por loja…" value="${storeFilter||''}" oninput="setStoreFilter(this.value.trim())" onsearch="setStoreFilter(this.value.trim())"></div>${storeFilter?`<button class="store-clear-btn" onclick="setStoreFilter(\'\');setTimeout(()=>{const i=document.getElementById(\'storeSearchInput\');if(i)i.value=\'\';},0)">✕</button>`:''}</div>`;
 
   el.innerHTML=used.map(room=>{
     const allItems=S.items.filter(i=>i.room===room.id);
-    // Aplicar filtro de loja: item visível se tem pelo menos uma opção dessa loja (ou não há filtro)
-    const sf=storeFilter?storeFilter.toLowerCase():'';const items=sf?allItems.filter(i=>i.options.some(o=>o.store&&o.store.toLowerCase().includes(sf))):allItems;
-    if(!items.length&&storeFilter)return ''; // esconde a área se não tem itens dessa loja
+    // Aplicar filtro de loja e de responsável: item visível se corresponde a ambos (ou não há filtro)
+    const sf=storeFilter?storeFilter.toLowerCase():'';
+    let items=sf?allItems.filter(i=>i.options.some(o=>o.store&&o.store.toLowerCase().includes(sf))):allItems;
+    if(respFilter) items=items.filter(i=>i.responsible===respFilter);
+    if(!items.length&&(storeFilter||respFilter))return ''; // esconde a área se não tem itens correspondentes
     const open=isRoomOpen(room.id);
     return `<div class="room-sect ${open?'':'collapsed'}" data-room="${room.id}">
       <div class="room-hdr" onclick="toggleRoom('${room.id}')">
@@ -1359,12 +1571,11 @@ function renderRoomsList(){
           <div class="item-hdr ${isItemOpen(item.id)?'':'collapsed'}" onclick="toggleItem('${item.id}')">
             <div class="item-color-bar" style="background:${room.c}"></div>
             <span class="item-name">${item.name}</span>
-            <input class="item-hdr-budget" type="number" min="0" step="50"
-              placeholder="€ orç."
-              value="${item.budget||''}"
-              onchange="setItemBudget('${item.id}',this.value)"
-              onclick="event.stopPropagation()"
-              title="Orçamento para este artigo">
+            <select class="resp-sel" data-r="${item.responsible||''}" onclick="event.stopPropagation()" onchange="event.stopPropagation();setItemResp('${item.id}',this.value)" title="Responsável">
+              <option value="" ${!item.responsible?'selected':''}>—</option>
+              <option value="vasco" ${item.responsible==='vasco'?'selected':''}>Vasco</option>
+              <option value="rita" ${item.responsible==='rita'?'selected':''}>Rita</option>
+            </select>
             <span class="item-tag ${chosen?'c':'p'}">${chosen?'✓ Escolhido':'A decidir'}</span>
             <button class="move-room-btn" onclick="event.stopPropagation();openMoveRoom('${item.id}')">⇄</button>
             <span class="item-x" onclick="event.stopPropagation();delItem('${item.id}')">×</span>
@@ -1411,11 +1622,24 @@ function delOpt(iid,oid){
   const it=S.items.find(i=>i.id===iid);
   if(it){it.options=it.options.filter(o=>o.id!==oid);save();}
 }
-function setItemBudget(id,val){
+function setItemResp(id,val){
   const item=S.items.find(i=>i.id===id);
-  if(item){item.budget=parseFloat(val)||null;save();}
+  if(item){item.responsible=val||null;save();}
 }
 function delItem(id){if(!confirm('Remover?'))return;S.items=S.items.filter(i=>i.id!==id);save();}
+
+// ── Item responsible filter (mirrors getStoreFilter/setStoreFilter) ───────────
+function getItemRespFilter(){try{return localStorage.getItem('itemRespFilter')||'';}catch(e){return '';}}
+function setItemRespFilter(v){try{localStorage.setItem('itemRespFilter',v);}catch(e){}renderRoomsList();}
+function renderItemRespFilterBar(){
+  const bar=document.getElementById('item-resp-filter-bar');
+  if(!bar)return;
+  const cur=getItemRespFilter();
+  const opts=[['','Todos'],['vasco','Vasco'],['rita','Rita']];
+  bar.innerHTML=`<div class="resp-filter">${opts.map(([v,l])=>
+    `<button class="resp-filter-btn ${cur===v?'active':''}" data-r="${v}" onclick="setItemRespFilter('${v}')">${l}</button>`
+  ).join('')}</div>`;
+}
 
 // ── Auto-fetch URL info ───────────────────
 function onUrlInput(){
@@ -1898,8 +2122,9 @@ function saveOpt(){
 
 // ── Item modal ────────────────────────────
 function buildGrid(presel){
-  _room=presel||'sala';
-  document.getElementById('roomGrid').innerHTML=ROOMS.map(r=>`
+  const rooms=getRooms();
+  _room=presel||(rooms.some(r=>r.id===_room)?_room:rooms[0]?.id)||'sala';
+  document.getElementById('roomGrid').innerHTML=rooms.map(r=>`
     <div class="r-btn ${r.id===_room?'sel':''}" onclick="selRoom('${r.id}',this)">
       <div class="ri">${r.e}</div>
       <div class="rn">${r.n}</div>
@@ -1910,7 +2135,7 @@ function openAddItem(){document.getElementById('iName').value='';buildGrid();ope
 function openAddItemRoom(rid){document.getElementById('iName').value='';buildGrid(rid);openO('itemOv');}
 function saveItem(){
   const name=document.getElementById('iName').value.trim();if(!name){alert('Nome obrigatório');return;}
-  S.items.push({id:uid(),room:_room,name,options:[]});
+  S.items.push({id:uid(),room:_room,name,options:[],responsible:null});
   closeO('itemOv');
   document.querySelectorAll('.tab-btn').forEach(t=>t.classList.remove('active'));
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
@@ -1926,179 +2151,8 @@ document.querySelectorAll('.overlay').forEach(el=>{
   el.addEventListener('click',e=>{if(e.target===el){el.classList.remove('open');document.body.style.overflow='';}});
 });
 
-function render(){renderTimeline();renderAdmin();renderRooms();renderBudget();}
+function render(){renderTimeline();renderAdmin();renderRooms();renderInventory();}
 initFire();
-
-// ── Price parser ─────────────────────────────────────────────────────────────
-function parsePrice(str){
-  if(!str)return 0;
-  let s=str.replace(/[€$£\s]/g,'').trim();
-  if(s.includes(',')&&s.includes('.')) s=s.replace(/\./g,'').replace(',','.');
-  else if(s.includes(',')) s=s.replace(',','.');
-  return parseFloat(s)||0;
-}
-
-// ── Budget ────────────────────────────────────────────────────────────────────
-let _budgetChart=null;
-function saveBudget(){
-  const v=parseFloat(document.getElementById('budgetInput').value)||0;
-  try{localStorage.setItem('budget',v);}catch(e){}
-  renderBudget();
-}
-function hideBudgetInput(){
-  const inp=document.getElementById('budgetInput');
-  const txt=document.getElementById('b-total-txt');
-  if(inp)inp.style.display='none';
-  if(txt)txt.style.display='';
-}
-function getBudget(){
-  try{return parseFloat(localStorage.getItem('budget'))||0;}catch(e){return 0;}
-}
-function renderBudget(){
-  if(!S)return;
-  // fmt must be defined first — used throughout
-  const fmt=v=>v===0?'0€':v.toLocaleString('pt-PT',{minimumFractionDigits:0,maximumFractionDigits:0})+'€';
-
-  // Auto-budget: sum of all item budgets if no manual budget set
-  const itemBudgetSum=S.items.reduce((a,i)=>a+(parseFloat(i.budget)||0),0);
-  const manualBudget=getBudget();
-  const budget=manualBudget||itemBudgetSum;
-
-  // Update budget card immediately (even if no options selected yet)
-  const bTotal=document.getElementById('b-total');
-  if(bTotal){
-    const txt=document.getElementById('b-total-txt');
-    if(txt){txt.textContent=budget?fmt(budget):'—';txt.style.display='';}
-    const inp2=document.getElementById('budgetInput');
-    if(inp2){inp2.style.display='none';if(budget)inp2.value=budget;}
-  }
-  const hint=document.getElementById('budget-auto-hint');
-  if(hint) hint.textContent=(!manualBudget&&itemBudgetSum)?`Auto: soma dos artigos (${fmt(itemBudgetSum)})`:'';
-
-  const inp=document.getElementById('budgetInput');
-  if(inp&&!inp.value&&budget) inp.value=budget;
-
-  // Collect selected options
-  const selected=[];
-  S.items.forEach(item=>{
-    const room=ROOMS.find(r=>r.id===item.room)||{n:item.room,c:'#aaa',e:''};
-    item.options.forEach(o=>{
-      if(o.selected){
-        const price=parsePrice(o.price);
-        selected.push({itemName:item.name,optName:o.name,store:o.store,price,priceStr:o.price,room});
-      }
-    });
-  });
-
-  const spent=selected.reduce((a,s)=>a+s.price,0);
-  const left=budget-spent;
-
-  const bSpent=document.getElementById('b-spent');
-  const bLeft=document.getElementById('b-left');
-  if(bSpent) bSpent.textContent=fmt(spent);
-  if(bLeft){
-    bLeft.textContent=budget?fmt(left):'—';
-    bLeft.className='bcard-val'+(budget?(left>=0?' positive':' negative'):'');
-  }
-
-  // ── Pie chart by room ─────────────────────────────────────────────────────
-  const chartWrap=document.getElementById('chart-wrap');
-  const topWrap=document.getElementById('top-wrap');
-  if(!selected.length){
-    if(chartWrap)chartWrap.style.display='none';
-    if(topWrap)topWrap.style.display='none';
-    const list=document.getElementById('budget-list');
-    if(list)list.innerHTML='<div class="budget-empty">Nenhuma opção escolhida ainda.<br>Vai a Compras e escolhe as tuas opções ✓</div>';
-    return;
-  }
-
-  if(chartWrap)chartWrap.style.display='';
-  if(topWrap)topWrap.style.display='';
-
-  // Group by room
-  const byRoom={};
-  selected.forEach(s=>{
-    const key=s.room.id||s.room.n;
-    if(!byRoom[key]) byRoom[key]={room:s.room,total:0};
-    byRoom[key].total+=s.price;
-  });
-  const roomEntries=Object.values(byRoom).filter(r=>r.total>0).sort((a,b)=>b.total-a.total);
-
-  // Draw/update chart
-  const ctx=document.getElementById('budgetChart');
-  if(ctx){
-    if(_budgetChart) _budgetChart.destroy();
-    _budgetChart=new Chart(ctx,{
-      type:'doughnut',
-      data:{
-        labels:roomEntries.map(r=>r.room.e+' '+r.room.n),
-        datasets:[{
-          data:roomEntries.map(r=>r.total),
-          backgroundColor:roomEntries.map(r=>r.room.c),
-          borderWidth:2,
-          borderColor:'var(--cream)'
-        }]
-      },
-      options:{
-        responsive:true,
-        plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>fmt(ctx.raw)}}},
-        cutout:'60%'
-      }
-    });
-  }
-
-  // Legend
-  const legend=document.getElementById('chart-legend');
-  if(legend) legend.innerHTML=roomEntries.map(r=>`
-    <div class="chart-legend-item">
-      <div class="chart-legend-dot" style="background:${r.room.c}"></div>
-      <span class="chart-legend-label">${r.room.e} ${r.room.n}</span>
-      <span class="chart-legend-val">${fmt(r.total)}</span>
-    </div>`).join('');
-
-  // Top expensive items
-  const topList=document.getElementById('top-items-list');
-  if(topList){
-    const sorted=[...selected].filter(s=>s.price>0).sort((a,b)=>b.price-a.price).slice(0,5);
-    topList.innerHTML=sorted.map((s,i)=>`
-      <div class="top-item-row">
-        <div class="top-item-rank">${i+1}</div>
-        <div class="top-item-info">
-          <div class="top-item-name">${s.itemName} · ${s.optName}</div>
-          <div class="top-item-room">${s.room.e} ${s.room.n}${s.store?' · '+s.store:''}</div>
-        </div>
-        <div class="top-item-price">${s.priceStr}€</div>
-      </div>`).join('');
-  }
-
-  // Item list
-  // ── Room breakdown ──────────────────────────────────────────────────────
-  const list=document.getElementById('budget-list');
-  if(list){
-    const maxTotal=Math.max(...roomEntries.map(r=>r.total),1);
-    // Build room breakdown with sub-items
-    const roomBreakdown=roomEntries.map(r=>{
-      const roomItems=selected.filter(s=>s.room.id===r.room.id);
-      const subHtml=roomItems.map(s=>`
-        <div class="sub-item-row">
-          <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:60%">${s.itemName}${s.optName?' · '+s.optName:''}</span>
-          <span style="font-weight:700;">${s.priceStr?s.priceStr+'€':'—'}</span>
-        </div>`).join('');
-      const barPct=(r.total/maxTotal*100).toFixed(1);
-      return `<div class="room-row collapsible" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'':'none'">
-        <div class="room-dot-lg" style="background:${r.room.c}"></div>
-        <span class="room-row-name">${r.room.e} ${r.room.n}</span>
-        <div class="room-row-bar-wrap"><div class="room-row-bar" style="width:${barPct}%;background:${r.room.c}"></div></div>
-        <span class="room-row-val">${fmt(r.total)}</span>
-      </div>
-      <div class="sub-items" style="display:none">${subHtml}</div>`;
-    }).join('');
-    list.innerHTML=`<div class="room-breakdown">
-      <div class="room-breakdown-title">Por divisão</div>
-      ${roomBreakdown}
-    </div>`;
-  }
-}
 
 // ── Move item to room ─────────────────────────────────────────────────────────
 let _moveItemId=null;
@@ -2106,7 +2160,7 @@ function openMoveRoom(itemId){
   _moveItemId=itemId;
   const item=S.items.find(i=>i.id===itemId);
   const grid=document.getElementById('moveRoomGrid');
-  grid.innerHTML=ROOMS.filter(r=>r.id!==item?.room).map(r=>`
+  grid.innerHTML=getRooms().filter(r=>r.id!==item?.room).map(r=>`
     <button class="move-room-opt" onclick="moveItem('${r.id}')">
       ${r.e} ${r.n}
     </button>
