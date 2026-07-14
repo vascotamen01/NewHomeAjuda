@@ -150,11 +150,7 @@ body.scrolled .tab-btn .tab-icon{font-size:1.3rem;line-height:1;}
 .room-body{padding:0 10px 8px;max-height:6000px;overflow:hidden;transition:max-height .35s ease, padding .25s ease, opacity .25s ease;opacity:1;}
 .room-sect.collapsed .room-body{max-height:0;padding-top:0;padding-bottom:0;opacity:0;}
 
-/* ── Já Temos (inventário) ── */
-.inv-add-row{display:flex;gap:8px;background:var(--surface);border-radius:var(--r-md);padding:10px;box-shadow:var(--sh-sm);margin-bottom:12px;}
-.inv-add-row input{flex:1;padding:10px 12px;border-radius:var(--r-sm);border:1.5px solid var(--border);background:var(--cream);font-family:var(--font);font-size:.86rem;color:var(--text);}
-.inv-add-row select{padding:10px 10px;border-radius:var(--r-sm);border:1.5px solid var(--border);background:var(--cream);font-family:var(--font);font-size:.82rem;color:var(--text);}
-.inv-add-row button{padding:0 16px;background:var(--sage);color:#fff;border:none;border-radius:var(--r-sm);cursor:pointer;font-size:1.2rem;}
+/* ── Já Temos (derived: tarefas concluídas agrupadas por divisão) ── */
 .inv-group{margin-bottom:8px;background:var(--surface);border-radius:var(--r-md);overflow:hidden;box-shadow:var(--sh-sm);}
 .inv-group-hdr{display:flex;align-items:center;gap:8px;padding:11px 14px;font-size:.82rem;font-weight:700;border-bottom:1px solid var(--border);}
 .inv-row{display:flex;align-items:center;gap:10px;padding:11px 14px;border-bottom:1px solid var(--border);}
@@ -336,9 +332,7 @@ body.scrolled .tab-btn .tab-icon{font-size:1.3rem;line-height:1;}
 
 
 
-/* ── Label manager ── */
-.label-mgr-row{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border);}
-.label-mgr-row:last-child{border-bottom:none;}
+/* ── Shared color swatch (used by the room/division manager) ── */
 .label-color-swatch{
   width:28px;height:28px;border-radius:50%;flex-shrink:0;cursor:pointer;
   border:2px solid rgba(0,0,0,.1);padding:0;overflow:hidden;
@@ -347,10 +341,7 @@ body.scrolled .tab-btn .tab-icon{font-size:1.3rem;line-height:1;}
 .label-color-swatch::-webkit-color-swatch-wrapper{padding:0;}
 .label-color-swatch::-webkit-color-swatch{border:none;border-radius:50%;}
 .label-color-swatch::-moz-color-swatch{border:none;border-radius:50%;}
-.label-mgr-text{flex:1;border:none;background:transparent;font-family:var(--font);font-size:.86rem;color:var(--text);padding:2px 4px;border-radius:4px;}
-.label-mgr-text:focus{outline:2px solid var(--sage);background:var(--cream);}
-.label-add-row{display:flex;gap:8px;margin-top:10px;}
-/* Inline label select in task table */
+/* Inline divisão select in task table */
 .task-label-sel{appearance:none;-webkit-appearance:none;border:none;background:transparent;font-size:.7rem;cursor:pointer;max-width:80px;color:var(--text2);font-family:var(--font);}
 
 /* ── Room manager ── */
@@ -554,6 +545,9 @@ body.scrolled .compact-bar{
 
   <!-- ADMIN -->
   <div class="panel active" id="panel-admin">
+    <div style="margin-bottom:10px;">
+      <button onclick="openRoomMgr()" style="padding:8px 14px;border-radius:20px;border:1.5px solid var(--border);background:var(--surface);font-family:var(--font);font-size:.76rem;font-weight:600;color:var(--text2);cursor:pointer;">⚙️ Gerir divisões</button>
+    </div>
     <div style="margin-bottom:8px">
       <button id="newTaskToggle" onclick="toggleNewTaskForm()" style="width:100%;padding:11px;border-radius:12px;border:1.5px dashed var(--border);background:transparent;font-family:var(--font);font-size:.84rem;color:var(--text2);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;">
         <span style="font-size:1.1rem;">＋</span> Nova tarefa
@@ -570,7 +564,7 @@ body.scrolled .compact-bar{
           </select>
           <input type="date" id="newTaskDate" style="padding:9px 6px;border-radius:10px;border:1.5px solid var(--border);background:var(--surface);font-family:var(--font);font-size:.75rem;color:var(--text);">
           <select id="newTaskLabel" style="padding:9px 6px;border-radius:10px;border:1.5px solid var(--border);background:var(--surface);font-family:var(--font);font-size:.78rem;color:var(--text);cursor:pointer;">
-            <option value="">— Etiqueta</option>
+            <option value="">— Divisão</option>
           </select>
         </div>
         <div style="margin-bottom:10px;">
@@ -595,37 +589,14 @@ body.scrolled .compact-bar{
     <div style="margin-bottom:10px;">
       <button onclick="openRoomMgr()" style="padding:8px 14px;border-radius:20px;border:1.5px solid var(--border);background:var(--surface);font-family:var(--font);font-size:.76rem;font-weight:600;color:var(--text2);cursor:pointer;">⚙️ Gerir divisões</button>
     </div>
-    <div id="rooms-wrap"><div id="store-filter-bar"></div><div id="item-resp-filter-bar"></div><div id="rooms-list"></div></div>
+    <div id="rooms-wrap"><div id="store-filter-bar"></div><div id="rooms-list"></div></div>
   </div>
 
   <!-- JÁ TEMOS -->
   <div class="panel" id="panel-inventario">
-    <div class="inv-add-row">
-      <input id="invName" placeholder="O que já têm? ex: Torradeira…" onkeydown="if(event.key==='Enter')addInventoryItem()">
-      <select id="invRoom"></select>
-      <button onclick="addInventoryItem()">＋</button>
-    </div>
-    <div id="inv-filter-bar"></div>
-    <div id="inv-list"></div>
+    <div id="jatemos-list"></div>
   </div>
 
-</div>
-
-<!-- Label Manager Modal -->
-<div class="overlay" id="labelMgrOv" style="z-index:600;">
-  <div class="modal" style="padding:20px 20px 40px;">
-    <div class="m-handle"></div>
-    <div class="m-title">Gerir etiquetas</div>
-    <div id="labelMgrList"></div>
-    <div class="label-add-row">
-      <input id="newLabelText" class="task-modal-input" placeholder="Nova etiqueta…" style="flex:1;">
-      <input type="color" class="label-color-swatch" id="newLabelColor" value="#6fa28f" style="width:40px;height:40px;border-radius:10px;">
-      <button onclick="addLabel()" style="padding:10px 14px;border-radius:10px;border:none;background:var(--sage);color:#fff;font-weight:700;cursor:pointer;font-family:var(--font);">＋</button>
-    </div>
-    <div class="m-btns" style="margin-top:14px;">
-      <button class="btn-ok" onclick="closeO('labelMgrOv')">Fechar</button>
-    </div>
-  </div>
 </div>
 
 <!-- Task Edit Modal -->
@@ -655,8 +626,8 @@ body.scrolled .compact-bar{
     </div>
     <div class="task-modal-field">
       <label style="display:flex;align-items:center;justify-content:space-between;">
-        Etiqueta
-        <button onclick="openLabelMgr()" style="font-size:.65rem;padding:3px 8px;border-radius:6px;border:1px solid var(--border);background:transparent;cursor:pointer;font-family:var(--font);color:var(--text2);">✏️ Gerir</button>
+        Divisão
+        <button onclick="openRoomMgr()" style="font-size:.65rem;padding:3px 8px;border-radius:6px;border:1px solid var(--border);background:transparent;cursor:pointer;font-family:var(--font);color:var(--text2);">✏️ Gerir</button>
       </label>
       <div class="task-label-chips" id="teLabelChips"></div>
     </div>
@@ -836,6 +807,52 @@ function getInventory(){
   if(!S) return [];
   if(!Array.isArray(S.inventory)) S.inventory=[];
   return S.inventory;
+}
+
+// ── One-time migration: fold old Etiquetas (task labels) into the shared
+// room/division list, so there's a single editable taxonomy used everywhere. ──
+// Data shape of the old, now-removed label system — kept ONLY so we can still
+// migrate any pre-existing save that had labels. Not exposed anywhere else.
+const _LEGACY_LABEL_FALLBACK=[
+  {k:'reuniao',l:'📅 Reunião',c:'#4f7196'},
+  {k:'compra',l:'🛒 Compra',c:'#7a6845'},
+  {k:'urgente',l:'⚡ Urgente',c:'#a03030'},
+  {k:'doc',l:'📄 Documento',c:'#5a5a8a'},
+  {k:'outro',l:'💬 Outro',c:'#4a7a5a'},
+];
+// Splits a leading emoji off an old label's display text, e.g. "📅 Reunião" ->
+// {emoji:'📅', name:'Reunião'}. Falls back to a generic tag emoji for labels
+// that never had one (user-added ones via the old "Gerir etiquetas" only had
+// free text + a color, no emoji).
+function _splitLeadingEmoji(text){
+  text=(text||'').trim();
+  const m=text.match(/^(\p{Extended_Pictographic}️?)\s*(.*)$/u);
+  if(m && m[2]) return {emoji:m[1],name:m[2].trim()};
+  return {emoji:'🏷️',name:text};
+}
+function runLegacyMigrations(){
+  if(!S) return;
+  if(S._migratedLabelsToRooms) return;
+  const hasTaskLabelRefs=Array.isArray(S.tasks)&&S.tasks.some(t=>t.label);
+  const oldLabels=(Array.isArray(S.labels)&&S.labels.length) ? S.labels
+    : (hasTaskLabelRefs ? _LEGACY_LABEL_FALLBACK : []);
+  if(oldLabels.length){
+    const rooms=getRooms(); // ensures S.rooms is seeded first
+    oldLabels.forEach(lb=>{
+      const k=lb.k;
+      if(!k||k==='outro')return; // room 'outro' already exists — don't duplicate
+      if(rooms.some(r=>r.id===k))return; // already exists / already migrated
+      const {emoji,name}=_splitLeadingEmoji(lb.l);
+      rooms.push({id:k,n:name||k,e:emoji,c:lb.c||'#A8C9C0'});
+    });
+  }
+  // Point old task.label references at the (now-existing) room ids.
+  if(Array.isArray(S.tasks)){
+    S.tasks.forEach(t=>{
+      if(!t.room && t.label) t.room=t.label;
+    });
+  }
+  S._migratedLabelsToRooms=true;
 }
 
 // ── localStorage helpers ──────────────────
@@ -1026,7 +1043,7 @@ function switchTab(el,name){
   document.querySelectorAll('[data-tab="'+name+'"]').forEach(t=>t.classList.add('active'));
   document.getElementById('panel-'+name).classList.add('active');
   document.getElementById('fab').className='fab'+(name==='compras'?'':' h');
-  if(name==='inventario') renderInventory();
+  if(name==='inventario') renderJaTemos();
 }
 
 // ── Admin ─────────────────────────────────
@@ -1056,8 +1073,8 @@ function sortedTasks(){
     if(_taskSort==='text'){
       return (a.text||'').localeCompare(b.text||'','pt');
     }
-    if(_taskSort==='label'){
-      return (a.label||'zzz').localeCompare(b.label||'zzz');
+    if(_taskSort==='room'){
+      return (a.room||'zzz').localeCompare(b.room||'zzz');
     }
     // secondary: always priority
     const pa=prioOrder[a.prio||'n']??4, pb=prioOrder[b.prio||'n']??4;
@@ -1066,17 +1083,6 @@ function sortedTasks(){
 }
 
 function thArrow(col){return _taskSort===col?'<span class="sort-arrow">▲</span>':'';}
-// Labels are stored in S.labels — fallback to defaults if not set
-const DEFAULT_LABELS=[
-  {k:'reuniao',l:'📅 Reunião',c:'#4f7196'},
-  {k:'compra',l:'🛒 Compra',c:'#7a6845'},
-  {k:'urgente',l:'⚡ Urgente',c:'#a03030'},
-  {k:'doc',l:'📄 Documento',c:'#5a5a8a'},
-  {k:'outro',l:'💬 Outro',c:'#4a7a5a'},
-];
-function getLabels(){if(!S)return DEFAULT_LABELS;return Array.isArray(S.labels)?S.labels:DEFAULT_LABELS;}
-// alias for use throughout
-Object.defineProperty(window,'LABELS',{get:()=>getLabels()});
 
 function renderAdmin(){
   if(!S)return;
@@ -1089,7 +1095,7 @@ function renderAdmin(){
   const thead=`<div class="task-thead">
       <div class="task-th"></div>
       <div class="task-th ${_taskSort==='text'?'sorted':''}" onclick="setTaskSort('text')">Tarefa ${thArrow('text')}</div>
-      <div class="task-th ${_taskSort==='label'?'sorted':''}" onclick="setTaskSort('label')">Etiq. ${thArrow('label')}</div>
+      <div class="task-th ${_taskSort==='room'?'sorted':''}" onclick="setTaskSort('room')">Divisão ${thArrow('room')}</div>
       <div class="task-th ${_taskSort==='date'?'sorted':''}" onclick="setTaskSort('date')">📅 ${thArrow('date')}</div>
       <div class="task-th ${_taskSort==='prio'?'sorted':''}" onclick="setTaskSort('prio')">P ${thArrow('prio')}</div>
       <div class="task-th">Resp.</div>
@@ -1097,24 +1103,26 @@ function renderAdmin(){
     </div>`;
 
   const respBadge={vasco:'V',rita:'R'};
+  const rooms=getRooms();
   const taskRow=t=>{
     const dc=t.due?(t.due<today?'overdue':t.due<=soon?'soon':''):'';
-    const label=LABELS.find(l=>l.k===t.label);
-    const labelBadge=label?`style="color:${label.c};font-weight:700;font-size:.68rem;"`:'';
+    const room=rooms.find(r=>r.id===t.room);
+    const roomLabel=room?`${room.e} ${room.n}`:'';
+    const labelBadge=room?`style="color:${room.c};font-weight:700;font-size:.68rem;"`:'';
     return `<div class="task-row" onclick="openEditTask('${t.id}')">
       <div class="task-cell" onclick="event.stopPropagation();togT('${t.id}')"><div class="cb ${t.done?'on':''}"></div></div>
       <div class="task-name-cell ${t.done?'done-txt':''}">
         <span>${t.text}</span>
         <div class="task-meta-mobile">
           ${t.due?`<span class="m-date ${dc}">${t.due.slice(5)}</span>`:''}
-          ${label?`<span class="m-label" style="color:${label.c}">${label.l}</span>`:''}
+          ${room?`<span class="m-label" style="color:${room.c}">${roomLabel}</span>`:''}
           ${t.responsible?`<span class="resp-chip ${t.responsible}">${t.responsible==='vasco'?'Vasco':'Rita'}</span>`:''}
         </div>
       </div>
       <div class="task-cell" onclick="event.stopPropagation()">
-        <select class="task-label-sel" onchange="setTaskLabel('${t.id}',this.value)" ${labelBadge}>
-          <option value="" ${!t.label?'selected':''}>—</option>
-          ${LABELS.map(l=>`<option value="${l.k}" ${t.label===l.k?'selected':''} style="color:${l.c}">${l.l}</option>`).join('')}
+        <select class="task-label-sel" onchange="setTaskRoom('${t.id}',this.value)" ${labelBadge}>
+          <option value="" ${!t.room?'selected':''}>—</option>
+          ${rooms.map(r=>`<option value="${r.id}" ${t.room===r.id?'selected':''} style="color:${r.c}">${r.e} ${r.n}</option>`).join('')}
         </select>
       </div>
       <div class="task-cell"><span class="task-date-small ${dc}">${t.due?t.due.slice(5):'—'}</span></div>
@@ -1131,26 +1139,24 @@ function renderAdmin(){
   };
 
   const taskRespFilter=getTaskRespFilter();
-  // Group by label
+  // Group by room/division
   const groups={};
   sortedTasks().filter(t=>!taskRespFilter||t.responsible===taskRespFilter).forEach(t=>{
-    const k=t.label||'_none';
+    const k=t.room||'_none';
     if(!groups[k])groups[k]=[];
     groups[k].push(t);
   });
-  const labelOrder=[...LABELS.map(l=>l.k),'_none'];
-  const groupHtml=labelOrder.filter(k=>groups[k]?.length).map(k=>{
-    const lbl=LABELS.find(l=>l.k===k);
-    const header=lbl
-      ?`<div style="padding:6px 10px 4px;font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:${lbl.c};border-bottom:1px solid var(--border);display:flex;align-items:center;gap:5px;"><span>${lbl.l}</span><span style="font-size:.6rem;opacity:.5;">${groups[k].length}</span></div>`
-      :'';
+  const roomOrder=[...rooms.map(r=>r.id),'_none'];
+  const groupHtml=roomOrder.filter(k=>groups[k]?.length).map(k=>{
+    const room=rooms.find(r=>r.id===k);
+    const roomLabel=room?`${room.e} ${room.n}`:'';
     const gid='grp_'+k;
     const isOpen=localStorage.getItem('grp_'+k)!=='0';
     const hdrClass=isOpen?'':'collapsed';
     const bodyClass=isOpen?'open':'closed';
     return `<div class="task-table" style="margin-bottom:8px;">
-      ${lbl?`<div class="label-group-hdr ${hdrClass}" style="color:${lbl.c}" onclick="toggleGroup('${gid}',this)">
-        <span>${lbl.l}</span>
+      ${room?`<div class="label-group-hdr ${hdrClass}" style="color:${room.c}" onclick="toggleGroup('${gid}',this)">
+        <span>${roomLabel}</span>
         <span style="font-size:.6rem;opacity:.5;margin-left:2px;">${groups[k].length}</span>
         <span class="label-group-chevron">▾</span>
       </div>`:''}
@@ -1182,47 +1188,6 @@ function setTaskResp(id,val){const t=S.tasks.find(t=>t.id===id);if(t){t.responsi
 
 
 
-// ── Label manager ─────────────────────────────────────────────────────────────
-function openLabelMgr(){
-  if(!S.labels)S.labels=[...DEFAULT_LABELS];
-  renderLabelMgr();
-  openO('labelMgrOv');
-}
-function renderLabelMgr(){
-  const list=document.getElementById('labelMgrList');
-  if(!list)return;
-  const labels=getLabels();
-  list.innerHTML=labels.map((lb,i)=>`
-    <div class="label-mgr-row">
-      <input type="color" class="label-color-swatch" value="${lb.c}"
-        onchange="updateLabel(${i},'c',this.value)" style="background:${lb.c};">
-      <input class="label-mgr-text" value="${lb.l}"
-        onchange="updateLabel(${i},'l',this.value)"
-        onkeydown="if(event.key==='Enter')this.blur()">
-      <span class="btn-del" onclick="delLabel(${i})">×</span>
-    </div>`).join('');
-}
-function updateLabel(i,field,val){
-  if(!S.labels)S.labels=[...DEFAULT_LABELS];
-  if(S.labels[i])S.labels[i][field]=val;
-  save();renderAdmin();
-}
-function addLabel(){
-  if(!S.labels)S.labels=[...DEFAULT_LABELS];
-  const text=document.getElementById('newLabelText').value.trim();
-  const color=document.getElementById('newLabelColor').value;
-  if(!text)return;
-  const k='lbl_'+uid().slice(0,6);
-  S.labels.push({k,l:text,c:color});
-  document.getElementById('newLabelText').value='';
-  save();renderLabelMgr();renderAdmin();
-}
-function delLabel(i){
-  if(!S.labels)return;
-  S.labels.splice(i,1);
-  save();renderLabelMgr();renderAdmin();
-}
-
 // ── Task edit modal ───────────────────────────────────────────────────────────
 let _editTaskId=null;
 function openEditTask(id){
@@ -1232,37 +1197,41 @@ function openEditTask(id){
   document.getElementById('tePrio').value=t.prio||'n';
   document.getElementById('teDue').value=t.due||'';
   const teResp=document.getElementById('teResp');if(teResp)teResp.value=t.responsible||'';
-  // label chips
-  document.getElementById('teLabelChips').innerHTML=getLabels().map(l=>`
-    <button class="label-chip ${t.label===l.k?'on':''}"
-      style="background:${t.label===l.k?l.c+'22':'transparent'};color:${l.c};border-color:${t.label===l.k?l.c:'var(--border)'}"
-      onclick="toggleLabel('${l.k}')">${l.l}</button>`).join('');
+  // divisão chips (shared room/division list)
+  const teLabelChips=document.getElementById('teLabelChips');
+  teLabelChips.innerHTML=getRooms().map(r=>`
+    <button class="label-chip ${t.room===r.id?'on':''}"
+      style="background:${t.room===r.id?r.c+'22':'transparent'};color:${r.c};border-color:${t.room===r.id?r.c:'var(--border)'}"
+      onclick="toggleTaskRoomChip('${r.id}')">${r.e} ${r.n}</button>`).join('');
+  teLabelChips.dataset.room=t.room||'';
   openO('taskEditOv');
 }
-function toggleLabel(k){
+function toggleTaskRoomChip(k){
   const chips=document.getElementById('teLabelChips');
   const t=S.tasks.find(t=>t.id===_editTaskId);
-  const cur=t?.label;
-  const newLabel=cur===k?null:k;
+  const cur=t?.room;
+  const newRoom=cur===k?null:k;
   // update UI only (save on Guardar)
+  const rooms=getRooms();
   chips.querySelectorAll('.label-chip').forEach(btn=>{
-    const lk=btn.getAttribute('onclick').match(/'(\w+)'/)[1];
-    const l=LABELS.find(l=>l.k===lk);
-    const on=lk===newLabel;
+    const rk=btn.getAttribute('onclick').match(/'(\w+)'/)[1];
+    const r=rooms.find(r=>r.id===rk);
+    if(!r)return;
+    const on=rk===newRoom;
     btn.className='label-chip'+(on?' on':'');
-    btn.style.background=on?l.c+'22':'transparent';
-    btn.style.color=l.c;
-    btn.style.borderColor=on?l.c:'var(--border)';
+    btn.style.background=on?r.c+'22':'transparent';
+    btn.style.color=r.c;
+    btn.style.borderColor=on?r.c:'var(--border)';
   });
-  chips.dataset.label=newLabel||'';
+  chips.dataset.room=newRoom||'';
 }
 function saveEditTask(){
   const t=S.tasks.find(t=>t.id===_editTaskId);if(!t)return;
   t.text=document.getElementById('teText').value.trim()||t.text;
   t.prio=document.getElementById('tePrio').value;
   t.due=document.getElementById('teDue').value;
-  const labelVal=document.getElementById('teLabelChips').dataset.label;
-  t.label=(labelVal===''||labelVal===undefined)?null:labelVal;
+  const roomVal=document.getElementById('teLabelChips').dataset.room;
+  t.room=(roomVal===''||roomVal===undefined)?null:roomVal;
   const teResp=document.getElementById('teResp');
   if(teResp)t.responsible=teResp.value||null;
   closeO('taskEditOv');save();
@@ -1277,7 +1246,7 @@ function toggleGroup(gid,hdr){
   hdr.classList.toggle('collapsed',isOpen);
   try{localStorage.setItem(gid,isOpen?'0':'1');}catch(e){}
 }
-function setTaskLabel(id,val){const t=S.tasks.find(t=>t.id===id);if(t){t.label=val===''||val===null?null:val;save();}}
+function setTaskRoom(id,val){const t=S.tasks.find(t=>t.id===id);if(t){t.room=val===''||val===null?null:val;save();}}
 function togT(id){const t=S.tasks.find(x=>x.id===id);if(t){t.done=!t.done;save();}}
 function delT(id){S.tasks=S.tasks.filter(t=>t.id!==id);save();}
 function editTask(id,val){const t=S.tasks.find(t=>t.id===id);if(t&&val.trim()){t.text=val.trim();save();}}
@@ -1290,10 +1259,10 @@ function toggleNewTaskForm(){
   form.style.display=show?'':'none';
   if(show){
     document.getElementById('newTask').focus();
-    // populate label select with current labels
+    // populate divisão select with the shared room/division list
     const sel=document.getElementById('newTaskLabel');
     if(sel){
-      sel.innerHTML='<option value="">— Etiqueta</option>'+getLabels().map(l=>`<option value="${l.k}" style="color:${l.c}">${l.l}</option>`).join('');
+      sel.innerHTML='<option value="">— Divisão</option>'+getRooms().map(r=>`<option value="${r.id}" style="color:${r.c}">${r.e} ${r.n}</option>`).join('');
     }
   }
 }
@@ -1302,9 +1271,9 @@ function addTask(){
   if(!text)return;
   const prio=document.getElementById('newTaskPrio').value||'n';
   const due=document.getElementById('newTaskDate').value||'';
-  const label=document.getElementById('newTaskLabel')?.value||null;
+  const room=document.getElementById('newTaskLabel')?.value||null;
   const responsible=document.getElementById('newTaskResp')?.value||null;
-  S.tasks.unshift({id:uid(),text,done:false,prio,due,label:label||null,responsible:responsible||null});
+  S.tasks.unshift({id:uid(),text,done:false,prio,due,room:room||null,responsible:responsible||null});
   el.value='';
   document.getElementById('newTaskDate').value='';
   document.getElementById('newTaskPrio').value='n';
@@ -1435,7 +1404,7 @@ function addRoom(){
 function getStoreFilter(){try{return localStorage.getItem('storeFilter')||'';}catch(e){return '';}}
 function setStoreFilter(v){try{localStorage.setItem('storeFilter',v);}catch(e){}renderRoomsList();}
 
-function renderRooms(){renderFilterBar();renderItemRespFilterBar();renderRoomsList();}
+function renderRooms(){renderFilterBar();renderRoomsList();}
 
 function renderFilterBar(){
   const bar=document.getElementById('store-filter-bar');
@@ -1453,68 +1422,34 @@ function renderFilterBar(){
   // keep focus after re-render (only runs once on init)
 }
 
-// ── Já Temos (inventário) ──────────────────────────────────────────────────────
-function getInvRoomFilter(){try{return localStorage.getItem('invRoomFilter')||'';}catch(e){return '';}}
-function setInvRoomFilter(v){try{localStorage.setItem('invRoomFilter',v);}catch(e){}renderInventory();}
-function renderInventory(){
+// ── Já Temos ──────────────────────────────────────────────────────────────────
+// Derived view: not manually maintained anymore. Shows Admin tasks that are
+// done (t.done===true), grouped by their division (t.room), sorted
+// alphabetically within each group. Tasks with no division, or the 'outro'
+// division, never appear here. Unchecking a task (via the same togT toggle
+// used in Admin) sends it back to Admin as an open task.
+function renderJaTemos(){
   if(!S)return;
-  const rooms=getRooms();
-  const inv=getInventory();
-
-  // Keep the room <select> in the add-row fresh (rooms can be edited any time)
-  const roomSel=document.getElementById('invRoom');
-  if(roomSel){
-    const prev=roomSel.value;
-    roomSel.innerHTML=rooms.map(r=>`<option value="${r.id}">${r.e} ${r.n}</option>`).join('');
-    if(rooms.some(r=>r.id===prev)) roomSel.value=prev;
-  }
-
-  // Filter bar
-  const bar=document.getElementById('inv-filter-bar');
-  if(bar){
-    const cur=getInvRoomFilter();
-    bar.innerHTML=`<div class="resp-filter">
-      <button class="resp-filter-btn ${!cur?'active':''}" onclick="setInvRoomFilter('')">Todas</button>
-      ${rooms.map(r=>`<button class="resp-filter-btn ${cur===r.id?'active':''}" onclick="setInvRoomFilter('${r.id}')">${r.e} ${r.n}</button>`).join('')}
-    </div>`;
-  }
-
-  const list=document.getElementById('inv-list');
+  const list=document.getElementById('jatemos-list');
   if(!list)return;
-  const filter=getInvRoomFilter();
-  const used=rooms.filter(r=>(!filter||r.id===filter)&&inv.some(i=>i.roomId===r.id));
-  if(!inv.length){
-    list.innerHTML='<div class="inv-empty">Ainda não adicionaste nada. Usa o campo acima para começar.</div>';
+  const rooms=getRooms().filter(r=>r.id!=='outro');
+  const doneTasks=(S.tasks||[]).filter(t=>t.done && t.room && t.room!=='outro');
+  const groups=rooms
+    .map(room=>({room,tasks:doneTasks.filter(t=>t.room===room.id)
+      .sort((a,b)=>(a.text||'').localeCompare(b.text||'','pt',{sensitivity:'base'}))}))
+    .filter(g=>g.tasks.length);
+  if(!groups.length){
+    list.innerHTML='<div class="inv-empty">Ainda não há tarefas concluídas associadas a uma divisão.</div>';
     return;
   }
-  if(!used.length){
-    list.innerHTML='<div class="inv-empty">Nada nesta divisão.</div>';
-    return;
-  }
-  list.innerHTML=used.map(room=>{
-    const items=inv.filter(i=>i.roomId===room.id);
-    return `<div class="inv-group">
-      <div class="inv-group-hdr"><div class="room-dot" style="background:${room.c}"></div>${room.e} ${room.n} <span class="room-cnt">· ${items.length}</span></div>
-      ${items.map(i=>`<div class="inv-row">
-        <span class="inv-row-name">${i.name}</span>
-        <span class="item-x" onclick="delInventoryItem('${i.id}')">×</span>
+  list.innerHTML=groups.map(g=>`
+    <div class="inv-group">
+      <div class="inv-group-hdr"><div class="room-dot" style="background:${g.room.c}"></div>${g.room.e} ${g.room.n} <span class="room-cnt">· ${g.tasks.length}</span></div>
+      ${g.tasks.map(t=>`<div class="inv-row">
+        <div class="cb on" onclick="togT('${t.id}')" title="Marcar como por fazer"></div>
+        <span class="inv-row-name" style="text-decoration:line-through;color:var(--text3);">${t.text}</span>
       </div>`).join('')}
-    </div>`;
-  }).join('');
-}
-function addInventoryItem(){
-  const nameEl=document.getElementById('invName');
-  const name=nameEl.value.trim();
-  if(!name)return;
-  const roomId=document.getElementById('invRoom').value||getRooms()[0]?.id;
-  getInventory().push({id:uid(),name,roomId});
-  nameEl.value='';
-  save();
-  nameEl.focus();
-}
-function delInventoryItem(id){
-  S.inventory=getInventory().filter(i=>i.id!==id);
-  save();
+    </div>`).join('');
 }
 
 // ── Item collapse ─────────────────────────────────────────────────────────────
@@ -1539,7 +1474,6 @@ function renderRoomsList(){
     return;
   }
   const storeFilter=getStoreFilter();
-  const respFilter=getItemRespFilter();
   const allStores=[...new Set(S.items.flatMap(i=>i.options.map(o=>o.store).filter(Boolean)))].sort();
   const chipsHtml=`<div class="store-search-row"><div class="store-search-wrap"><input class="store-search-input" id="storeSearchInput" type="search" placeholder="Filtrar por loja…" value="${storeFilter||''}" oninput="setStoreFilter(this.value.trim())" onsearch="setStoreFilter(this.value.trim())"></div>${storeFilter?`<button class="store-clear-btn" onclick="setStoreFilter(\'\');setTimeout(()=>{const i=document.getElementById(\'storeSearchInput\');if(i)i.value=\'\';},0)">✕</button>`:''}</div>`;
 
@@ -1548,8 +1482,7 @@ function renderRoomsList(){
     // Aplicar filtro de loja e de responsável: item visível se corresponde a ambos (ou não há filtro)
     const sf=storeFilter?storeFilter.toLowerCase():'';
     let items=sf?allItems.filter(i=>i.options.some(o=>o.store&&o.store.toLowerCase().includes(sf))):allItems;
-    if(respFilter) items=items.filter(i=>i.responsible===respFilter);
-    if(!items.length&&(storeFilter||respFilter))return ''; // esconde a área se não tem itens correspondentes
+    if(!items.length&&storeFilter)return ''; // esconde a área se não tem itens correspondentes
     const open=isRoomOpen(room.id);
     return `<div class="room-sect ${open?'':'collapsed'}" data-room="${room.id}">
       <div class="room-hdr" onclick="toggleRoom('${room.id}')">
@@ -1627,19 +1560,6 @@ function setItemResp(id,val){
   if(item){item.responsible=val||null;save();}
 }
 function delItem(id){if(!confirm('Remover?'))return;S.items=S.items.filter(i=>i.id!==id);save();}
-
-// ── Item responsible filter (mirrors getStoreFilter/setStoreFilter) ───────────
-function getItemRespFilter(){try{return localStorage.getItem('itemRespFilter')||'';}catch(e){return '';}}
-function setItemRespFilter(v){try{localStorage.setItem('itemRespFilter',v);}catch(e){}renderRoomsList();}
-function renderItemRespFilterBar(){
-  const bar=document.getElementById('item-resp-filter-bar');
-  if(!bar)return;
-  const cur=getItemRespFilter();
-  const opts=[['','Todos'],['vasco','Vasco'],['rita','Rita']];
-  bar.innerHTML=`<div class="resp-filter">${opts.map(([v,l])=>
-    `<button class="resp-filter-btn ${cur===v?'active':''}" data-r="${v}" onclick="setItemRespFilter('${v}')">${l}</button>`
-  ).join('')}</div>`;
-}
 
 // ── Auto-fetch URL info ───────────────────
 function onUrlInput(){
@@ -2151,7 +2071,7 @@ document.querySelectorAll('.overlay').forEach(el=>{
   el.addEventListener('click',e=>{if(e.target===el){el.classList.remove('open');document.body.style.overflow='';}});
 });
 
-function render(){renderTimeline();renderAdmin();renderRooms();renderInventory();}
+function render(){runLegacyMigrations();renderTimeline();renderAdmin();renderRooms();renderJaTemos();}
 initFire();
 
 // ── Move item to room ─────────────────────────────────────────────────────────
