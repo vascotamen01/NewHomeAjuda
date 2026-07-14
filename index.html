@@ -300,11 +300,7 @@ body.scrolled .tab-btn .tab-icon{font-size:1.3rem;line-height:1;}
 .resp-chip{font-size:.65rem;font-weight:700;padding:2px 8px;border-radius:20px;white-space:nowrap;}
 .resp-chip.vasco{background:var(--vasco-lt);color:var(--vasco);}
 .resp-chip.rita{background:var(--rita-lt);color:var(--rita);}
-.resp-filter{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;}
-.resp-filter-btn{padding:7px 13px;border-radius:20px;border:1.5px solid var(--border);background:var(--surface);font-size:.76rem;font-weight:600;color:var(--text2);cursor:pointer;font-family:var(--font);transition:all .15s;}
-.resp-filter-btn.active{background:var(--sage);border-color:var(--sage);color:#fff;}
-.resp-filter-btn.active[data-r="vasco"]{background:var(--vasco);border-color:var(--vasco);}
-.resp-filter-btn.active[data-r="rita"]{background:var(--rita);border-color:var(--rita);}
+.inline-filter-sel{padding:8px 12px;border-radius:20px;border:1.5px solid var(--border);background:var(--surface);font-family:var(--font);font-size:.76rem;font-weight:600;color:var(--text2);cursor:pointer;}
 
 /* ── Item collapse ── */
 .item-body{overflow:hidden;transition:max-height .28s cubic-bezier(.4,0,.2,1);}
@@ -536,8 +532,10 @@ body.scrolled .compact-bar{
 
   <!-- ADMIN -->
   <div class="panel active" id="panel-admin">
-    <div style="margin-bottom:10px;">
+    <div style="margin-bottom:10px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
       <button onclick="openRoomMgr()" style="padding:8px 14px;border-radius:20px;border:1.5px solid var(--border);background:var(--surface);font-family:var(--font);font-size:.76rem;font-weight:600;color:var(--text2);cursor:pointer;">⚙️ Gerir divisões</button>
+      <div id="task-status-filter-bar"></div>
+      <div id="task-resp-filter-bar"></div>
     </div>
     <div style="margin-bottom:8px">
       <button id="newTaskToggle" onclick="toggleNewTaskForm()" style="width:100%;padding:11px;border-radius:12px;border:1.5px dashed var(--border);background:transparent;font-family:var(--font);font-size:.84rem;color:var(--text2);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;">
@@ -571,8 +569,6 @@ body.scrolled .compact-bar{
         </div>
       </div>
     </div>
-    <div id="task-status-filter-bar"></div>
-    <div id="task-resp-filter-bar"></div>
     <div id="task-wrap" style="margin-top:8px"></div>
   </div>
 
@@ -1171,9 +1167,9 @@ function renderTaskStatusFilterBar(){
   if(!bar)return;
   const cur=getTaskStatusFilter();
   const opts=[['','Todas'],['pending','Por fazer'],['done','Concluídas']];
-  bar.innerHTML=`<div class="resp-filter">${opts.map(([v,l])=>
-    `<button class="resp-filter-btn ${cur===v?'active':''}" data-r="${v}" onclick="setTaskStatusFilter('${v}')">${l}</button>`
-  ).join('')}</div>`;
+  bar.innerHTML=`<select class="inline-filter-sel" onchange="setTaskStatusFilter(this.value)">${opts.map(([v,l])=>
+    `<option value="${v}" ${cur===v?'selected':''}>${l}</option>`
+  ).join('')}</select>`;
 }
 
 // ── Task responsible filter (mirrors getStoreFilter/setStoreFilter) ──────────
@@ -1183,10 +1179,10 @@ function renderTaskRespFilterBar(){
   const bar=document.getElementById('task-resp-filter-bar');
   if(!bar)return;
   const cur=getTaskRespFilter();
-  const opts=[['','Todas'],['vasco','Vasco'],['rita','Rita']];
-  bar.innerHTML=`<div class="resp-filter">${opts.map(([v,l])=>
-    `<button class="resp-filter-btn ${cur===v?'active':''}" data-r="${v}" onclick="setTaskRespFilter('${v}')">${l}</button>`
-  ).join('')}</div>`;
+  const opts=[['','Todos'],['vasco','Vasco'],['rita','Rita']];
+  bar.innerHTML=`<select class="inline-filter-sel" onchange="setTaskRespFilter(this.value)">${opts.map(([v,l])=>
+    `<option value="${v}" ${cur===v?'selected':''}>${l}</option>`
+  ).join('')}</select>`;
 }
 function setTaskResp(id,val){const t=S.tasks.find(t=>t.id===id);if(t){t.responsible=val||null;save();}}
 
