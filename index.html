@@ -19,6 +19,7 @@
   --border:  #ECE3D6; --red: #C05A45; --surface: #FFFFFF;
   --vasco:   #6E93B0; --vasco-lt: #E8F1F6;
   --rita:    #B06C93; --rita-lt: #FBEEF5;
+  --ambos:   #8E7CA0; --ambos-lt: #EFEBF3;
   --font: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --r-sm: 10px; --r-md: 14px; --r-lg: 20px;
   --sh-sm: 0 1px 3px rgba(58,50,44,.06), 0 0 0 1px rgba(58,50,44,.035);
@@ -296,10 +297,14 @@ body.scrolled .tab-btn .tab-icon{font-size:1.3rem;line-height:1;}
 .resp-sel{appearance:none;-webkit-appearance:none;border:1.5px solid var(--border);border-radius:20px;background:var(--surface);font-size:.68rem;font-weight:700;cursor:pointer;padding:4px 8px;color:var(--text2);font-family:var(--font);max-width:100%;}
 .resp-sel[data-r="vasco"]{background:var(--vasco-lt);border-color:var(--vasco);color:var(--vasco);}
 .resp-sel[data-r="rita"]{background:var(--rita-lt);border-color:var(--rita);color:var(--rita);}
+.resp-sel[data-r="ambos"]{background:var(--ambos-lt);border-color:var(--ambos);color:var(--ambos);}
 .resp-sel-sm{padding:3px 3px;font-size:.66rem;width:100%;text-align:center;}
 .resp-chip{font-size:.65rem;font-weight:700;padding:2px 8px;border-radius:20px;white-space:nowrap;}
 .resp-chip.vasco{background:var(--vasco-lt);color:var(--vasco);}
 .resp-chip.rita{background:var(--rita-lt);color:var(--rita);}
+.resp-chip.ambos{background:var(--ambos-lt);color:var(--ambos);}
+.filter-group{display:inline-flex;align-items:center;gap:5px;}
+.filter-group-lbl{font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--text3);}
 .inline-filter-sel{padding:8px 12px;border-radius:20px;border:1.5px solid var(--border);background:var(--surface);font-family:var(--font);font-size:.76rem;font-weight:600;color:var(--text2);cursor:pointer;}
 
 /* ── Item collapse ── */
@@ -374,7 +379,7 @@ body.scrolled .tab-btn .tab-icon{font-size:1.3rem;line-height:1;}
 .label-group-chevron{font-size:.6rem;transition:transform .2s ease;margin-left:auto;color:var(--text3);}
 .label-group-hdr.collapsed .label-group-chevron{transform:rotate(-90deg);}
 .label-group-body{overflow:hidden;transition:max-height .25s ease;}
-.label-group-body.open{max-height:2000px;}
+.label-group-body.open{max-height:60000px;}
 .label-group-body.closed{max-height:0;}
 
 
@@ -534,8 +539,8 @@ body.scrolled .compact-bar{
   <div class="panel active" id="panel-admin">
     <div style="margin-bottom:10px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
       <button onclick="openRoomMgr()" style="padding:8px 14px;border-radius:20px;border:1.5px solid var(--border);background:var(--surface);font-family:var(--font);font-size:.76rem;font-weight:600;color:var(--text2);cursor:pointer;">⚙️ Gerir divisões</button>
-      <div id="task-status-filter-bar"></div>
-      <div id="task-resp-filter-bar"></div>
+      <div class="filter-group"><span class="filter-group-lbl">Estado</span><div id="task-status-filter-bar"></div></div>
+      <div class="filter-group"><span class="filter-group-lbl">Responsável</span><div id="task-resp-filter-bar"></div></div>
     </div>
     <div style="margin-bottom:8px">
       <button id="newTaskToggle" onclick="toggleNewTaskForm()" style="width:100%;padding:11px;border-radius:12px;border:1.5px dashed var(--border);background:transparent;font-family:var(--font);font-size:.84rem;color:var(--text2);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;">
@@ -561,6 +566,7 @@ body.scrolled .compact-bar{
             <option value="">— Responsável</option>
             <option value="vasco">Vasco</option>
             <option value="rita">Rita</option>
+            <option value="ambos">Vasco + Rita</option>
           </select>
         </div>
         <div style="display:flex;gap:8px;">
@@ -620,6 +626,7 @@ body.scrolled .compact-bar{
         <option value="">— Nenhum</option>
         <option value="vasco">Vasco</option>
         <option value="rita">Rita</option>
+        <option value="ambos">Vasco + Rita</option>
       </select>
     </div>
     <div class="m-btns">
@@ -1099,7 +1106,7 @@ function renderAdmin(){
         <div class="task-meta-mobile">
           ${t.due?`<span class="m-date ${dc}">${t.due.slice(5)}</span>`:''}
           ${room?`<span class="m-label" style="color:${room.c}">${roomLabel}</span>`:''}
-          ${t.responsible?`<span class="resp-chip ${t.responsible}">${t.responsible==='vasco'?'Vasco':'Rita'}</span>`:''}
+          ${t.responsible?`<span class="resp-chip ${t.responsible}">${t.responsible==='ambos'?'Vasco + Rita':t.responsible==='vasco'?'Vasco':'Rita'}</span>`:''}
         </div>
       </div>
       <div class="task-cell" onclick="event.stopPropagation()">
@@ -1115,6 +1122,7 @@ function renderAdmin(){
           <option value="" ${!t.responsible?'selected':''}>—</option>
           <option value="vasco" ${t.responsible==='vasco'?'selected':''}>V</option>
           <option value="rita" ${t.responsible==='rita'?'selected':''}>R</option>
+          <option value="ambos" ${t.responsible==='ambos'?'selected':''}>V+R</option>
         </select>
       </div>
       <div class="task-cell" onclick="event.stopPropagation();delT('${t.id}')"><span class="btn-del">×</span></div>
@@ -1126,7 +1134,7 @@ function renderAdmin(){
   // Group by room/division
   const groups={};
   sortedTasks()
-    .filter(t=>!taskRespFilter||t.responsible===taskRespFilter)
+    .filter(t=>!taskRespFilter||t.responsible===taskRespFilter||t.responsible==='ambos')
     .filter(t=>!taskStatusFilter||(taskStatusFilter==='done'?t.done:!t.done))
     .forEach(t=>{
     const k=t.room||'_none';
@@ -1413,7 +1421,7 @@ function renderFilterBar(){
   bar.innerHTML=`<div class="store-search-row">
     <div class="store-search-wrap">
       <input class="store-search-input" id="storeSearchInput" type="search"
-        placeholder="Filtrar por loja…" value="${sf||''}"
+        placeholder="Filtrar por loja ou artigo…" value="${sf||''}"
         oninput="setStoreFilter(this.value.trim())"
         onsearch="setStoreFilter(this.value.trim())">
     </div>
@@ -1445,13 +1453,13 @@ function renderRoomsList(){
   }
   const storeFilter=getStoreFilter();
   const allStores=[...new Set(S.items.flatMap(i=>i.options.map(o=>o.store).filter(Boolean)))].sort();
-  const chipsHtml=`<div class="store-search-row"><div class="store-search-wrap"><input class="store-search-input" id="storeSearchInput" type="search" placeholder="Filtrar por loja…" value="${storeFilter||''}" oninput="setStoreFilter(this.value.trim())" onsearch="setStoreFilter(this.value.trim())"></div>${storeFilter?`<button class="store-clear-btn" onclick="setStoreFilter(\'\');setTimeout(()=>{const i=document.getElementById(\'storeSearchInput\');if(i)i.value=\'\';},0)">✕</button>`:''}</div>`;
+  const chipsHtml=`<div class="store-search-row"><div class="store-search-wrap"><input class="store-search-input" id="storeSearchInput" type="search" placeholder="Filtrar por loja ou artigo…" value="${storeFilter||''}" oninput="setStoreFilter(this.value.trim())" onsearch="setStoreFilter(this.value.trim())"></div>${storeFilter?`<button class="store-clear-btn" onclick="setStoreFilter(\'\');setTimeout(()=>{const i=document.getElementById(\'storeSearchInput\');if(i)i.value=\'\';},0)">✕</button>`:''}</div>`;
 
   el.innerHTML=used.map(room=>{
     const allItems=S.items.filter(i=>i.room===room.id);
-    // Aplicar filtro de loja e de responsável: item visível se corresponde a ambos (ou não há filtro)
+    // Filtro de loja/artigo: item visível se o nome do artigo OU a loja de alguma opção corresponder (ou não há filtro)
     const sf=storeFilter?storeFilter.toLowerCase():'';
-    let items=sf?allItems.filter(i=>i.options.some(o=>o.store&&o.store.toLowerCase().includes(sf))):allItems;
+    let items=sf?allItems.filter(i=>(i.name&&i.name.toLowerCase().includes(sf))||i.options.some(o=>o.store&&o.store.toLowerCase().includes(sf))):allItems;
     if(!items.length&&storeFilter)return ''; // esconde a área se não tem itens correspondentes
     const open=isRoomOpen(room.id);
     return `<div class="room-sect ${open?'':'collapsed'}" data-room="${room.id}">
@@ -1470,6 +1478,7 @@ function renderRoomsList(){
         ${items.length?'':'<p class="no-opts" style="padding:14px;">Sem artigos nesta marca.</p>'}
       ${items.map(item=>{
         const chosen=item.options.some(o=>o.selected);
+        const nameMatches=sf&&item.name&&item.name.toLowerCase().includes(sf);
         return `<div class="item-card">
           <div class="item-hdr ${isItemOpen(item.id)?'':'collapsed'}" onclick="toggleItem('${item.id}')">
             <div class="item-color-bar" style="background:${room.c}"></div>
@@ -1478,6 +1487,7 @@ function renderRoomsList(){
               <option value="" ${!item.responsible?'selected':''}>—</option>
               <option value="vasco" ${item.responsible==='vasco'?'selected':''}>Vasco</option>
               <option value="rita" ${item.responsible==='rita'?'selected':''}>Rita</option>
+              <option value="ambos" ${item.responsible==='ambos'?'selected':''}>Vasco + Rita</option>
             </select>
             <span class="item-tag ${chosen?'c':'p'}">${chosen?'✓ Escolhido':'A decidir'}</span>
             <button class="move-room-btn" onclick="event.stopPropagation();openMoveRoom('${item.id}')">⇄</button>
@@ -1486,7 +1496,7 @@ function renderRoomsList(){
           </div>
           <div class="item-body ${isItemOpen(item.id)?'open':'closed'}">
           ${!item.options.length?'<div class="no-opts">Adiciona a primeira opção abaixo.</div>':''}
-          ${(sf?item.options.filter(o=>!o.store||o.store.toLowerCase().includes(sf)):item.options).map(o=>`
+          ${(sf&&!nameMatches?item.options.filter(o=>!o.store||o.store.toLowerCase().includes(sf)):item.options).map(o=>`
             <div class="opt-row ${o.selected?'sel':''}">
               <div class="opt-top">
                 ${o.url?`<a class="opt-img-link" href="${o.url}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${o.image?`<img class="opt-img" src="https://wsrv.nl/?url=${encodeURIComponent(o.image)}" alt="" loading="lazy" onerror="this.outerHTML='<div class=\\'opt-img-ph\\'>📦</div>'">`:'<div class="opt-img-ph">📦</div>'}</a>`:o.image?`<img class="opt-img" src="https://wsrv.nl/?url=${encodeURIComponent(o.image)}" alt="" loading="lazy" onerror="this.outerHTML='<div class=\\'opt-img-ph\\'>📦</div>'">`:'<div class="opt-img-ph">📦</div>'}
