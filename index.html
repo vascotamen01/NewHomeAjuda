@@ -152,7 +152,12 @@ body.scrolled .tab-btn .tab-icon{font-size:1.3rem;line-height:1;}
 
 /* ── Já Temos (derived: tarefas concluídas agrupadas por divisão) ── */
 .inv-group{margin-bottom:8px;background:var(--surface);border-radius:var(--r-md);overflow:hidden;box-shadow:var(--sh-sm);}
-.inv-group-hdr{display:flex;align-items:center;gap:8px;padding:11px 14px;font-size:.82rem;font-weight:700;border-bottom:1px solid var(--border);}
+.inv-group-hdr{display:flex;align-items:center;gap:8px;padding:11px 14px;font-size:.82rem;font-weight:700;border-bottom:1px solid var(--border);cursor:pointer;}
+.inv-group.collapsed .inv-group-hdr{border-bottom:none;}
+.inv-group-chevron{margin-left:auto;font-size:.68rem;color:var(--text3);transition:transform .2s ease;}
+.inv-group.collapsed .inv-group-chevron{transform:rotate(-90deg);}
+.inv-group-body{max-height:6000px;overflow:hidden;transition:max-height .35s ease, padding .25s ease, opacity .25s ease;opacity:1;}
+.inv-group.collapsed .inv-group-body{max-height:0;opacity:0;}
 .inv-row{display:flex;align-items:center;gap:10px;padding:11px 14px;border-bottom:1px solid var(--border);}
 .inv-row:last-child{border-bottom:none;}
 .inv-row-name{flex:1;font-size:.86rem;color:var(--text);}
@@ -1292,8 +1297,10 @@ function toggleRoom(rid){
   let s={};try{s=JSON.parse(localStorage.getItem('roomOpen')||'{}');}catch(e){}
   s[rid]=!isRoomOpen(rid);
   localStorage.setItem('roomOpen',JSON.stringify(s));
-  const el=document.querySelector(`.room-sect[data-room="${rid}"]`);
-  if(el)el.classList.toggle('collapsed',!s[rid]);
+  // Shared open/closed state across Compras' room sections and Já Temos'
+  // division groups — toggle whichever of the two is currently in the DOM.
+  document.querySelectorAll(`.room-sect[data-room="${rid}"], .inv-group[data-room="${rid}"]`)
+    .forEach(el=>el.classList.toggle('collapsed',!s[rid]));
 }
 
 // ── Room manager (mirrors the label manager: add/rename/delete/reorder/recolor) ──
@@ -1426,8 +1433,10 @@ function renderFilterBar(){
 // Derived view: not manually maintained anymore. Shows Admin tasks that are
 // done (t.done===true), grouped by their division (t.room), sorted
 // alphabetically within each group. Tasks with no division, or the 'outro'
-// division, never appear here. Unchecking a task (via the same togT toggle
-// used in Admin) sends it back to Admin as an open task.
+// division, never appear here. Purely informational here — no checkbox/click
+// to revert, since the task already shows as concluded (and can be reverted)
+// back in Admin; each division group can be collapsed/expanded, same as
+// Compras' room sections (shares the same roomOpen state via toggleRoom()).
 function renderJaTemos(){
   if(!S)return;
   const list=document.getElementById('jatemos-list');
@@ -1442,14 +1451,20 @@ function renderJaTemos(){
     list.innerHTML='<div class="inv-empty">Ainda não há tarefas concluídas associadas a uma divisão.</div>';
     return;
   }
-  list.innerHTML=groups.map(g=>`
-    <div class="inv-group">
-      <div class="inv-group-hdr"><div class="room-dot" style="background:${g.room.c}"></div>${g.room.e} ${g.room.n} <span class="room-cnt">· ${g.tasks.length}</span></div>
+  list.innerHTML=groups.map(g=>{
+    const open=isRoomOpen(g.room.id);
+    return `<div class="inv-group ${open?'':'collapsed'}" data-room="${g.room.id}">
+      <div class="inv-group-hdr" onclick="toggleRoom('${g.room.id}')">
+        <div class="room-dot" style="background:${g.room.c}"></div>${g.room.e} ${g.room.n} <span class="room-cnt">· ${g.tasks.length}</span>
+        <span class="inv-group-chevron">▾</span>
+      </div>
+      <div class="inv-group-body">
       ${g.tasks.map(t=>`<div class="inv-row">
-        <div class="cb on" onclick="togT('${t.id}')" title="Marcar como por fazer"></div>
-        <span class="inv-row-name" style="text-decoration:line-through;color:var(--text3);">${t.text}</span>
+        <span class="inv-row-name">${t.text}</span>
       </div>`).join('')}
-    </div>`).join('');
+      </div>
+    </div>`;
+  }).join('');
 }
 
 // ── Item collapse ─────────────────────────────────────────────────────────────
